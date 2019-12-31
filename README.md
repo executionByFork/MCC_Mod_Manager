@@ -93,3 +93,5 @@ The 'Restore Selected' and 'Restore All Files' buttons restore from backups the 
 The 'Delete Selected' and 'Delete All Backups' buttons remove the selected/all backup files, respectively, after confirming
 that you actually want to delete them.  
 
+## Known Issues
+- The application will crash if it tries to modify a game file which is currently in use by the game. As a workaround, only patch files to the game while Halo MCC is not running.
