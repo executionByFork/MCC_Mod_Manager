@@ -235,8 +235,10 @@ namespace MCC_Mod_Manager
         private void patchButton_Click(object sender, EventArgs e)
         {
             bool baksMade = false;
+            bool chk = false;
             foreach (CheckBox chb in modListPanel.Controls.OfType<CheckBox>()) {
                 if (chb.Checked) {
+                    chk = true;
                     string modpackname = chb.Text.Replace(dirtyPadding, "");
                     using (ZipArchive archive = ZipFile.OpenRead(cfg["modpack_dir"] + @"\" + modpackname + ".zip")) {
                         ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpack_config.cfg");
@@ -263,6 +265,10 @@ namespace MCC_Mod_Manager
                     }
                     chb.Checked = false;
                 }
+            }
+            if (!chk) {
+                MessageBox.Show("Error: No items selected from the list.");
+                return;
             }
             string msg = "The selected mods have been patched to the game.";
             if (baksMade) {
@@ -473,7 +479,7 @@ namespace MCC_Mod_Manager
                 }
                 ZipArchiveEntry readmeFile = archive.CreateEntry("README.txt");
                 using (StreamWriter writer = new StreamWriter(readmeFile.Open())) {
-                    writer.WriteLine("Install using MCC Mod Manager: <github link here>");  // TODO: put github link here
+                    writer.WriteLine("Install using MCC Mod Manager: https://github.com/executionByFork/MCC_Mod_Manager/tree/master");
                 }
             }
 
@@ -487,6 +493,7 @@ namespace MCC_Mod_Manager
         private void clearBtn_Click(object sender, EventArgs e)
         {
             createFilesPanel.Controls.Clear();
+            createPageList = new List<Panel>(); // garbage collector magic
         }
 
         //////////////////////////////////

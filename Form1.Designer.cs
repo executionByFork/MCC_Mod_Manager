@@ -76,6 +76,7 @@
             this.bakLabel2 = new System.Windows.Forms.Label();
             this.bakLabel1 = new System.Windows.Forms.Label();
             this.bakListPanel = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
             this.topBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minButton)).BeginInit();
@@ -93,6 +94,7 @@
             // topBar
             // 
             this.topBar.BackColor = System.Drawing.Color.DarkGray;
+            this.topBar.Controls.Add(this.label1);
             this.topBar.Controls.Add(this.refreshButton);
             this.topBar.Controls.Add(this.minButton);
             this.topBar.Controls.Add(this.titleLabel);
@@ -206,7 +208,7 @@
             // 
             this.delModpack.Font = new System.Drawing.Font("Reem Kufi", 9.749999F);
             this.delModpack.ForeColor = System.Drawing.Color.Red;
-            this.delModpack.Location = new System.Drawing.Point(434, 317);
+            this.delModpack.Location = new System.Drawing.Point(434, 311);
             this.delModpack.Name = "delModpack";
             this.delModpack.Size = new System.Drawing.Size(124, 35);
             this.delModpack.TabIndex = 5;
@@ -217,7 +219,7 @@
             // patchButton
             // 
             this.patchButton.Font = new System.Drawing.Font("Reem Kufi", 9.749999F);
-            this.patchButton.Location = new System.Drawing.Point(434, 276);
+            this.patchButton.Location = new System.Drawing.Point(434, 270);
             this.patchButton.Name = "patchButton";
             this.patchButton.Size = new System.Drawing.Size(124, 35);
             this.patchButton.TabIndex = 3;
@@ -241,11 +243,11 @@
             // 
             this.homeEnableLabel.AutoSize = true;
             this.homeEnableLabel.Font = new System.Drawing.Font("Reem Kufi", 8.999999F);
-            this.homeEnableLabel.Location = new System.Drawing.Point(28, 7);
+            this.homeEnableLabel.Location = new System.Drawing.Point(32, 7);
             this.homeEnableLabel.Name = "homeEnableLabel";
-            this.homeEnableLabel.Size = new System.Drawing.Size(55, 23);
+            this.homeEnableLabel.Size = new System.Drawing.Size(42, 23);
             this.homeEnableLabel.TabIndex = 1;
-            this.homeEnableLabel.Text = "Enabled";
+            this.homeEnableLabel.Text = "Select";
             // 
             // modListPanel
             // 
@@ -546,9 +548,9 @@
             // restoreSelectedBtn
             // 
             this.restoreSelectedBtn.Font = new System.Drawing.Font("Reem Kufi", 9.749999F);
-            this.restoreSelectedBtn.Location = new System.Drawing.Point(411, 184);
+            this.restoreSelectedBtn.Location = new System.Drawing.Point(427, 184);
             this.restoreSelectedBtn.Name = "restoreSelectedBtn";
-            this.restoreSelectedBtn.Size = new System.Drawing.Size(151, 35);
+            this.restoreSelectedBtn.Size = new System.Drawing.Size(135, 35);
             this.restoreSelectedBtn.TabIndex = 7;
             this.restoreSelectedBtn.Text = "Restore Selected";
             this.restoreSelectedBtn.UseVisualStyleBackColor = true;
@@ -560,9 +562,9 @@
             // 
             this.delAllBaksBtn.Font = new System.Drawing.Font("Reem Kufi", 9.749999F);
             this.delAllBaksBtn.ForeColor = System.Drawing.Color.Red;
-            this.delAllBaksBtn.Location = new System.Drawing.Point(411, 308);
+            this.delAllBaksBtn.Location = new System.Drawing.Point(427, 308);
             this.delAllBaksBtn.Name = "delAllBaksBtn";
-            this.delAllBaksBtn.Size = new System.Drawing.Size(151, 35);
+            this.delAllBaksBtn.Size = new System.Drawing.Size(135, 35);
             this.delAllBaksBtn.TabIndex = 6;
             this.delAllBaksBtn.Text = "Delete All Backups";
             this.delAllBaksBtn.UseVisualStyleBackColor = true;
@@ -573,9 +575,9 @@
             // makeBakBtn
             // 
             this.makeBakBtn.Font = new System.Drawing.Font("Reem Kufi", 9.749999F);
-            this.makeBakBtn.Location = new System.Drawing.Point(411, 143);
+            this.makeBakBtn.Location = new System.Drawing.Point(427, 143);
             this.makeBakBtn.Name = "makeBakBtn";
-            this.makeBakBtn.Size = new System.Drawing.Size(151, 35);
+            this.makeBakBtn.Size = new System.Drawing.Size(135, 35);
             this.makeBakBtn.TabIndex = 5;
             this.makeBakBtn.Text = "New Backup";
             this.makeBakBtn.UseVisualStyleBackColor = true;
@@ -586,9 +588,9 @@
             // restoreAllBaksBtn
             // 
             this.restoreAllBaksBtn.Font = new System.Drawing.Font("Reem Kufi", 9.749999F);
-            this.restoreAllBaksBtn.Location = new System.Drawing.Point(411, 225);
+            this.restoreAllBaksBtn.Location = new System.Drawing.Point(427, 225);
             this.restoreAllBaksBtn.Name = "restoreAllBaksBtn";
-            this.restoreAllBaksBtn.Size = new System.Drawing.Size(151, 36);
+            this.restoreAllBaksBtn.Size = new System.Drawing.Size(135, 36);
             this.restoreAllBaksBtn.TabIndex = 4;
             this.restoreAllBaksBtn.Text = "Restore All Files";
             this.restoreAllBaksBtn.UseVisualStyleBackColor = true;
@@ -600,9 +602,9 @@
             // 
             this.delSelectedBak.Font = new System.Drawing.Font("Reem Kufi", 9.749999F);
             this.delSelectedBak.ForeColor = System.Drawing.Color.Red;
-            this.delSelectedBak.Location = new System.Drawing.Point(411, 267);
+            this.delSelectedBak.Location = new System.Drawing.Point(427, 267);
             this.delSelectedBak.Name = "delSelectedBak";
-            this.delSelectedBak.Size = new System.Drawing.Size(151, 35);
+            this.delSelectedBak.Size = new System.Drawing.Size(135, 35);
             this.delSelectedBak.TabIndex = 3;
             this.delSelectedBak.Text = "Delete Selected";
             this.delSelectedBak.UseVisualStyleBackColor = true;
@@ -636,8 +638,22 @@
             this.bakListPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.bakListPanel.Location = new System.Drawing.Point(14, 33);
             this.bakListPanel.Name = "bakListPanel";
-            this.bakListPanel.Size = new System.Drawing.Size(385, 322);
+            this.bakListPanel.Size = new System.Drawing.Size(402, 322);
             this.bakListPanel.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.label1.Font = new System.Drawing.Font("Gadugi", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(429, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(40, 19);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "v0.1";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.label1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
+            this.label1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
             // 
             // Form1
             // 
@@ -731,6 +747,7 @@
         private System.Windows.Forms.Button delAllBaksBtn;
         private System.Windows.Forms.Button restoreSelectedBtn;
         private System.Windows.Forms.Button delModpack;
+        private System.Windows.Forms.Label label1;
     }
 }
 
