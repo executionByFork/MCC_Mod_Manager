@@ -86,10 +86,10 @@ installed on both systems without any extra overhead.
 ### Backups Tab
 This tool manages backups for you, however, there are times you may need to remove old backups or will want to create new ones.
 Additionally, if you want to restore your game's original functionality this is where you can do that. The large box displays
-all the file names which are currently backed up in the backup directory.
+all the file names which are currently backed up in the backup directory.  
 'New Backup' can be used to create a new backup of a file. If you select a file that is already backed up, it will ask if you
-want to overwrite it.
-The 'Restore Selected' and 'Restore All Files' buttons restore from backups the selected files/all files, respectively.
+want to overwrite it.  
+The 'Restore Selected' and 'Restore All Files' buttons restore from backups the selected files/all files, respectively.  
 The 'Delete Selected' and 'Delete All Backups' buttons remove the selected/all backup files, respectively, after confirming
-that you actually want to delete them.
+that you actually want to delete them.  
 
