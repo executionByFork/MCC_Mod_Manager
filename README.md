@@ -36,14 +36,16 @@ files should you need to restore the base game. The main benefit of using this t
   threat to the user. This application does **NOT** need Administrator privileges to run, because it avoids using links.
 
 ## INSTALLATION
-This application can be downloaded from the Github Release page or from Nexus Mods.
+This application can be downloaded from the [Github Release](https://github.com/executionByFork/MCC_Mod_Manager/releases)
+page or from Nexus Mods.  
+Make sure `MCC Mod Manager.exe` and `Newtonsoft.Json.dll` are in a folder together. The executable will create folders and config files in the same directory, so it's best if these two files are in a folder alone.
 
 If you would like to install from source, you can pull down this repository and open the project in [Visual Studio 2019](https://visualstudio.microsoft.com/vs/).
 You can create an executable application from that IDE. [Read more here](https://docs.microsoft.com/en-us/visualstudio/ide/building-and-cleaning-projects-and-solutions-in-visual-studio?view=vs-2019).
 
 ## USAGE
-I have recorded a video on how to use this tool in its entirety here. However, if you prefer reading, details on the
-application can be found below.
+I have recorded a video on how to use this tool in its entirety [here](https://www.youtube.com/watch?v=wvRcdXpgIos).
+However, if you prefer reading, details on the application can be found below.
 
 **_**NOTE:** When creating or installing modpacks with large files, the application will look as if it has frozen. This is because I had trouble implementing the progress bar to show it working (and also I was lazy and coded this without threading). I will be adding a progress bar shortly, as soon as I get an odd bug resolved._
 
