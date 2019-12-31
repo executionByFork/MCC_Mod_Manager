@@ -47,8 +47,6 @@ You can create an executable application from that IDE. [Read more here](https:/
 I have recorded a video on how to use this tool in its entirety [here](https://www.youtube.com/watch?v=wvRcdXpgIos).
 However, if you prefer reading, details on the application can be found below.
 
-**_**NOTE:** When creating or installing modpacks with large files, the application will look as if it has frozen. This is because I had trouble implementing the progress bar to show it working (and also I was lazy and coded this without threading). I will be adding a progress bar shortly, as soon as I get an odd bug resolved._
-
 ### Top Bar and Buttons
 You can drag the window by holding down the left mouse on the light gray bar at the top of the window.  
 The red power icon quits the application  
@@ -97,3 +95,4 @@ that you actually want to delete them.
 
 ## Known Issues
 - The application will crash if it tries to modify a game file which is currently in use by the game. As a workaround, only patch files to the game while Halo MCC is not running.
+- When creating or installing modpacks with large files, the application will look as if it has frozen. This is because I had trouble implementing the progress bar to show it working (and also I was lazy and coded this without threading). I will be adding a progress bar shortly, as soon as I get an odd bug resolved.
