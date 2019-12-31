@@ -485,6 +485,7 @@ namespace MCC_Mod_Manager
 
             MessageBox.Show("Modpack '" + modpackName + "' created.");
             createFilesPanel.Controls.Clear();
+            createPageList = new List<Panel>(); // garbage collector magic
             modpackName_txt.Text = "";
             loadModpacks();
             return;
