@@ -11,6 +11,7 @@ using System.IO;
 using System.IO.Compression;
 using Newtonsoft.Json;
 
+// TODO: User notifications should be handled in their own layer, to avoid duplicate or false message boxes popping up
 namespace MCC_Mod_Manager
 {
     public partial class Form1 : Form
@@ -70,7 +71,7 @@ namespace MCC_Mod_Manager
             try {
                 File.Delete(path);
             } catch (IOException) {
-                MessageBox.Show("Error: File access exception. If the game is running, exit it and retry.");
+                MessageBox.Show("Error: File access exception. If the game is running, exit it and try again.");
                 return;
             }
         }
@@ -87,7 +88,7 @@ namespace MCC_Mod_Manager
             try {
                 File.Copy(src, dest);
             } catch (IOException) {
-                MessageBox.Show("Error: File access exception. If the game is running, exit it and retry.");
+                MessageBox.Show("Error: File Access Exception. If the game is running, exit it and try again.");
                 return false;
             }
             return true;
@@ -251,6 +252,7 @@ namespace MCC_Mod_Manager
             // TODO: Fix crash when trying to write to a file which is in use by another application
             bool baksMade = false;
             bool chk = false;
+            bool err = false;
             pBar.Visible = true;
             pBar.Maximum = modListPanel.Controls.OfType<CheckBox>().Count();
             foreach (CheckBox chb in modListPanel.Controls.OfType<CheckBox>()) {
@@ -278,7 +280,13 @@ namespace MCC_Mod_Manager
                                 }
                                 DeleteFile(destination);
                             }
-                            modFile.ExtractToFile(destination); // TODO: fix crash if file exists
+                            try {
+                                modFile.ExtractToFile(destination);
+                            } catch (IOException) {
+                                err = true;
+                                MessageBox.Show("Error: File Access Exception. If the game is running, exit it and try again.");
+                                break;
+                            }
                         }
                     }
                     chb.Checked = false;
@@ -292,7 +300,9 @@ namespace MCC_Mod_Manager
             if (baksMade) {
                 msg += "\r\nNew backups were created.";
             }
-            MessageBox.Show(msg);
+            if (!err) {
+                MessageBox.Show(msg);
+            }
             pBar.Value = 0;
             pBar.Visible = false;
         }
