@@ -294,14 +294,14 @@ namespace MCC_Mod_Manager
             }
             if (!chk) {
                 MessageBox.Show("Error: No items selected from the list.");
-                return;
-            }
-            string msg = "The selected mods have been patched to the game.";
-            if (baksMade) {
-                msg += "\r\nNew backups were created.";
-            }
-            if (!err) {
-                MessageBox.Show(msg);
+            } else {
+                string msg = "The selected mods have been patched to the game.";
+                if (baksMade) {
+                    msg += "\r\nNew backups were created.";
+                }
+                if (!err) {
+                    MessageBox.Show(msg);
+                }
             }
             pBar.Value = 0;
             pBar.Visible = false;
