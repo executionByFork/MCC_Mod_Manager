@@ -93,6 +93,7 @@ The 'Restore Selected' and 'Restore All Files' buttons restore from backups the 
 The 'Delete Selected' and 'Delete All Backups' buttons remove the selected/all backup files, respectively, after confirming
 that you actually want to delete them.  
 
-## Known Issues
+## Known Issues / Future Improvements
 - The application will crash if it tries to modify a game file which is currently in use by the game. As a workaround, only patch files to the game while Halo MCC is not running.
 - When creating or installing modpacks with large files, the application will look as if it has frozen. This is because I had trouble implementing the progress bar to show it working (and also I was lazy and coded this without threading). I will be adding a progress bar shortly, as soon as I get an odd bug resolved.
+- Need to add tracking for which mods are currently installed. Two modpacks which overwrite the same files will overwrite one another.
