@@ -249,7 +249,6 @@ namespace MCC_Mod_Manager
 
         private void patchButton_Click(object sender, EventArgs e)
         {
-            // TODO: Fix crash when trying to write to a file which is in use by another application
             bool baksMade = false;
             bool chk = false;
             bool err = false;
@@ -260,34 +259,54 @@ namespace MCC_Mod_Manager
                 if (chb.Checked) {
                     chk = true;
                     string modpackname = chb.Text.Replace(dirtyPadding, "");
-                    using (ZipArchive archive = ZipFile.OpenRead(cfg["modpack_dir"] + @"\" + modpackname + ".zip")) {
-                        ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpack_config.cfg");
-                        if (modpackConfigEntry == null) {
-                            MessageBox.Show("Error: Could not open modpack config file.");
-                            return;
-                        }
-                        List<Dictionary<string, string>> modpackConfig;
-                        using (Stream jsonStream = modpackConfigEntry.Open()) {
-                            StreamReader reader = new StreamReader(jsonStream);
-                            modpackConfig = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(reader.ReadToEnd());
-                        }
-                        foreach (Dictionary<string, string> dict in modpackConfig) {
-                            ZipArchiveEntry modFile = archive.GetEntry(dict["src"]);
-                            string destination = dict["dest"].Replace("$MCC_home", cfg["MCC_home"]);
-                            if (File.Exists(destination)) {
-                                if(createBackup(destination, false)){
-                                    baksMade = true;
+                    try
+                    {
+                        using (ZipArchive archive = ZipFile.OpenRead(cfg["modpack_dir"] + @"\" + modpackname + ".zip"))
+                        {
+                            ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpack_config.cfg");
+                            if (modpackConfigEntry == null)
+                            {
+                                MessageBox.Show("Error: Could not open modpack config file.");
+                                pBar.Value = 0;
+                                pBar.Visible = false;
+                                return;
+                            }
+                            List<Dictionary<string, string>> modpackConfig;
+                            using (Stream jsonStream = modpackConfigEntry.Open())
+                            {
+                                StreamReader reader = new StreamReader(jsonStream);
+                                modpackConfig = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(reader.ReadToEnd());
+                            }
+                            foreach (Dictionary<string, string> dict in modpackConfig)
+                            {
+                                ZipArchiveEntry modFile = archive.GetEntry(dict["src"]);
+                                string destination = dict["dest"].Replace("$MCC_home", cfg["MCC_home"]);
+                                if (File.Exists(destination))
+                                {
+                                    if (createBackup(destination, false))
+                                    {
+                                        baksMade = true;
+                                    }
+                                    DeleteFile(destination);
                                 }
-                                DeleteFile(destination);
-                            }
-                            try {
-                                modFile.ExtractToFile(destination);
-                            } catch (IOException) {
-                                err = true;
-                                MessageBox.Show("Error: File Access Exception. If the game is running, exit it and try again.");
-                                break;
+                                try
+                                {
+                                    modFile.ExtractToFile(destination);
+                                }
+                                catch (IOException)
+                                {
+                                    err = true;
+                                    MessageBox.Show("Error: File Access Exception. If the game is running, exit it and try again.");
+                                    break;
+                                }
                             }
                         }
+                    } catch (FileNotFoundException) {
+                        MessageBox.Show("Error: Could not find the '" + modpackname + "' modpack");
+                        loadModpacks();
+                        pBar.Value = 0;
+                        pBar.Visible = false;
+                        return;
                     }
                     chb.Checked = false;
                 }
