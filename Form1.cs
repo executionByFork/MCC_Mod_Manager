@@ -234,9 +234,13 @@ namespace MCC_Mod_Manager
 
         private void patchButton_Click(object sender, EventArgs e)
         {
+            // TODO: Fix crash when trying to write to a file which is in use by another application
             bool baksMade = false;
             bool chk = false;
+            pBar.Visible = true;
+            pBar.Maximum = modListPanel.Controls.OfType<CheckBox>().Count();
             foreach (CheckBox chb in modListPanel.Controls.OfType<CheckBox>()) {
+                pBar.PerformStep();
                 if (chb.Checked) {
                     chk = true;
                     string modpackname = chb.Text.Replace(dirtyPadding, "");
@@ -275,6 +279,8 @@ namespace MCC_Mod_Manager
                 msg += "\r\nNew backups were created.";
             }
             MessageBox.Show(msg);
+            pBar.Value = 0;
+            pBar.Visible = false;
         }
         private void delModpack_Click(object sender, EventArgs e)
         {
@@ -289,7 +295,10 @@ namespace MCC_Mod_Manager
             }
 
             bool chk = false;
+            pBar.Visible = true;
+            pBar.Maximum = modListPanel.Controls.OfType<CheckBox>().Count();
             foreach (CheckBox chb in modListPanel.Controls.OfType<CheckBox>()) {
+                pBar.PerformStep();
                 if (chb.Checked) {
                     chk = true;
                     string modpackname = chb.Text.Replace(dirtyPadding, "");
@@ -303,6 +312,8 @@ namespace MCC_Mod_Manager
                 MessageBox.Show("Selected modpacks have been deleted.");
                 loadModpacks();
             }
+            pBar.Value = 0;
+            pBar.Visible = false;
         }
 
         //////////////////////////////////
@@ -465,8 +476,11 @@ namespace MCC_Mod_Manager
                 return;
             }
 
+            pBar.Visible = true;
+            pBar.Maximum = fileMap.Count();
             using (var archive = ZipFile.Open(zipPath, ZipArchiveMode.Create)) {
                 foreach (var entry in fileMap) {
+                    pBar.PerformStep();
                     String fileName = Path.GetFileName(entry["src"]);
                     archive.CreateEntryFromFile(entry["src"], fileName);    // TODO: Fix issues when two source files have same name but diff path
                     // change src path to just modpack after archive creation but before json serialization
@@ -484,6 +498,8 @@ namespace MCC_Mod_Manager
             }
 
             MessageBox.Show("Modpack '" + modpackName + "' created.");
+            pBar.Value = 0;
+            pBar.Visible = false;
             createFilesPanel.Controls.Clear();
             createPageList = new List<Panel>(); // garbage collector magic
             modpackName_txt.Text = "";
@@ -607,7 +623,10 @@ namespace MCC_Mod_Manager
         private void restoreSelectedBtn_Click(object sender, EventArgs e)
         {
             bool chk = false;
+            pBar.Visible = true;
+            pBar.Maximum = bakListPanel.Controls.OfType<CheckBox>().Count();
             foreach (CheckBox chb in bakListPanel.Controls.OfType<CheckBox>()) {
+                pBar.PerformStep();
                 if (chb.Checked) {
                     chk = true;
                     string fileName = chb.Text.Replace(dirtyPadding, "");
@@ -620,14 +639,21 @@ namespace MCC_Mod_Manager
             } else {
                 MessageBox.Show("Selected files have been restored.");
             }
+            pBar.Value = 0;
+            pBar.Visible = false;
         }
 
         private void restoreAllBaksBtn_Click(object sender, EventArgs e)
         {
+            pBar.Visible = true;
+            pBar.Maximum = baks.Count();
             foreach (KeyValuePair<string, string> entry in baks) {
+                pBar.PerformStep();
                 CopyFile(cfg["backup_dir"] + @"\" + entry.Key, entry.Value, true);
             }
             MessageBox.Show("All files have been restored.");
+            pBar.Value = 0;
+            pBar.Visible = false;
         }
 
         private void delSelectedBak_Click(object sender, EventArgs e)
@@ -643,7 +669,10 @@ namespace MCC_Mod_Manager
             }
 
             bool chk = false;
+            pBar.Visible = true;
+            pBar.Maximum = bakListPanel.Controls.OfType<CheckBox>().Count();
             foreach (CheckBox chb in bakListPanel.Controls.OfType<CheckBox>()) {
+                pBar.PerformStep();
                 if (chb.Checked) {
                     chk = true;
                     string fileName = chb.Text.Replace(dirtyPadding, "");
@@ -659,6 +688,8 @@ namespace MCC_Mod_Manager
                 MessageBox.Show("Selected files have been deleted.");
                 updateBackupList();
             }
+            pBar.Value = 0;
+            pBar.Visible = false;
         }
 
         private void delAllBaksBtn_Click(object sender, EventArgs e)
@@ -673,13 +704,18 @@ namespace MCC_Mod_Manager
                 return;
             }
 
+            pBar.Visible = true;
+            pBar.Maximum = baks.Count();
             foreach (KeyValuePair<string, string> entry in baks) {
+                pBar.PerformStep();
                 File.Delete(cfg["backup_dir"] + @"\" + entry.Key);
             }
             baks = new Dictionary<string, string>();
             saveBackups();
             MessageBox.Show("All backups deleted.");
             updateBackupList();
+            pBar.Value = 0;
+            pBar.Visible = false;
         }
     }
 }

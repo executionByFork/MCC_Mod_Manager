@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.topBar = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
             this.refreshButton = new System.Windows.Forms.PictureBox();
             this.minButton = new System.Windows.Forms.PictureBox();
             this.titleLabel = new System.Windows.Forms.Label();
@@ -76,7 +77,7 @@
             this.bakLabel2 = new System.Windows.Forms.Label();
             this.bakLabel1 = new System.Windows.Forms.Label();
             this.bakListPanel = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
+            this.pBar = new System.Windows.Forms.ProgressBar();
             this.topBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minButton)).BeginInit();
@@ -106,6 +107,20 @@
             this.topBar.TabIndex = 1;
             this.topBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
             this.topBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.label1.Font = new System.Drawing.Font("Gadugi", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(429, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(40, 19);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "v0.1";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.label1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
+            this.label1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
             // 
             // refreshButton
             // 
@@ -641,19 +656,14 @@
             this.bakListPanel.Size = new System.Drawing.Size(402, 322);
             this.bakListPanel.TabIndex = 0;
             // 
-            // label1
+            // pBar
             // 
-            this.label1.AutoSize = true;
-            this.label1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.label1.Font = new System.Drawing.Font("Gadugi", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(429, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(40, 19);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "v0.1";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.label1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
-            this.label1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
+            this.pBar.Location = new System.Drawing.Point(20, 451);
+            this.pBar.Name = "pBar";
+            this.pBar.Size = new System.Drawing.Size(554, 23);
+            this.pBar.Step = 1;
+            this.pBar.TabIndex = 9;
+            this.pBar.Visible = false;
             // 
             // Form1
             // 
@@ -661,6 +671,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.WindowFrame;
             this.ClientSize = new System.Drawing.Size(582, 485);
+            this.Controls.Add(this.pBar);
             this.Controls.Add(this.backupTab);
             this.Controls.Add(this.configTab);
             this.Controls.Add(this.createTab);
@@ -748,6 +759,7 @@
         private System.Windows.Forms.Button restoreSelectedBtn;
         private System.Windows.Forms.Button delModpack;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ProgressBar pBar;
     }
 }
 
