@@ -94,6 +94,7 @@ The 'Delete Selected' and 'Delete All Backups' buttons remove the selected/all b
 that you actually want to delete them.  
 
 ## Known Issues / Future Improvements
+- **Urgent** Sometimes backups get overwritten.
 - Need to add tracking for which mods are currently installed. Two modpacks which overwrite the same files will overwrite one another.
 - Add support for installing mods in Halo's %APPDATA% folders.
 - Add button to check for/install updates
