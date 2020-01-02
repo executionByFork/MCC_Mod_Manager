@@ -65,17 +65,31 @@ namespace MCC_Mod_Manager
             return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
         }
 
+        private void DeleteFile(string path)
+        {
+            try {
+                File.Delete(path);
+            } catch (IOException) {
+                MessageBox.Show("Error: File access exception. If the game is running, exit it and retry.");
+                return;
+            }
+        }
+
         private bool CopyFile(string src, string dest, bool overwrite)
         {
             if (File.Exists(dest)) {
                 if (overwrite) {
-                    File.Delete(dest);
+                    DeleteFile(dest);
                 } else {
                     return false;
                 }
             }
-
-            File.Copy(src, dest);
+            try {
+                File.Copy(src, dest);
+            } catch (IOException) {
+                MessageBox.Show("Error: File access exception. If the game is running, exit it and retry.");
+                return false;
+            }
             return true;
         }
 
@@ -262,7 +276,7 @@ namespace MCC_Mod_Manager
                                 if(createBackup(destination, false)){
                                     baksMade = true;
                                 }
-                                File.Delete(destination);
+                                DeleteFile(destination);
                             }
                             modFile.ExtractToFile(destination); // TODO: fix crash if file exists
                         }
@@ -302,7 +316,7 @@ namespace MCC_Mod_Manager
                 if (chb.Checked) {
                     chk = true;
                     string modpackname = chb.Text.Replace(dirtyPadding, "");
-                    File.Delete(cfg["modpack_dir"] + @"\" + modpackname + ".zip");
+                    DeleteFile(cfg["modpack_dir"] + @"\" + modpackname + ".zip");
                     chb.Checked = false;
                 }
             }
@@ -676,7 +690,7 @@ namespace MCC_Mod_Manager
                 if (chb.Checked) {
                     chk = true;
                     string fileName = chb.Text.Replace(dirtyPadding, "");
-                    File.Delete(cfg["backup_dir"] + @"\" + fileName);
+                    DeleteFile(cfg["backup_dir"] + @"\" + fileName);
                     baks.Remove(fileName);
                     chb.Checked = false;
                 }
@@ -708,7 +722,7 @@ namespace MCC_Mod_Manager
             pBar.Maximum = baks.Count();
             foreach (KeyValuePair<string, string> entry in baks) {
                 pBar.PerformStep();
-                File.Delete(cfg["backup_dir"] + @"\" + entry.Key);
+                DeleteFile(cfg["backup_dir"] + @"\" + entry.Key);
             }
             baks = new Dictionary<string, string>();
             saveBackups();
