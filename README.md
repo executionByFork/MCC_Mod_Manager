@@ -95,3 +95,4 @@ that you actually want to delete them.
 
 ## Known Issues / Future Improvements
 - Need to add tracking for which mods are currently installed. Two modpacks which overwrite the same files will overwrite one another.
+- Add support for installing mods in Halo's %APPDATA% folders.
