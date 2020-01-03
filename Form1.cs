@@ -149,16 +149,17 @@ namespace MCC_Mod_Manager
             return true;
         }
 
-        private void saveBackups()
+        private bool saveBackups()
         {
             string json = JsonConvert.SerializeObject(baks, Formatting.Indented);
             using (FileStream fs = File.Create(cfg["backup_dir"] + @"\backups.cfg")) {
                 byte[] info = new UTF8Encoding(true).GetBytes(json);
                 fs.Write(info, 0, info.Length);
             }
+            return true;
         }
 
-        private void updateBackupList()
+        private bool updateBackupList()
         {
             bakListPanel.Controls.Clear();
             foreach (KeyValuePair<string, string> entry in baks) {
@@ -169,6 +170,7 @@ namespace MCC_Mod_Manager
 
                 bakListPanel.Controls.Add(chb);
             }
+            return true;
         }
 
         private bool loadBackups()
