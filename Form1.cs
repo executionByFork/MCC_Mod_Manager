@@ -71,7 +71,7 @@ namespace MCC_Mod_Manager
             try {
                 File.Delete(path);
             } catch (IOException) {
-                MessageBox.Show("Error: File access exception. If the game is running, exit it and try again.");
+                //MessageBox.Show("Error: File access exception. If the game is running, exit it and try again.");
                 return;
             }
         }
@@ -88,7 +88,7 @@ namespace MCC_Mod_Manager
             try {
                 File.Copy(src, dest);
             } catch (IOException) {
-                MessageBox.Show("Error: File Access Exception. If the game is running, exit it and try again.");
+                //MessageBox.Show("Error: File Access Exception. If the game is running, exit it and try again.");
                 return false;
             }
             return true;
@@ -247,11 +247,10 @@ namespace MCC_Mod_Manager
             backupPanel.Visible = false;
         }
 
-        private void patchButton_Click(object sender, EventArgs e)
-        {
+        private int doPatchMods() {
             bool baksMade = false;
             bool chk = false;
-            bool err = false;
+            bool packErr = false;
             pBar.Visible = true;
             pBar.Maximum = modListPanel.Controls.OfType<CheckBox>().Count();
             foreach (CheckBox chb in modListPanel.Controls.OfType<CheckBox>()) {
@@ -259,68 +258,75 @@ namespace MCC_Mod_Manager
                 if (chb.Checked) {
                     chk = true;
                     string modpackname = chb.Text.Replace(dirtyPadding, "");
-                    try
-                    {
-                        using (ZipArchive archive = ZipFile.OpenRead(cfg["modpack_dir"] + @"\" + modpackname + ".zip"))
-                        {
+                    try {
+                        using (ZipArchive archive = ZipFile.OpenRead(cfg["modpack_dir"] + @"\" + modpackname + ".zip")) {
                             ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpack_config.cfg");
-                            if (modpackConfigEntry == null)
-                            {
-                                MessageBox.Show("Error: Could not open modpack config file.");
-                                pBar.Value = 0;
-                                pBar.Visible = false;
-                                return;
+                            if (modpackConfigEntry == null) {
+                                MessageBox.Show("Error: Could not open modpack config file. The file '" + modpackname + ".zip' is not a compatible modpack." +
+                                    "\r\nTry using the 'Create Modpack' Tab to convert this mod into a compatible modpack.");
+                                packErr = true;
+                                continue;
                             }
                             List<Dictionary<string, string>> modpackConfig;
-                            using (Stream jsonStream = modpackConfigEntry.Open())
-                            {
+                            using (Stream jsonStream = modpackConfigEntry.Open()) {
                                 StreamReader reader = new StreamReader(jsonStream);
-                                modpackConfig = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(reader.ReadToEnd());
+                                modpackConfig = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(reader.ReadToEnd());    //TODO: catch JSON errors
                             }
-                            foreach (Dictionary<string, string> dict in modpackConfig)
-                            {
+                            List<string> modpackBakList = new List<string>();   // track patched files in case of failure mid patch
+                            foreach (Dictionary<string, string> dict in modpackConfig) {
                                 ZipArchiveEntry modFile = archive.GetEntry(dict["src"]);
                                 string destination = dict["dest"].Replace("$MCC_home", cfg["MCC_home"]);
-                                if (File.Exists(destination))
-                                {
-                                    if (createBackup(destination, false))
-                                    {
+                                modpackBakList.Add(Path.GetFileName(dict["dest"]));
+                                if (File.Exists(destination)) {
+                                    if (createBackup(destination, false)) {
                                         baksMade = true;
                                     }
                                     DeleteFile(destination);
                                 }
-                                try
-                                {
+                                try {
                                     modFile.ExtractToFile(destination);
-                                }
-                                catch (IOException)
-                                {
-                                    err = true;
-                                    MessageBox.Show("Error: File Access Exception. If the game is running, exit it and try again.");
+                                } catch (IOException) {
+                                    MessageBox.Show("Error: File Access Exception. If the game is running, exit it and try again." +
+                                        "\r\nCould not install the '" + modpackname + "' modpack.");
+                                    restoreBaks(modpackBakList);    // restore from modpackBakList
+                                    packErr = true;
                                     break;
                                 }
                             }
                         }
                     } catch (FileNotFoundException) {
-                        MessageBox.Show("Error: Could not find the '" + modpackname + "' modpack");
-                        loadModpacks();
-                        pBar.Value = 0;
-                        pBar.Visible = false;
-                        return;
+                        MessageBox.Show("Error: Could not find the '" + modpackname + "' modpack.");
+                        packErr = true;
                     }
                     chb.Checked = false;
                 }
             }
+
             if (!chk) {
-                MessageBox.Show("Error: No items selected from the list.");
-            } else {
-                string msg = "The selected mods have been patched to the game.";
-                if (baksMade) {
-                    msg += "\r\nNew backups were created.";
-                }
-                if (!err) {
-                    MessageBox.Show(msg);
-                }
+                return 3;
+            }
+            if (packErr) {
+                return 2;
+            }
+            if (baksMade) {
+                return 1;
+            }
+            return 0;
+        }
+
+        private void patchButton_Click(object sender, EventArgs e)
+        {
+            int r = doPatchMods();
+
+            if (r == 0) {   // success
+                MessageBox.Show("The selected mods have been patched to the game.");
+            } else if (r == 1) {    // success and new backup(s) created
+                MessageBox.Show("The selected mods have been patched to the game.\r\nNew backups were created.");
+            } else if (r == 2) {    // fail / partial success - At least one modpack was not patched
+                MessageBox.Show("Warning: One or more of the selected modpacks were not patched to the game.");
+                loadModpacks();
+            } else if (r == 3) {    // fail - no boxes checked
+                MessageBox.Show("Error: No modpacks selected.");
             }
             pBar.Value = 0;
             pBar.Visible = false;
@@ -663,27 +669,35 @@ namespace MCC_Mod_Manager
             }
         }
 
-        private void restoreSelectedBtn_Click(object sender, EventArgs e)
+        private void restoreBaks(List<string> backupNames)
         {
-            bool chk = false;
             pBar.Visible = true;
-            pBar.Maximum = bakListPanel.Controls.OfType<CheckBox>().Count();
-            foreach (CheckBox chb in bakListPanel.Controls.OfType<CheckBox>()) {
+            pBar.Maximum = backupNames.Count();
+            foreach (string fileName in backupNames) {
                 pBar.PerformStep();
-                if (chb.Checked) {
-                    chk = true;
-                    string fileName = chb.Text.Replace(dirtyPadding, "");
-                    CopyFile(cfg["backup_dir"] + @"\" + fileName, baks[fileName], true);
-                    chb.Checked = false;
-                }
-            }
-            if (!chk) {
-                MessageBox.Show("Error: No items selected from the list.");
-            } else {
-                MessageBox.Show("Selected files have been restored.");
+                CopyFile(cfg["backup_dir"] + @"\" + fileName, baks[fileName], true);
             }
             pBar.Value = 0;
             pBar.Visible = false;
+        }
+
+        private void restoreSelectedBtn_Click(object sender, EventArgs e)
+        {
+            
+            List<string> backupNames = new List<string>();
+            foreach (CheckBox chb in bakListPanel.Controls.OfType<CheckBox>()) {
+                if (chb.Checked) {
+                    backupNames.Add(chb.Text.Replace(dirtyPadding, ""));
+                    chb.Checked = false;
+                }
+            }
+
+            if (backupNames.Count() == 0) {
+                MessageBox.Show("Error: No items selected from the list.");
+            } else {
+                restoreBaks(backupNames);
+                MessageBox.Show("Selected files have been restored.");
+            }
         }
 
         private void restoreAllBaksBtn_Click(object sender, EventArgs e)
