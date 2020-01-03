@@ -190,7 +190,7 @@ namespace MCC_Mod_Manager
         {
             String fileName = Path.GetFileName(path);
             int res = CopyFile(path, cfg["backup_dir"] + @"\" + fileName, overwrite);
-            if (res == 0) {
+            if (res == 0 || res == 1) {
                 baks[fileName] = path;
                 saveBackups();
                 updateBackupList();
@@ -675,11 +675,19 @@ namespace MCC_Mod_Manager
             pBar.Maximum = backupNames.Count();
             foreach (string fileName in backupNames) {
                 pBar.PerformStep();
-                if (CopyFile(cfg["backup_dir"] + @"\" + fileName, baks[fileName], true) != 0) {
+                if (CopyFile(cfg["backup_dir"] + @"\" + fileName, baks[fileName], true) == 0) {
+                    if (DeleteFile(cfg["backup_dir"] + @"\" + fileName)) {
+                        baks.Remove(fileName);
+                    } else {
+                        MessageBox.Show("Error: Could not remove old backup '" + fileName + "'. Is the file open somewhere?");
+                    }
+                } else {
                     MessageBox.Show("Error: Could not restore '" + fileName + "'. If the game is open, close it and try again.");
                     return false;
                 }
             }
+            saveBackups();
+            updateBackupList();
             pBar.Value = 0;
             pBar.Visible = false;
             return true;
@@ -709,14 +717,33 @@ namespace MCC_Mod_Manager
         {
             pBar.Visible = true;
             pBar.Maximum = baks.Count();
+            List<string> remainingBaks = new List<string>();
+            List<string> toRemove = new List<string>();
             foreach (KeyValuePair<string, string> entry in baks) {
                 pBar.PerformStep();
-                if (CopyFile(cfg["backup_dir"] + @"\" + entry.Key, entry.Value, true) != 0) {
+                if (CopyFile(cfg["backup_dir"] + @"\" + entry.Key, entry.Value, true) == 0) {
+                    if (!DeleteFile(cfg["backup_dir"] + @"\" + entry.Key)) {
+                        remainingBaks.Add(entry.Key);
+                        MessageBox.Show("Error: Could not remove old backup '" + entry.Key + "'. Is the file open somewhere?");
+                    }
+                } else {
+                    remainingBaks.Add(entry.Key);
                     MessageBox.Show("Error: Could not restore '" + entry.Key + "'. If the game is open, close it and try again.");
-                    return;
                 }
             }
-            MessageBox.Show("All files have been restored.");
+
+            if (remainingBaks.Count() == 0) {
+                baks = new Dictionary<string, string>();
+                MessageBox.Show("All files have been restored.");
+            } else {
+                Dictionary<string, string> tmp = new Dictionary<string, string>();
+                foreach (string file in remainingBaks) {    // create backup config of files which couldn't be restored and removed
+                    tmp[file] = baks[file];
+                }
+                baks = tmp;
+            }
+            saveBackups();
+            updateBackupList();
             pBar.Value = 0;
             pBar.Visible = false;
         }
