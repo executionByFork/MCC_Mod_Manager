@@ -66,32 +66,33 @@ namespace MCC_Mod_Manager
             return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
         }
 
-        private void DeleteFile(string path)
+        private bool DeleteFile(string path)
         {
             try {
                 File.Delete(path);
             } catch (IOException) {
-                //MessageBox.Show("Error: File access exception. If the game is running, exit it and try again.");
-                return;
+                return false;
             }
+            return true;
         }
 
-        private bool CopyFile(string src, string dest, bool overwrite)
+        private int CopyFile(string src, string dest, bool overwrite)
         {
             if (File.Exists(dest)) {
                 if (overwrite) {
-                    DeleteFile(dest);
+                    if (!DeleteFile(dest)) {
+                        return 2;   // fail - file in use
+                    }
                 } else {
-                    return false;
+                    return 1;   // success - not overwriting the existing file
                 }
             }
             try {
                 File.Copy(src, dest);
             } catch (IOException) {
-                //MessageBox.Show("Error: File Access Exception. If the game is running, exit it and try again.");
-                return false;
+                return 3;   // fail - file access error
             }
-            return true;
+            return 0;   // success
         }
 
         private void saveCfg()
@@ -186,13 +187,14 @@ namespace MCC_Mod_Manager
         private bool createBackup(string path, bool overwrite)
         {
             String fileName = Path.GetFileName(path);
-            bool res = CopyFile(path, cfg["backup_dir"] + @"\" + fileName, overwrite);
-            if (res) {
+            int res = CopyFile(path, cfg["backup_dir"] + @"\" + fileName, overwrite);
+            if (res == 0 || res == 1) {
                 baks[fileName] = path;
                 saveBackups();
                 updateBackupList();
+                return true;
             }
-            return res;
+            return false;
         }
 
         ///////////////////////////////////
@@ -277,17 +279,25 @@ namespace MCC_Mod_Manager
                                 ZipArchiveEntry modFile = archive.GetEntry(dict["src"]);
                                 string destination = dict["dest"].Replace("$MCC_home", cfg["MCC_home"]);
                                 modpackBakList.Add(Path.GetFileName(dict["dest"]));
+                                bool err = false;
                                 if (File.Exists(destination)) {
-                                    if (createBackup(destination, false)) {
+                                    if (createBackup(destination, false)) { // TODO: fix return vals. Will always say backup created
                                         baksMade = true;
                                     }
-                                    DeleteFile(destination);
+                                    if (!DeleteFile(destination)) {
+                                        err = true;
+                                    }
                                 }
-                                try {
-                                    modFile.ExtractToFile(destination);
-                                } catch (IOException) {
+                                if (!err) {
+                                    try {
+                                        modFile.ExtractToFile(destination);
+                                    } catch (IOException) {
+                                        err = true;     // strange edge case which will *probably* never happen
+                                    }
+                                }
+                                if (err) {
                                     MessageBox.Show("Error: File Access Exception. If the game is running, exit it and try again." +
-                                        "\r\nCould not install the '" + modpackname + "' modpack.");
+                                            "\r\nCould not install the '" + modpackname + "' modpack.");
                                     restoreBaks(modpackBakList);    // restore from modpackBakList
                                     packErr = true;
                                     break;
