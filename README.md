@@ -37,7 +37,7 @@ files should you need to restore the base game. The main benefit of using this t
 
 ## INSTALLATION
 This application can be downloaded from the [Github Release](https://github.com/executionByFork/MCC_Mod_Manager/releases)
-page or from Nexus Mods.  
+page or from [Nexus Mods](https://www.nexusmods.com/halothemasterchiefcollection/mods/185).  
 Make sure `MCC Mod Manager.exe` and `Newtonsoft.Json.dll` are in a folder together. The executable will create folders and config files in the same directory, so it's best if these two files are in a folder alone.
 
 If you would like to install from source, you can pull down this repository and open the project in [Visual Studio 2019](https://visualstudio.microsoft.com/vs/).
