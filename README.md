@@ -1,6 +1,6 @@
 # A Mod Manager for Halo MCC on PC
 **_**NOTE:** This application was developed for Windows PCs with Halo MCC installed via Steam. As such, operating systems other
-than Windows, and Halo MCC installations not utilizing Steam, are not officially supported. If you [dump the Windows Store version of MCC](https://www.reddit.com/r/halomods/comments/e5tsmu/dumping_the_ms_store_version_of_halo_mcc/) then this tool should work as intended, though I can only guarantee Steam._
+than Windows, and Halo MCC installations not utilizing Steam, are not officially supported. If you [dump the Windows Store version of MCC](https://www.reddit.com/r/halomods/comments/e5tsmu/dumping_the_ms_store_version_of_halo_mcc/) then this tool **should** work as intended, though I am not testing for this and so I can not guarantee it will work flawlessly._
 
 ## PURPOSE
 This application is intended to both make mod installations easy, and to create a standard format for Halo MCC mods. The tool
