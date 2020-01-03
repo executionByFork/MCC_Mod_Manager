@@ -251,7 +251,7 @@ namespace MCC_Mod_Manager
             backupPanel.Visible = false;
         }
 
-        private int doPatchMods() {
+        private void patchButton_Click(object sender, EventArgs e) {
             bool baksMade = false;
             bool chk = false;
             bool packErr = false;
@@ -314,35 +314,19 @@ namespace MCC_Mod_Manager
                 }
             }
 
-            if (!chk) {
-                return 3;
-            }
-            if (packErr) {
-                return 2;
-            }
-            if (baksMade) {
-                return 1;
-            }
-            return 0;
-        }
-
-        private void patchButton_Click(object sender, EventArgs e)
-        {
-            int r = doPatchMods();
-
-            if (r == 0) {   // success
-                MessageBox.Show("The selected mods have been patched to the game.");
-            } else if (r == 1) {    // success and new backup(s) created
-                MessageBox.Show("The selected mods have been patched to the game.\r\nNew backups were created.");
-            } else if (r == 2) {    // fail / partial success - At least one modpack was not patched
-                MessageBox.Show("Warning: One or more of the selected modpacks were not patched to the game.");
-                loadModpacks();
-            } else if (r == 3) {    // fail - no boxes checked
+            if (!chk) { // fail - no boxes checked
                 MessageBox.Show("Error: No modpacks selected.");
+            } else if (packErr) {   // fail / partial success - At least one modpack was not patched
+                MessageBox.Show("Warning: One or more of the selected modpacks were not patched to the game.");
+            } else if (baksMade) {  // success and new backup(s) created
+                MessageBox.Show("The selected mods have been patched to the game.\r\nNew backups were created.");
+            } else {
+                MessageBox.Show("The selected mods have been patched to the game.");
             }
             pBar.Value = 0;
             pBar.Visible = false;
         }
+
         private void delModpack_Click(object sender, EventArgs e)
         {
             DialogResult ans = MessageBox.Show(
