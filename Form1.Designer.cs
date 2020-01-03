@@ -117,7 +117,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(40, 19);
             this.label1.TabIndex = 6;
-            this.label1.Text = "v0.1";
+            this.label1.Text = "v0.3";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.label1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
             this.label1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
@@ -677,11 +677,12 @@
             this.Controls.Add(this.createTab);
             this.Controls.Add(this.homeTab);
             this.Controls.Add(this.topBar);
-            this.Controls.Add(this.homePanel);
-            this.Controls.Add(this.backupPanel);
             this.Controls.Add(this.createPanel);
             this.Controls.Add(this.configPanel);
+            this.Controls.Add(this.homePanel);
+            this.Controls.Add(this.backupPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MCC Mod Manager";
