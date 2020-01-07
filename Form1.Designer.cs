@@ -78,6 +78,7 @@
             this.bakLabel1 = new System.Windows.Forms.Label();
             this.bakListPanel = new System.Windows.Forms.Panel();
             this.pBar = new System.Windows.Forms.ProgressBar();
+            this.delOldBaks_chb = new System.Windows.Forms.CheckBox();
             this.topBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minButton)).BeginInit();
@@ -389,6 +390,7 @@
             // 
             // configPanel
             // 
+            this.configPanel.Controls.Add(this.delOldBaks_chb);
             this.configPanel.Controls.Add(this.panel3);
             this.configPanel.Controls.Add(this.panel2);
             this.configPanel.Controls.Add(this.panel1);
@@ -665,6 +667,16 @@
             this.pBar.TabIndex = 9;
             this.pBar.Visible = false;
             // 
+            // delOldBaks_chb
+            // 
+            this.delOldBaks_chb.AutoSize = true;
+            this.delOldBaks_chb.Location = new System.Drawing.Point(217, 82);
+            this.delOldBaks_chb.Name = "delOldBaks_chb";
+            this.delOldBaks_chb.Size = new System.Drawing.Size(243, 17);
+            this.delOldBaks_chb.TabIndex = 15;
+            this.delOldBaks_chb.Text = "Delete backups after restoring? (saves space)";
+            this.delOldBaks_chb.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -677,10 +689,10 @@
             this.Controls.Add(this.createTab);
             this.Controls.Add(this.homeTab);
             this.Controls.Add(this.topBar);
-            this.Controls.Add(this.createPanel);
             this.Controls.Add(this.configPanel);
             this.Controls.Add(this.homePanel);
             this.Controls.Add(this.backupPanel);
+            this.Controls.Add(this.createPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
@@ -761,6 +773,7 @@
         private System.Windows.Forms.Button delModpack;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ProgressBar pBar;
+        private System.Windows.Forms.CheckBox delOldBaks_chb;
     }
 }
 

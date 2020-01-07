@@ -112,6 +112,7 @@ namespace MCC_Mod_Manager
                 cfg["MCC_home"] = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
                 cfg["backup_dir"] = @".\backups";
                 cfg["modpack_dir"] = @".\modpacks";
+                cfg["deleteOldBaks"] = "false";
                 saveCfg();
             } else {
                 string json = File.ReadAllText(cfg_location);
@@ -296,9 +297,11 @@ namespace MCC_Mod_Manager
                                     }
                                 }
                                 if (err) {
-                                    restoreBaks(modpackBakList);    // All files in this list should be writable
                                     MessageBox.Show("Error: File Access Exception. If the game is running, exit it and try again." +
                                             "\r\nCould not install the '" + modpackname + "' modpack.");
+                                    if (restoreBaks(modpackBakList) != 0) {
+                                        MessageBox.Show("Warning: At least one file restore failed. Your game may be in an unstable state.");
+                                    }
                                     packErr = true;
                                     break;
                                 }
@@ -619,6 +622,11 @@ namespace MCC_Mod_Manager
             if (!String.IsNullOrEmpty(cfgTextBox3.Text)) {
                 cfg["modpack_dir"] = cfgTextBox3.Text;
             }
+            if (delOldBaks_chb.Checked) {
+                cfg["deleteOldBaks"] = "true";
+            } else {
+                cfg["deleteOldBaks"] = "false";
+            }
 
             saveCfg();
 
@@ -669,28 +677,43 @@ namespace MCC_Mod_Manager
             }
         }
 
-        private bool restoreBaks(List<string> backupNames)
+        private int restoreBaks(List<string> backupNames)
         {
+            if (backupNames.Count() == 0) {
+                return 0;
+            }
+
             pBar.Visible = true;
             pBar.Maximum = backupNames.Count();
+            bool chk = false;
+            bool err = false;
             foreach (string fileName in backupNames) {
                 pBar.PerformStep();
                 if (CopyFile(cfg["backup_dir"] + @"\" + fileName, baks[fileName], true) == 0) {
-                    if (DeleteFile(cfg["backup_dir"] + @"\" + fileName)) {
-                        baks.Remove(fileName);
-                    } else {
-                        MessageBox.Show("Error: Could not remove old backup '" + fileName + "'. Is the file open somewhere?");
+                    if (cfg["deleteOldBaks"] == "true") {
+                        if (DeleteFile(cfg["backup_dir"] + @"\" + fileName)) {
+                            baks.Remove(fileName);
+                        } else {
+                            MessageBox.Show("Error: Could not remove old backup '" + fileName + "'. Is the file open somewhere?");
+                        }
                     }
+                    chk = true;
                 } else {
                     MessageBox.Show("Error: Could not restore '" + fileName + "'. If the game is open, close it and try again.");
-                    return false;
+                    err = true;
                 }
             }
             saveBackups();
             updateBackupList();
             pBar.Value = 0;
             pBar.Visible = false;
-            return true;
+            if (chk) {
+                if (err) {
+                    return 1;   // Partial success - Some files were restored
+                }
+                return 0;   // Success - All files were restored
+            }
+            return 2;   // Failure - No files were restored
         }
 
         private void restoreSelectedBtn_Click(object sender, EventArgs e)
@@ -708,8 +731,11 @@ namespace MCC_Mod_Manager
                 MessageBox.Show("Error: No items selected from the list.");
                 return;
             }
-            if (restoreBaks(backupNames)) {
+            int r = restoreBaks(backupNames);
+            if (r == 0) {
                 MessageBox.Show("Selected files have been restored.");
+            } else if (r == 1) {
+                MessageBox.Show("Warning: At least one file restore failed. Your game may be in an unstable state.");
             }
         }
 
@@ -719,28 +745,37 @@ namespace MCC_Mod_Manager
             pBar.Maximum = baks.Count();
             List<string> remainingBaks = new List<string>();
             List<string> toRemove = new List<string>();
+            bool chk = false;
             foreach (KeyValuePair<string, string> entry in baks) {
                 pBar.PerformStep();
                 if (CopyFile(cfg["backup_dir"] + @"\" + entry.Key, entry.Value, true) == 0) {
-                    if (!DeleteFile(cfg["backup_dir"] + @"\" + entry.Key)) {
-                        remainingBaks.Add(entry.Key);
-                        MessageBox.Show("Error: Could not remove old backup '" + entry.Key + "'. Is the file open somewhere?");
+                    if (cfg["deleteOldBaks"] == "true") {
+                        if (!DeleteFile(cfg["backup_dir"] + @"\" + entry.Key)) {
+                            remainingBaks.Add(entry.Key);
+                            MessageBox.Show("Error: Could not remove old backup '" + entry.Key + "'. Is the file open somewhere?");
+                        }
                     }
+                    chk = true;
                 } else {
                     remainingBaks.Add(entry.Key);
                     MessageBox.Show("Error: Could not restore '" + entry.Key + "'. If the game is open, close it and try again.");
                 }
             }
 
-            if (remainingBaks.Count() == 0) {
-                baks = new Dictionary<string, string>();
-                MessageBox.Show("All files have been restored.");
-            } else {
-                Dictionary<string, string> tmp = new Dictionary<string, string>();
-                foreach (string file in remainingBaks) {    // create backup config of files which couldn't be restored and removed
-                    tmp[file] = baks[file];
+            if (cfg["delOldBaks"] == "true") {
+                if (remainingBaks.Count() == 0) {
+                    baks = new Dictionary<string, string>();
+                } else {
+                    Dictionary<string, string> tmp = new Dictionary<string, string>();
+                    foreach (string file in remainingBaks) {    // create backup config of files which couldn't be restored and removed
+                        tmp[file] = baks[file];
+                    }
+                    baks = tmp;
                 }
-                baks = tmp;
+            }
+
+            if (chk) {
+                MessageBox.Show("Files have been restored.");
             }
             saveBackups();
             updateBackupList();
