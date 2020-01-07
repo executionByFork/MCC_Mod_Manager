@@ -11,7 +11,7 @@ using System.IO;
 using System.IO.Compression;
 using Newtonsoft.Json;
 
-// TODO: User notifications should be handled in their own layer, to avoid duplicate or false message boxes popping up
+
 namespace MCC_Mod_Manager
 {
     public partial class Form1 : Form
