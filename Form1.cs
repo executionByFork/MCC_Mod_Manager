@@ -303,8 +303,8 @@ namespace MCC_Mod_Manager
                         using (ZipArchive archive = ZipFile.OpenRead(cfg["modpack_dir"] + @"\" + modpackname + ".zip")) {
                             ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpack_config.cfg");
                             if (modpackConfigEntry == null) {
-                                MessageBox.Show("Error: Could not open modpack config file. The file '" + modpackname + ".zip' is not a compatible modpack." +
-                                    "\r\nTry using the 'Create Modpack' Tab to convert this mod into a compatible modpack.");
+                                MessageBox.Show("Could not open modpack config file. The file '" + modpackname + ".zip' is not a compatible modpack." +
+                                    "\r\nTry using the 'Create Modpack' Tab to convert this mod into a compatible modpack.", "Error");
                                 packErr = true;
                                 continue;
                             }
@@ -314,8 +314,8 @@ namespace MCC_Mod_Manager
                                 try {
                                     modpackConfig = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(reader.ReadToEnd());
                                 } catch (JsonSerializationException) {
-                                    MessageBox.Show("Error: The configuration file in '" + modpackname + ".zip' is corrupted." +
-                                    "\r\nThis modpack cannot be installed.");
+                                    MessageBox.Show("The configuration file in '" + modpackname + ".zip' is corrupted." +
+                                    "\r\nThis modpack cannot be installed.", "Error");
                                     continue;
                                 }
                             }
@@ -340,10 +340,10 @@ namespace MCC_Mod_Manager
                                     }
                                 }
                                 if (err) {
-                                    MessageBox.Show("Error: File Access Exception. If the game is running, exit it and try again." +
-                                            "\r\nCould not install the '" + modpackname + "' modpack.");
+                                    MessageBox.Show("File Access Exception. If the game is running, exit it and try again." +
+                                            "\r\nCould not install the '" + modpackname + "' modpack.", "Error");
                                     if (restoreBaks(modpackBakList) != 0) {
-                                        MessageBox.Show("Warning: At least one file restore failed. Your game may be in an unstable state.");
+                                        MessageBox.Show("At least one file restore failed. Your game may be in an unstable state.", "Warning");
                                     }
                                     packErr = true;
                                     break;
@@ -352,7 +352,7 @@ namespace MCC_Mod_Manager
                             }
                         }
                     } catch (FileNotFoundException) {
-                        MessageBox.Show("Error: Could not find the '" + modpackname + "' modpack.");
+                        MessageBox.Show("Could not find the '" + modpackname + "' modpack.", "Error");
                         packErr = true;
                     }
                     chb.Checked = false;
@@ -360,13 +360,13 @@ namespace MCC_Mod_Manager
             }
 
             if (!chk) { // fail - no boxes checked
-                MessageBox.Show("Error: No modpacks selected.");
+                MessageBox.Show("No modpacks selected.", "Error");
             } else if (packErr) {   // fail / partial success - At least one modpack was not patched
-                MessageBox.Show("Warning: One or more of the selected modpacks were not patched to the game.");
+                MessageBox.Show("One or more of the selected modpacks were not patched to the game.", "Warning");
             } else if (baksMade) {  // success and new backup(s) created
-                MessageBox.Show("The selected mods have been patched to the game.\r\nNew backups were created.");
+                MessageBox.Show("The selected mods have been patched to the game.\r\nNew backups were created.", "Info");
             } else {
-                MessageBox.Show("The selected mods have been patched to the game.");
+                MessageBox.Show("The selected mods have been patched to the game.", "Info");
             }
             pBar.Value = 0;
             pBar.Visible = false;
@@ -393,15 +393,15 @@ namespace MCC_Mod_Manager
                     chk = true;
                     string modpackname = chb.Text.Replace(dirtyPadding, "");
                     if (!DeleteFile(cfg["modpack_dir"] + @"\" + modpackname + ".zip")) {
-                        MessageBox.Show("Error: Could not delete '" + modpackname + ".zip'. Is the zip file open somewhere?");
+                        MessageBox.Show("Could not delete '" + modpackname + ".zip'. Is the zip file open somewhere?", "Error");
                     }
                     chb.Checked = false;
                 }
             }
             if (!chk) {
-                MessageBox.Show("Error: No items selected from the list.");
+                MessageBox.Show("No items selected from the list.", "Error");
             } else {
-                MessageBox.Show("Selected modpacks have been deleted.");
+                MessageBox.Show("Selected modpacks have been deleted.", "Info");
                 loadModpacks();
             }
             pBar.Value = 0;
@@ -524,7 +524,7 @@ namespace MCC_Mod_Manager
         private void createModpackBtn_Click(object sender, EventArgs e)
         {
             if (String.IsNullOrEmpty(modpackName_txt.Text)) {
-                MessageBox.Show("Error: Please enter a modpack name");
+                MessageBox.Show("Please enter a modpack name", "Error");
                 return;
             }
 
@@ -535,16 +535,16 @@ namespace MCC_Mod_Manager
                 dict["src"] = row.GetChildAtPoint(sourceTextBoxPoint).Text;
                 dict["dest"] = row.GetChildAtPoint(destTextBoxPoint).Text;
                 if (String.IsNullOrEmpty(dict["src"]) || String.IsNullOrEmpty(dict["dest"])) {
-                    MessageBox.Show("Error: Filepaths cannot be empty.");
+                    MessageBox.Show("Filepaths cannot be empty.", "Error");
                     return;
                 }
                 if (!File.Exists(dict["src"])) {
-                    MessageBox.Show("Error: The source file '" + dict["src"] + "' does not exist.");
+                    MessageBox.Show("The source file '" + dict["src"] + "' does not exist.", "Error");
                     return;
                 }
                 if (!dict["dest"].StartsWith(cfg["MCC_home"])) {
-                    MessageBox.Show("Error: Destination files must be located within the MCC install directory. " +
-                        "You may need to configure this directory if you haven't done so already.");
+                    MessageBox.Show("Destination files must be located within the MCC install directory. " +
+                        "You may need to configure this directory if you haven't done so already.", "Error");
                     return;
                 }
 
@@ -556,7 +556,7 @@ namespace MCC_Mod_Manager
             }
 
             if (chk.Distinct().Count() != chk.Count()) {
-                MessageBox.Show("Error: You have multiple files trying to write to the same destination.");
+                MessageBox.Show("You have multiple files trying to write to the same destination.", "Error");
                 return;
             }
 
@@ -564,7 +564,7 @@ namespace MCC_Mod_Manager
             String modpackName = modpackName_txt.Text + ".zip";
             String zipPath = cfg["modpack_dir"] + @"\" + modpackName;
             if (File.Exists(zipPath)) {
-                MessageBox.Show("Error: A modpack with that name already exists.");
+                MessageBox.Show("A modpack with that name already exists.", "Error");
                 return;
             }
 
@@ -589,7 +589,7 @@ namespace MCC_Mod_Manager
                 }
             }
 
-            MessageBox.Show("Modpack '" + modpackName + "' created.");
+            MessageBox.Show("Modpack '" + modpackName + "' created.", "Info");
             pBar.Value = 0;
             pBar.Visible = false;
             createFilesPanel.Controls.Clear();
@@ -652,8 +652,8 @@ namespace MCC_Mod_Manager
         {
             if (!String.IsNullOrEmpty(cfgTextBox1.Text)) {
                 if (!correctHomeDir(cfgTextBox1.Text)) {
-                    MessageBox.Show("Error: It seems you have selected the wrong MCC install directory. " +
-                        "Please make sure to select the folder named 'Halo The Master Chief Collection' in your Steam files.");
+                    MessageBox.Show("It seems you have selected the wrong MCC install directory. " +
+                        "Please make sure to select the folder named 'Halo The Master Chief Collection' in your Steam files.", "Error");
                     cfgTextBox1.Text = cfg["MCC_home"];
                     return;
                 }
@@ -673,7 +673,7 @@ namespace MCC_Mod_Manager
 
             saveCfg();
 
-            MessageBox.Show("Config Updated!");
+            MessageBox.Show("Config Updated!", "Info");
         }
 
         //////////////////////////////////
@@ -711,7 +711,7 @@ namespace MCC_Mod_Manager
                 }
 
                 if (createBackup(ofd.FileName, true) != 0) {
-                    MessageBox.Show("Error: Could not create a backup of the chosen file. Is the file open somewhere?");
+                    MessageBox.Show("Could not create a backup of the chosen file. Is the file open somewhere?", "Error");
                 } else {
                     MessageBox.Show("New Backup Created");
                     saveBackups();
@@ -737,12 +737,12 @@ namespace MCC_Mod_Manager
                         if (DeleteFile(cfg["backup_dir"] + @"\" + fileName)) {
                             baks.Remove(fileName);
                         } else {
-                            MessageBox.Show("Error: Could not remove old backup '" + fileName + "'. Is the file open somewhere?");
+                            MessageBox.Show("Could not remove old backup '" + fileName + "'. Is the file open somewhere?", "Error");
                         }
                     }
                     chk = true;
                 } else {
-                    MessageBox.Show("Error: Could not restore '" + fileName + "'. If the game is open, close it and try again.");
+                    MessageBox.Show("Could not restore '" + fileName + "'. If the game is open, close it and try again.", "Error");
                     err = true;
                 }
             }
@@ -771,14 +771,14 @@ namespace MCC_Mod_Manager
             }
 
             if (backupNames.Count() == 0) {
-                MessageBox.Show("Error: No items selected from the list.");
+                MessageBox.Show("No items selected from the list.", "Error");
                 return;
             }
             int r = restoreBaks(backupNames);
             if (r == 0) {
-                MessageBox.Show("Selected files have been restored.");
+                MessageBox.Show("Selected files have been restored.", "Info");
             } else if (r == 1) {
-                MessageBox.Show("Warning: At least one file restore failed. Your game may be in an unstable state.");
+                MessageBox.Show("At least one file restore failed. Your game may be in an unstable state.", "Warning");
             }
         }
 
@@ -795,13 +795,13 @@ namespace MCC_Mod_Manager
                     if (cfg["deleteOldBaks"] == "true") {
                         if (!DeleteFile(cfg["backup_dir"] + @"\" + entry.Key)) {
                             remainingBaks.Add(entry.Key);
-                            MessageBox.Show("Error: Could not remove old backup '" + entry.Key + "'. Is the file open somewhere?");
+                            MessageBox.Show("Could not remove old backup '" + entry.Key + "'. Is the file open somewhere?", "Error");
                         }
                     }
                     chk = true;
                 } else {
                     remainingBaks.Add(entry.Key);
-                    MessageBox.Show("Error: Could not restore '" + entry.Key + "'. If the game is open, close it and try again.");
+                    MessageBox.Show("Could not restore '" + entry.Key + "'. If the game is open, close it and try again.", "Error");
                 }
             }
 
@@ -818,7 +818,7 @@ namespace MCC_Mod_Manager
             }
 
             if (chk) {
-                MessageBox.Show("Files have been restored.");
+                MessageBox.Show("Files have been restored.", "Info");
             }
             saveBackups();
             updateBackupList();
@@ -849,16 +849,16 @@ namespace MCC_Mod_Manager
                     if (DeleteFile(cfg["backup_dir"] + @"\" + fileName)) {
                         baks.Remove(fileName);
                     } else {
-                        MessageBox.Show("Error: Could not delete '" + fileName + "'. Is the file open somewhere?");
+                        MessageBox.Show("Could not delete '" + fileName + "'. Is the file open somewhere?", "Error");
                     }
                     chb.Checked = false;
                 }
             }
             if (!chk) {
-                MessageBox.Show("Error: No items selected from the list.");
+                MessageBox.Show("No items selected from the list.", "Error");
             } else {
                 saveBackups();
-                MessageBox.Show("Selected files have been deleted.");
+                MessageBox.Show("Selected files have been deleted.", "Info");
                 updateBackupList();
             }
             pBar.Value = 0;
@@ -884,12 +884,12 @@ namespace MCC_Mod_Manager
                 pBar.PerformStep();
                 if (!DeleteFile(cfg["backup_dir"] + @"\" + entry.Key)) {
                     remainingBaks.Add(entry.Key);
-                    MessageBox.Show("Error: Could not delete '" + entry.Key + "'. Is the file open somewhere?");
+                    MessageBox.Show("Could not delete '" + entry.Key + "'. Is the file open somewhere?", "Error");
                 }
             }
             if (remainingBaks.Count() == 0) {
                 baks = new Dictionary<string, string>();
-                MessageBox.Show("All backups deleted.");
+                MessageBox.Show("All backups deleted.", "Info");
             } else {
                 Dictionary<string, string> tmp = new Dictionary<string, string>();
                 foreach (string file in remainingBaks) {    // create backup config of files which couldn't be deleted
