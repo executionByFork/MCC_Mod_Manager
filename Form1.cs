@@ -104,30 +104,52 @@ namespace MCC_Mod_Manager
             }
         }
 
+        private bool createDefaultCfg() {
+            // default config values
+            // TODO: Ask user if they want to use default config first
+            cfg["MCC_home"] = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
+            cfg["backup_dir"] = @".\backups";
+            cfg["modpack_dir"] = @".\modpacks";
+            cfg["deleteOldBaks"] = "false";
+            saveCfg();
+
+            return true;
+        }
+
         private bool loadCfg()
         {
+            bool err = false;
             if (!File.Exists(cfg_location)) {
-                // default config values
-                // TODO: Ask user if they want to use default config first
-                cfg["MCC_home"] = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
-                cfg["backup_dir"] = @".\backups";
-                cfg["modpack_dir"] = @".\modpacks";
-                cfg["deleteOldBaks"] = "false";
-                saveCfg();
+                createDefaultCfg();
             } else {
                 string json = File.ReadAllText(cfg_location);
-                Dictionary<string, string> values = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                try {
+                    Dictionary<string, string> values = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
 
-                // TODO: make sure all values are present and config isn't corrupted
-                cfg["MCC_home"] = values["MCC_home"];
-                cfg["backup_dir"] = values["backup_dir"];
-                cfg["modpack_dir"] = values["modpack_dir"];
+                    cfg["MCC_home"] = values["MCC_home"];
+                    cfg["backup_dir"] = values["backup_dir"];
+                    cfg["modpack_dir"] = values["modpack_dir"];
+                    cfg["deleteOldBaks"] = values["deleteOldBaks"];
+                } catch (JsonSerializationException) {
+                    err = true;
+                    createDefaultCfg();
+                } catch (KeyNotFoundException) {
+                    err = true;
+                    createDefaultCfg();
+                }
             }
+            if (err) {
+                MessageBox.Show("There was an error in your configuration file. A default config has been created. Please review and update it if needed.", "Error");
+            }
+
 
             // Update config tab
             cfgTextBox1.Text = cfg["MCC_home"];
             cfgTextBox2.Text = cfg["backup_dir"];
             cfgTextBox3.Text = cfg["modpack_dir"];
+            if (cfg["deleteOldBaks"] == "true") {
+                delOldBaks_chb.Checked = true;
+            }
 
             return true;
         }
@@ -181,8 +203,23 @@ namespace MCC_Mod_Manager
             }
 
             string json = File.ReadAllText(cfg["backup_dir"] + @"\backups.cfg");
-            baks = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            updateBackupList();
+            try {
+                baks = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                updateBackupList();
+            } catch (JsonSerializationException) {
+                DialogResult ans = MessageBox.Show(
+                    "The backup configuration file is corrupted. You may need to verify your game files on steam or reinstall." +
+                    "Would you like to delete the corrupted backup config file?",
+                    "Error",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question
+                );
+                if (ans == DialogResult.Yes) {
+                    if (!DeleteFile(cfg["backup_dir"] + @"\backups.cfg")) {
+                        MessageBox.Show("The backup file could not be deleted. Is it open somewhere?", "Error");
+                    }
+                }
+            }
 
             return true;
         }
@@ -224,7 +261,7 @@ namespace MCC_Mod_Manager
 
         private void minButton_Click(object sender, EventArgs e)
         {
-            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+            WindowState = FormWindowState.Minimized;
         }
 
         private void refreshButton_Click(object sender, EventArgs e)
@@ -274,7 +311,13 @@ namespace MCC_Mod_Manager
                             List<Dictionary<string, string>> modpackConfig;
                             using (Stream jsonStream = modpackConfigEntry.Open()) {
                                 StreamReader reader = new StreamReader(jsonStream);
-                                modpackConfig = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(reader.ReadToEnd());    //TODO: catch JSON errors
+                                try {
+                                    modpackConfig = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(reader.ReadToEnd());
+                                } catch (JsonSerializationException) {
+                                    MessageBox.Show("Error: The configuration file in '" + modpackname + ".zip' is corrupted." +
+                                    "\r\nThis modpack cannot be installed.");
+                                    continue;
+                                }
                             }
                             List<string> modpackBakList = new List<string>();   // track patched files in case of failure mid patch
                             foreach (Dictionary<string, string> dict in modpackConfig) {
