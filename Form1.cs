@@ -65,35 +65,6 @@ namespace MCC_Mod_Manager
             return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
         }
 
-        private bool DeleteFile(string path)
-        {
-            try {
-                File.Delete(path);
-            } catch (IOException) {
-                return false;
-            }
-            return true;
-        }
-
-        private int CopyFile(string src, string dest, bool overwrite)
-        {
-            if (File.Exists(dest)) {
-                if (overwrite) {
-                    if (!DeleteFile(dest)) {
-                        return 2;   // fail - file in use
-                    }
-                } else {
-                    return 1;   // success - not overwriting the existing file
-                }
-            }
-            try {
-                File.Copy(src, dest);
-            } catch (IOException) {
-                return 3;   // fail - file access error
-            }
-            return 0;   // success
-        }
-
         String dirtyPadding = "              ";
         private bool loadModpacks()
         {
@@ -155,7 +126,7 @@ namespace MCC_Mod_Manager
                     MessageBoxIcon.Question
                 );
                 if (ans == DialogResult.Yes) {
-                    if (!DeleteFile(_config.backupCfg)) {
+                    if (!IO.DeleteFile(_config.backupCfg)) {
                         MessageBox.Show("The backup file could not be deleted. Is it open somewhere?", "Error");
                     }
                 }
@@ -167,7 +138,7 @@ namespace MCC_Mod_Manager
         private int createBackup(string path, bool overwrite)
         {
             String fileName = Path.GetFileName(path);
-            int res = CopyFile(path, _config.backup_dir + @"\" + fileName, overwrite);
+            int res = IO.CopyFile(path, _config.backup_dir + @"\" + fileName, overwrite);
             if (res == 0 || res == 1) {
                 baks[fileName] = path;
                 saveBackups();
@@ -268,7 +239,7 @@ namespace MCC_Mod_Manager
                                     if (createBackup(destination, false) == 0) {
                                         baksMade = true;
                                     }
-                                    if (!DeleteFile(destination)) {
+                                    if (!IO.DeleteFile(destination)) {
                                         err = true;
                                     }
                                 }
@@ -332,7 +303,7 @@ namespace MCC_Mod_Manager
                 if (chb.Checked) {
                     chk = true;
                     string modpackname = chb.Text.Replace(dirtyPadding, "");
-                    if (!DeleteFile(_config.modpack_dir + @"\" + modpackname + ".zip")) {
+                    if (!IO.DeleteFile(_config.modpack_dir + @"\" + modpackname + ".zip")) {
                         MessageBox.Show("Could not delete '" + modpackname + ".zip'. Is the zip file open somewhere?", "Error");
                     }
                     chb.Checked = false;
@@ -685,9 +656,9 @@ namespace MCC_Mod_Manager
             bool err = false;
             foreach (string fileName in backupNames) {
                 pBar.PerformStep();
-                if (CopyFile(_config.backup_dir + @"\" + fileName, baks[fileName], true) == 0) {
+                if (IO.CopyFile(_config.backup_dir + @"\" + fileName, baks[fileName], true) == 0) {
                     if (_config.deleteOldBaks) {
-                        if (DeleteFile(_config.backup_dir + @"\" + fileName)) {
+                        if (IO.DeleteFile(_config.backup_dir + @"\" + fileName)) {
                             baks.Remove(fileName);
                         } else {
                             MessageBox.Show("Could not remove old backup '" + fileName + "'. Is the file open somewhere?", "Error");
@@ -744,9 +715,9 @@ namespace MCC_Mod_Manager
             bool chk = false;
             foreach (KeyValuePair<string, string> entry in baks) {
                 pBar.PerformStep();
-                if (CopyFile(_config.backup_dir + @"\" + entry.Key, entry.Value, true) == 0) {
+                if (IO.CopyFile(_config.backup_dir + @"\" + entry.Key, entry.Value, true) == 0) {
                     if (_config.deleteOldBaks) {
-                        if (!DeleteFile(_config.backup_dir + @"\" + entry.Key)) {
+                        if (!IO.DeleteFile(_config.backup_dir + @"\" + entry.Key)) {
                             remainingBaks.Add(entry.Key);
                             MessageBox.Show("Could not remove old backup '" + entry.Key + "'. Is the file open somewhere?", "Error");
                         }
@@ -799,7 +770,7 @@ namespace MCC_Mod_Manager
                 if (chb.Checked) {
                     chk = true;
                     string fileName = chb.Text.Replace(dirtyPadding, "");
-                    if (DeleteFile(_config.backup_dir + @"\" + fileName)) {
+                    if (IO.DeleteFile(_config.backup_dir + @"\" + fileName)) {
                         baks.Remove(fileName);
                     } else {
                         MessageBox.Show("Could not delete '" + fileName + "'. Is the file open somewhere?", "Error");
@@ -835,7 +806,7 @@ namespace MCC_Mod_Manager
             List<string> remainingBaks = new List<string>();
             foreach (KeyValuePair<string, string> entry in baks) {
                 pBar.PerformStep();
-                if (!DeleteFile(_config.backup_dir + @"\" + entry.Key)) {
+                if (!IO.DeleteFile(_config.backup_dir + @"\" + entry.Key)) {
                     remainingBaks.Add(entry.Key);
                     MessageBox.Show("Could not delete '" + entry.Key + "'. Is the file open somewhere?", "Error");
                 }

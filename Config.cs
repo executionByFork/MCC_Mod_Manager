@@ -18,7 +18,6 @@ namespace MCC_Mod_Manager
 
         public Config(Form1 caller)
         {
-            
             form1 = caller;
             loadCfg();
         }
