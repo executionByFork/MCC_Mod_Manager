@@ -115,7 +115,7 @@ namespace MCC_Mod_Manager
         private bool saveBackups()
         {
             string json = JsonConvert.SerializeObject(baks, Formatting.Indented);
-            using (FileStream fs = File.Create(_config.backup_dir + @"\backups.cfg")) {
+            using (FileStream fs = File.Create(_config.backupCfg)) {
                 byte[] info = new UTF8Encoding(true).GetBytes(json);
                 fs.Write(info, 0, info.Length);
             }
@@ -138,11 +138,11 @@ namespace MCC_Mod_Manager
 
         private bool loadBackups()
         {
-            if (!File.Exists(_config.backup_dir + @"\backups.cfg")) {
+            if (!File.Exists(_config.backupCfg)) {
                 return false;
             }
 
-            string json = File.ReadAllText(_config.backup_dir + @"\backups.cfg");
+            string json = File.ReadAllText(_config.backupCfg);
             try {
                 baks = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
                 updateBackupList();
@@ -155,7 +155,7 @@ namespace MCC_Mod_Manager
                     MessageBoxIcon.Question
                 );
                 if (ans == DialogResult.Yes) {
-                    if (!DeleteFile(_config.backup_dir + @"\backups.cfg")) {
+                    if (!DeleteFile(_config.backupCfg)) {
                         MessageBox.Show("The backup file could not be deleted. Is it open somewhere?", "Error");
                     }
                 }

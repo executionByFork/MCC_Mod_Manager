@@ -13,6 +13,7 @@ namespace MCC_Mod_Manager
     {
         private readonly Form1 form1;
         private readonly string _cfgLocation = @".\MCC_Mod_Manager.cfg";
+        private readonly string _bakcfgName = @"\backups.cfg";
         private Dictionary<string, string> _cfg = new Dictionary<string, string>();
 
         public Config(Form1 caller)
@@ -31,6 +32,10 @@ namespace MCC_Mod_Manager
         {
             get { return _cfg["backup_dir"]; }
             set { _cfg["backup_dir"] = value; }
+        }
+        public string backupCfg
+        {
+            get { return _cfg["backup_dir"] + _bakcfgName; }
         }
         public string modpack_dir
         {
