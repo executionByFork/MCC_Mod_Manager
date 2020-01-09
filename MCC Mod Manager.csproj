@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config.cs" />
     <Compile Include="FolderSelectDialog.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
