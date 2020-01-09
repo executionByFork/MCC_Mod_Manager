@@ -60,5 +60,7 @@ The 'Delete Selected' and 'Delete All Backups' buttons remove the selected/all b
 
 ## Known Issues / Future Improvements
 - Need to add tracking for which mods are currently installed. Two modpacks which overwrite the same files will overwrite one another.
+- Add support for using Assembly patch files to install mods
 - Add support for installing mods in Halo's %APPDATA% folders.
 - Add button to check for/install updates
+- The progress bar doesn't update properly when creating modpacks
