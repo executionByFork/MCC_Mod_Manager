@@ -14,8 +14,9 @@ namespace MCC_Mod_Manager
         private static readonly string _cfgLocation = @".\MCC_Mod_Manager.cfg";
         private static readonly string _bakcfgName = @"\backups.cfg";
         private static Dictionary<string, string> _cfg = new Dictionary<string, string>();
+        public static string dirtyPadding = "              ";
 
-        public static Form1 form1;
+        public static Form1 form1;  // this is set on form load
         public static string MCC_home
         {
             get { return _cfg["MCC_home"]; }

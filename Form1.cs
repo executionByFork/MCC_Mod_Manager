@@ -21,13 +21,13 @@ namespace MCC_Mod_Manager
             InitializeComponent();
         }
 
-        Dictionary<string, string> baks = new Dictionary<string, string>();
         private void Form1_Load(object sender, EventArgs e)
         {
             Config.form1 = this;
             Config.loadCfg();
-            ensureBackupFolderExists();
-            loadBackups();
+            Backups.form1 = this;
+            Backups.ensureBackupFolderExists();
+            Backups.loadBackups();
             ensureModpackFolderExists();
             loadModpacks();
         }
@@ -56,16 +56,7 @@ namespace MCC_Mod_Manager
 
             return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
         }
-        private bool ensureBackupFolderExists()
-        {
-            if (!Directory.Exists(Config.backup_dir)) {
-                Directory.CreateDirectory(Config.backup_dir);
-            }
 
-            return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
-        }
-
-        String dirtyPadding = "              ";
         private bool loadModpacks()
         {
             modListPanel.Controls.Clear();
@@ -74,77 +65,13 @@ namespace MCC_Mod_Manager
             foreach (string file in fileEntries) {
                 CheckBox chb = new CheckBox();
                 chb.AutoSize = true;
-                chb.Text = dirtyPadding + Path.GetFileName(file).Replace(".zip", "");
+                chb.Text = Config.dirtyPadding + Path.GetFileName(file).Replace(".zip", "");
                 chb.Location = new Point(30, modListPanel.Controls.Count * 20);
 
                 modListPanel.Controls.Add(chb);
             }
 
             return true;
-        }
-
-        private bool saveBackups()
-        {
-            string json = JsonConvert.SerializeObject(baks, Formatting.Indented);
-            using (FileStream fs = File.Create(Config.backupCfg)) {
-                byte[] info = new UTF8Encoding(true).GetBytes(json);
-                fs.Write(info, 0, info.Length);
-            }
-            return true;
-        }
-
-        private bool updateBackupList()
-        {
-            bakListPanel.Controls.Clear();
-            foreach (KeyValuePair<string, string> entry in baks) {
-                CheckBox chb = new CheckBox();
-                chb.AutoSize = true;
-                chb.Text = dirtyPadding + entry.Key;
-                chb.Location = new Point(30, bakListPanel.Controls.Count * 20);
-
-                bakListPanel.Controls.Add(chb);
-            }
-            return true;
-        }
-
-        private bool loadBackups()
-        {
-            if (!File.Exists(Config.backupCfg)) {
-                return false;
-            }
-
-            string json = File.ReadAllText(Config.backupCfg);
-            try {
-                baks = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                updateBackupList();
-            } catch (JsonSerializationException) {
-                DialogResult ans = MessageBox.Show(
-                    "The backup configuration file is corrupted. You may need to verify your game files on steam or reinstall." +
-                    "Would you like to delete the corrupted backup config file?",
-                    "Error",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question
-                );
-                if (ans == DialogResult.Yes) {
-                    if (!IO.DeleteFile(Config.backupCfg)) {
-                        MessageBox.Show("The backup file could not be deleted. Is it open somewhere?", "Error");
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        private int createBackup(string path, bool overwrite)
-        {
-            String fileName = Path.GetFileName(path);
-            int res = IO.CopyFile(path, Config.backup_dir + @"\" + fileName, overwrite);
-            if (res == 0 || res == 1) {
-                baks[fileName] = path;
-                saveBackups();
-                updateBackupList();
-            }
-            return res;
         }
 
         ///////////////////////////////////
@@ -178,7 +105,7 @@ namespace MCC_Mod_Manager
         private void refreshButton_Click(object sender, EventArgs e)
         {
             Config.loadCfg();
-            loadBackups();
+            Backups.loadBackups();
             loadModpacks();
         }
 
@@ -209,7 +136,7 @@ namespace MCC_Mod_Manager
                 pBar.PerformStep();
                 if (chb.Checked) {
                     chk = true;
-                    string modpackname = chb.Text.Replace(dirtyPadding, "");
+                    string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
                     try {
                         using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpackname + ".zip")) {
                             ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpackConfig.cfg");
@@ -236,7 +163,7 @@ namespace MCC_Mod_Manager
                                 string destination = dict["dest"].Replace("$MCC_home", Config.MCC_home);
                                 bool err = false;
                                 if (File.Exists(destination)) {
-                                    if (createBackup(destination, false) == 0) {
+                                    if (Backups.createBackup(destination, false) == 0) {
                                         baksMade = true;
                                     }
                                     if (!IO.DeleteFile(destination)) {
@@ -253,7 +180,7 @@ namespace MCC_Mod_Manager
                                 if (err) {
                                     MessageBox.Show("File Access Exception. If the game is running, exit it and try again." +
                                             "\r\nCould not install the '" + modpackname + "' modpack.", "Error");
-                                    if (restoreBaks(modpackBakList) != 0) {
+                                    if (Backups.restoreBaks(modpackBakList) != 0) {
                                         MessageBox.Show("At least one file restore failed. Your game may be in an unstable state.", "Warning");
                                     }
                                     packErr = true;
@@ -302,7 +229,7 @@ namespace MCC_Mod_Manager
                 pBar.PerformStep();
                 if (chb.Checked) {
                     chk = true;
-                    string modpackname = chb.Text.Replace(dirtyPadding, "");
+                    string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
                     if (!IO.DeleteFile(Config.modpack_dir + @"\" + modpackname + ".zip")) {
                         MessageBox.Show("Could not delete '" + modpackname + ".zip'. Is the zip file open somewhere?", "Error");
                     }
@@ -634,53 +561,14 @@ namespace MCC_Mod_Manager
                     }
                 }
 
-                if (createBackup(ofd.FileName, true) != 0) {
+                if (Backups.createBackup(ofd.FileName, true) != 0) {
                     MessageBox.Show("Could not create a backup of the chosen file. Is the file open somewhere?", "Error");
                 } else {
                     MessageBox.Show("New Backup Created");
-                    saveBackups();
-                    loadBackups();
+                    Backups.saveBackups();
+                    Backups.loadBackups();
                 }
             }
-        }
-
-        private int restoreBaks(List<string> backupNames)
-        {
-            if (backupNames.Count() == 0) {
-                return 0;
-            }
-
-            pBar.Visible = true;
-            pBar.Maximum = backupNames.Count();
-            bool chk = false;
-            bool err = false;
-            foreach (string fileName in backupNames) {
-                pBar.PerformStep();
-                if (IO.CopyFile(Config.backup_dir + @"\" + fileName, baks[fileName], true) == 0) {
-                    if (Config.deleteOldBaks) {
-                        if (IO.DeleteFile(Config.backup_dir + @"\" + fileName)) {
-                            baks.Remove(fileName);
-                        } else {
-                            MessageBox.Show("Could not remove old backup '" + fileName + "'. Is the file open somewhere?", "Error");
-                        }
-                    }
-                    chk = true;
-                } else {
-                    MessageBox.Show("Could not restore '" + fileName + "'. If the game is open, close it and try again.", "Error");
-                    err = true;
-                }
-            }
-            saveBackups();
-            updateBackupList();
-            pBar.Value = 0;
-            pBar.Visible = false;
-            if (chk) {
-                if (err) {
-                    return 1;   // Partial success - Some files were restored
-                }
-                return 0;   // Success - All files were restored
-            }
-            return 2;   // Failure - No files were restored
         }
 
         private void restoreSelectedBtn_Click(object sender, EventArgs e)
@@ -689,7 +577,7 @@ namespace MCC_Mod_Manager
             List<string> backupNames = new List<string>();
             foreach (CheckBox chb in bakListPanel.Controls.OfType<CheckBox>()) {
                 if (chb.Checked) {
-                    backupNames.Add(chb.Text.Replace(dirtyPadding, ""));
+                    backupNames.Add(chb.Text.Replace(Config.dirtyPadding, ""));
                     chb.Checked = false;
                 }
             }
@@ -698,7 +586,7 @@ namespace MCC_Mod_Manager
                 MessageBox.Show("No items selected from the list.", "Error");
                 return;
             }
-            int r = restoreBaks(backupNames);
+            int r = Backups.restoreBaks(backupNames);
             if (r == 0) {
                 MessageBox.Show("Selected files have been restored.", "Info");
             } else if (r == 1) {
@@ -709,11 +597,11 @@ namespace MCC_Mod_Manager
         private void restoreAllBaksBtn_Click(object sender, EventArgs e)
         {
             pBar.Visible = true;
-            pBar.Maximum = baks.Count();
+            pBar.Maximum = Backups._baks.Count();
             List<string> remainingBaks = new List<string>();
             List<string> toRemove = new List<string>();
             bool chk = false;
-            foreach (KeyValuePair<string, string> entry in baks) {
+            foreach (KeyValuePair<string, string> entry in Backups._baks) {
                 pBar.PerformStep();
                 if (IO.CopyFile(Config.backup_dir + @"\" + entry.Key, entry.Value, true) == 0) {
                     if (Config.deleteOldBaks) {
@@ -731,21 +619,21 @@ namespace MCC_Mod_Manager
 
             if (Config.deleteOldBaks) {
                 if (remainingBaks.Count() == 0) {
-                    baks = new Dictionary<string, string>();
+                    Backups._baks = new Dictionary<string, string>();
                 } else {
                     Dictionary<string, string> tmp = new Dictionary<string, string>();
                     foreach (string file in remainingBaks) {    // create backup config of files which couldn't be restored and removed
-                        tmp[file] = baks[file];
+                        tmp[file] = Backups._baks[file];
                     }
-                    baks = tmp;
+                    Backups._baks = tmp;
                 }
             }
 
             if (chk) {
                 MessageBox.Show("Files have been restored.", "Info");
             }
-            saveBackups();
-            updateBackupList();
+            Backups.saveBackups();
+            Backups.updateBackupList();
             pBar.Value = 0;
             pBar.Visible = false;
         }
@@ -769,9 +657,9 @@ namespace MCC_Mod_Manager
                 pBar.PerformStep();
                 if (chb.Checked) {
                     chk = true;
-                    string fileName = chb.Text.Replace(dirtyPadding, "");
+                    string fileName = chb.Text.Replace(Config.dirtyPadding, "");
                     if (IO.DeleteFile(Config.backup_dir + @"\" + fileName)) {
-                        baks.Remove(fileName);
+                        Backups._baks.Remove(fileName);
                     } else {
                         MessageBox.Show("Could not delete '" + fileName + "'. Is the file open somewhere?", "Error");
                     }
@@ -781,9 +669,9 @@ namespace MCC_Mod_Manager
             if (!chk) {
                 MessageBox.Show("No items selected from the list.", "Error");
             } else {
-                saveBackups();
+                Backups.saveBackups();
                 MessageBox.Show("Selected files have been deleted.", "Info");
-                updateBackupList();
+                Backups.updateBackupList();
             }
             pBar.Value = 0;
             pBar.Visible = false;
@@ -802,9 +690,9 @@ namespace MCC_Mod_Manager
             }
 
             pBar.Visible = true;
-            pBar.Maximum = baks.Count();
+            pBar.Maximum = Backups._baks.Count();
             List<string> remainingBaks = new List<string>();
-            foreach (KeyValuePair<string, string> entry in baks) {
+            foreach (KeyValuePair<string, string> entry in Backups._baks) {
                 pBar.PerformStep();
                 if (!IO.DeleteFile(Config.backup_dir + @"\" + entry.Key)) {
                     remainingBaks.Add(entry.Key);
@@ -812,19 +700,56 @@ namespace MCC_Mod_Manager
                 }
             }
             if (remainingBaks.Count() == 0) {
-                baks = new Dictionary<string, string>();
+                Backups._baks = new Dictionary<string, string>();
                 MessageBox.Show("All backups deleted.", "Info");
             } else {
                 Dictionary<string, string> tmp = new Dictionary<string, string>();
                 foreach (string file in remainingBaks) {    // create backup config of files which couldn't be deleted
-                    tmp[file] = baks[file];
+                    tmp[file] = Backups._baks[file];
                 }
-                baks = tmp;
+                Backups._baks = tmp;
             }
-            saveBackups();
-            updateBackupList();
+            Backups.saveBackups();
+            Backups.updateBackupList();
             pBar.Value = 0;
             pBar.Visible = false;
+        }
+
+        public int bakListPanel_getCount()
+        {
+            return bakListPanel.Controls.Count;
+        }
+        public void bakListPanel_clear()
+        {
+            bakListPanel.Controls.Clear();
+        }
+        public void bakListPanel_add(CheckBox chb)
+        {
+            bakListPanel.Controls.Add(chb);
+        }
+
+        //////////////////////////////////
+        /////      PROGRESS BAR      /////
+        //////////////////////////////////
+
+        public bool pBar_show(int maxVal)
+        {
+            pBar.Value = 0;
+            pBar.Maximum = maxVal;
+            pBar.Visible = true;
+
+            return true;
+        }
+        public bool pBar_update()
+        {
+            pBar.PerformStep();
+            return true;
+        }
+
+        public bool pBar_hide()
+        {
+            pBar.Visible = false;
+            return true;
         }
     }
 }
