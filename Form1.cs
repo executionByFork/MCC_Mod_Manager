@@ -546,183 +546,39 @@ namespace MCC_Mod_Manager
 
         private void makeBakBtn_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.InitialDirectory = Config.MCC_home;
-            if (ofd.ShowDialog() == DialogResult.OK) {
-                if (File.Exists(Config.backup_dir + @"\" + Path.GetFileName(ofd.FileName))) {
-                    DialogResult ans = MessageBox.Show(
-                        "A backup of that file already exists. Would you like to overwrite?",
-                        "Error",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question
-                    );
-                    if (ans == DialogResult.No) {
-                        return;
-                    }
-                }
-
-                if (Backups.createBackup(ofd.FileName, true) != 0) {
-                    MessageBox.Show("Could not create a backup of the chosen file. Is the file open somewhere?", "Error");
-                } else {
-                    MessageBox.Show("New Backup Created");
-                    Backups.saveBackups();
-                    Backups.loadBackups();
-                }
-            }
+            Backups.newBackup();
         }
 
         private void restoreSelectedBtn_Click(object sender, EventArgs e)
         {
-            
-            List<string> backupNames = new List<string>();
-            foreach (CheckBox chb in bakListPanel.Controls.OfType<CheckBox>()) {
-                if (chb.Checked) {
-                    backupNames.Add(chb.Text.Replace(Config.dirtyPadding, ""));
-                    chb.Checked = false;
-                }
-            }
-
-            if (backupNames.Count() == 0) {
-                MessageBox.Show("No items selected from the list.", "Error");
-                return;
-            }
-            int r = Backups.restoreBaks(backupNames);
-            if (r == 0) {
-                MessageBox.Show("Selected files have been restored.", "Info");
-            } else if (r == 1) {
-                MessageBox.Show("At least one file restore failed. Your game may be in an unstable state.", "Warning");
-            }
+            Backups.restoreSelected(bakListPanel.Controls.OfType<CheckBox>());
         }
 
         private void restoreAllBaksBtn_Click(object sender, EventArgs e)
         {
-            pBar.Visible = true;
-            pBar.Maximum = Backups._baks.Count();
-            List<string> remainingBaks = new List<string>();
-            List<string> toRemove = new List<string>();
-            bool chk = false;
-            foreach (KeyValuePair<string, string> entry in Backups._baks) {
-                pBar.PerformStep();
-                if (IO.CopyFile(Config.backup_dir + @"\" + entry.Key, entry.Value, true) == 0) {
-                    if (Config.deleteOldBaks) {
-                        if (!IO.DeleteFile(Config.backup_dir + @"\" + entry.Key)) {
-                            remainingBaks.Add(entry.Key);
-                            MessageBox.Show("Could not remove old backup '" + entry.Key + "'. Is the file open somewhere?", "Error");
-                        }
-                    }
-                    chk = true;
-                } else {
-                    remainingBaks.Add(entry.Key);
-                    MessageBox.Show("Could not restore '" + entry.Key + "'. If the game is open, close it and try again.", "Error");
-                }
-            }
-
-            if (Config.deleteOldBaks) {
-                if (remainingBaks.Count() == 0) {
-                    Backups._baks = new Dictionary<string, string>();
-                } else {
-                    Dictionary<string, string> tmp = new Dictionary<string, string>();
-                    foreach (string file in remainingBaks) {    // create backup config of files which couldn't be restored and removed
-                        tmp[file] = Backups._baks[file];
-                    }
-                    Backups._baks = tmp;
-                }
-            }
-
-            if (chk) {
-                MessageBox.Show("Files have been restored.", "Info");
-            }
-            Backups.saveBackups();
-            Backups.updateBackupList();
-            pBar.Value = 0;
-            pBar.Visible = false;
+            Backups.restoreAll();
         }
 
         private void delSelectedBak_Click(object sender, EventArgs e)
         {
-            DialogResult ans = MessageBox.Show(
-                "Are you sure you want to delete the selected backup(s)?\r\nNo crying afterwards?",
-                "Warning",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question
-            );
-            if (ans == DialogResult.No) {
-                return;
-            }
-
-            bool chk = false;
-            pBar.Visible = true;
-            pBar.Maximum = bakListPanel.Controls.OfType<CheckBox>().Count();
-            foreach (CheckBox chb in bakListPanel.Controls.OfType<CheckBox>()) {
-                pBar.PerformStep();
-                if (chb.Checked) {
-                    chk = true;
-                    string fileName = chb.Text.Replace(Config.dirtyPadding, "");
-                    if (IO.DeleteFile(Config.backup_dir + @"\" + fileName)) {
-                        Backups._baks.Remove(fileName);
-                    } else {
-                        MessageBox.Show("Could not delete '" + fileName + "'. Is the file open somewhere?", "Error");
-                    }
-                    chb.Checked = false;
-                }
-            }
-            if (!chk) {
-                MessageBox.Show("No items selected from the list.", "Error");
-            } else {
-                Backups.saveBackups();
-                MessageBox.Show("Selected files have been deleted.", "Info");
-                Backups.updateBackupList();
-            }
-            pBar.Value = 0;
-            pBar.Visible = false;
+            Backups.deleteSelected(bakListPanel.Controls.OfType<CheckBox>());
         }
 
         private void delAllBaksBtn_Click(object sender, EventArgs e)
         {
-            DialogResult ans = MessageBox.Show(
-                "Are you sure you want to delete ALL of your backup(s)?\r\nNo crying afterwards?",
-                "Warning",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question
-            );
-            if (ans == DialogResult.No) {
-                return;
-            }
-
-            pBar.Visible = true;
-            pBar.Maximum = Backups._baks.Count();
-            List<string> remainingBaks = new List<string>();
-            foreach (KeyValuePair<string, string> entry in Backups._baks) {
-                pBar.PerformStep();
-                if (!IO.DeleteFile(Config.backup_dir + @"\" + entry.Key)) {
-                    remainingBaks.Add(entry.Key);
-                    MessageBox.Show("Could not delete '" + entry.Key + "'. Is the file open somewhere?", "Error");
-                }
-            }
-            if (remainingBaks.Count() == 0) {
-                Backups._baks = new Dictionary<string, string>();
-                MessageBox.Show("All backups deleted.", "Info");
-            } else {
-                Dictionary<string, string> tmp = new Dictionary<string, string>();
-                foreach (string file in remainingBaks) {    // create backup config of files which couldn't be deleted
-                    tmp[file] = Backups._baks[file];
-                }
-                Backups._baks = tmp;
-            }
-            Backups.saveBackups();
-            Backups.updateBackupList();
-            pBar.Value = 0;
-            pBar.Visible = false;
+            Backups.deleteAll();
         }
 
         public int bakListPanel_getCount()
         {
             return bakListPanel.Controls.Count;
         }
+
         public void bakListPanel_clear()
         {
             bakListPanel.Controls.Clear();
         }
+
         public void bakListPanel_add(CheckBox chb)
         {
             bakListPanel.Controls.Add(chb);
