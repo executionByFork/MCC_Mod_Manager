@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
-using System.IO.Compression;
-using Newtonsoft.Json;
 
 
 namespace MCC_Mod_Manager
@@ -59,7 +53,7 @@ namespace MCC_Mod_Manager
                 this.Top += e.Y - lastPoint.Y;
             }
         }
-        
+
         private void topBar_MouseDown(object sender, MouseEventArgs e)
         {
             lastPoint = new Point(e.X, e.Y);
@@ -99,7 +93,8 @@ namespace MCC_Mod_Manager
             backupPanel.Visible = false;
         }
 
-        private void patchButton_Click(object sender, EventArgs e) {
+        private void patchButton_Click(object sender, EventArgs e)
+        {
             Modpacks.patchModpack(modListPanel.Controls.OfType<CheckBox>());
         }
 
@@ -152,40 +147,46 @@ namespace MCC_Mod_Manager
             del.Click += deleteRow;
             del.Location = Config.delBtnPoint;
 
-            TextBox txt1 = new TextBox();
-            txt1.Width = 180;
-            txt1.Location = Config.sourceTextBoxPoint;
+            TextBox txt1 = new TextBox {
+                Width = 180,
+                Location = Config.sourceTextBoxPoint
+            };
 
-            Button btn1 = new Button();
-            btn1.BackColor = SystemColors.ButtonFace;
-            btn1.Width = 39;
-            btn1.Font = Config.btnFont;
-            btn1.Text = "...";
+            Button btn1 = new Button {
+                BackColor = SystemColors.ButtonFace,
+                Width = 39,
+                Font = Config.btnFont,
+                Text = "..."
+            };
             btn1.Click += Modpacks.create_fileBrowse1;
             btn1.Location = Config.sourceBtnPoint;
 
-            Label lbl = new Label();
-            lbl.Width = 33;
-            lbl.Font = Config.arrowFont;
-            lbl.Text = ">>";
-            lbl.Location = Config.arrowPoint;
+            Label lbl = new Label {
+                Width = 33,
+                Font = Config.arrowFont,
+                Text = ">>",
+                Location = Config.arrowPoint
+            };
 
-            TextBox txt2 = new TextBox();
-            txt2.Width = 180;
-            txt2.Location = Config.destTextBoxPoint;
+            TextBox txt2 = new TextBox {
+                Width = 180,
+                Location = Config.destTextBoxPoint
+            };
 
-            Button btn2 = new Button();
-            btn2.BackColor = SystemColors.ButtonFace;
-            btn2.Width = 39;
-            btn2.Font = Config.btnFont;
-            btn2.Text = "...";
+            Button btn2 = new Button {
+                BackColor = SystemColors.ButtonFace,
+                Width = 39,
+                Font = Config.btnFont,
+                Text = "..."
+            };
             btn2.Click += Modpacks.create_fileBrowse2;
             btn2.Location = Config.destBtnPoint;
 
-            Panel p = new Panel();
-            p.Width = 500;
-            p.Height = 25;
-            p.Location = new Point(10, (createFilesPanel.Controls.Count * 25) + 5);
+            Panel p = new Panel {
+                Width = 500,
+                Height = 25,
+                Location = new Point(10, (createFilesPanel.Controls.Count * 25) + 5)
+            };
             p.Controls.Add(del);
             p.Controls.Add(txt1);
             p.Controls.Add(btn1);
@@ -252,26 +253,30 @@ namespace MCC_Mod_Manager
             }
         }
 
-        public string cfgTextBox1Text
-        {
-            set { cfgTextBox1.Text = value; }
+        public string cfgTextBox1Text {
+            set {
+                cfgTextBox1.Text = value;
+            }
         }
-        public string cfgTextBox2Text
-        {
-            set { cfgTextBox2.Text = value; }
+        public string cfgTextBox2Text {
+            set {
+                cfgTextBox2.Text = value;
+            }
         }
-        public string cfgTextBox3Text
-        {
-            set { cfgTextBox3.Text = value; }
+        public string cfgTextBox3Text {
+            set {
+                cfgTextBox3.Text = value;
+            }
         }
-        public bool delOldBaks
-        {
-            set { delOldBaks_chb.Checked = value; }
+        public bool delOldBaks {
+            set {
+                delOldBaks_chb.Checked = value;
+            }
         }
 
         private void cfgUpdateBtn_Click(object sender, EventArgs e)
         {
-            if (String.IsNullOrEmpty(cfgTextBox1.Text) || String.IsNullOrEmpty(cfgTextBox2.Text) || String.IsNullOrEmpty(cfgTextBox3.Text)) {
+            if (string.IsNullOrEmpty(cfgTextBox1.Text) || string.IsNullOrEmpty(cfgTextBox2.Text) || string.IsNullOrEmpty(cfgTextBox3.Text)) {
                 MessageBox.Show("Config entries must not be empty.", "Error");
                 return;
             }

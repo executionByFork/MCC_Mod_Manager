@@ -15,19 +15,32 @@ namespace MCC_Mod_Manager
         private string _title;
         private string _fileName = "";
 
-        public string InitialDirectory
-        {
-            get { return string.IsNullOrEmpty(_initialDirectory) ? Environment.CurrentDirectory : _initialDirectory; }
-            set { _initialDirectory = value; }
+        public string InitialDirectory {
+            get {
+                return string.IsNullOrEmpty(_initialDirectory) ? Environment.CurrentDirectory : _initialDirectory;
+            }
+            set {
+                _initialDirectory = value;
+            }
         }
-        public string Title
-        {
-            get { return _title ?? "Select a folder"; }
-            set { _title = value; }
+        public string Title {
+            get {
+                return _title ?? "Select a folder";
+            }
+            set {
+                _title = value;
+            }
         }
-        public string FileName { get { return _fileName; } }
+        public string FileName {
+            get {
+                return _fileName;
+            }
+        }
 
-        public bool Show() { return Show(IntPtr.Zero); }
+        public bool Show()
+        {
+            return Show(IntPtr.Zero);
+        }
 
         public bool Show(IntPtr hWndOwner)
         {
@@ -40,21 +53,23 @@ namespace MCC_Mod_Manager
 
         private struct ShowDialogResult
         {
-            public bool Result { get; set; }
-            public string FileName { get; set; }
+            public bool Result {
+                get; set;
+            }
+            public string FileName {
+                get; set;
+            }
         }
 
         private static ShowDialogResult ShowXpDialog(IntPtr ownerHandle, string initialDirectory, string title)
         {
-            var folderBrowserDialog = new FolderBrowserDialog
-            {
+            var folderBrowserDialog = new FolderBrowserDialog {
                 Description = title,
                 SelectedPath = initialDirectory,
                 ShowNewFolderButton = false
             };
             var dialogResult = new ShowDialogResult();
-            if (folderBrowserDialog.ShowDialog(new WindowWrapper(ownerHandle)) == DialogResult.OK)
-            {
+            if (folderBrowserDialog.ShowDialog(new WindowWrapper(ownerHandle)) == DialogResult.OK) {
                 dialogResult.Result = true;
                 dialogResult.FileName = folderBrowserDialog.SelectedPath;
             }
@@ -85,8 +100,7 @@ namespace MCC_Mod_Manager
 
             public static ShowDialogResult Show(IntPtr ownerHandle, string initialDirectory, string title)
             {
-                var openFileDialog = new OpenFileDialog
-                {
+                var openFileDialog = new OpenFileDialog {
                     AddExtension = false,
                     CheckFileExists = false,
                     DereferenceLinks = true,
@@ -102,17 +116,13 @@ namespace MCC_Mod_Manager
                 var adviseParametersWithOutputConnectionToken = new[] { s_vistaDialogEventsConstructorInfo.Invoke(new object[] { openFileDialog }), 0U };
                 s_adviseMethodInfo.Invoke(iFileDialog, adviseParametersWithOutputConnectionToken);
 
-                try
-                {
+                try {
                     int retVal = (int)s_showMethodInfo.Invoke(iFileDialog, new object[] { ownerHandle });
-                    return new ShowDialogResult
-                    {
+                    return new ShowDialogResult {
                         Result = retVal == 0,
                         FileName = openFileDialog.FileName
                     };
-                }
-                finally
-                {
+                } finally {
                     s_unAdviseMethodInfo.Invoke(iFileDialog, new[] { adviseParametersWithOutputConnectionToken[1] });
                 }
             }
@@ -122,8 +132,15 @@ namespace MCC_Mod_Manager
         private class WindowWrapper : IWin32Window
         {
             private readonly IntPtr _handle;
-            public WindowWrapper(IntPtr handle) { _handle = handle; }
-            public IntPtr Handle { get { return _handle; } }
+            public WindowWrapper(IntPtr handle)
+            {
+                _handle = handle;
+            }
+            public IntPtr Handle {
+                get {
+                    return _handle;
+                }
+            }
         }
     }
 }

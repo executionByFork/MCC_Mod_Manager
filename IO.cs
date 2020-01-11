@@ -12,12 +12,9 @@ namespace MCC_Mod_Manager
     {
         public static bool DeleteFile(string path)
         {
-            try
-            {
+            try {
                 File.Delete(path);
-            }
-            catch (IOException)
-            {
+            } catch (IOException) {
                 return false;
             }
             return true;
@@ -25,26 +22,18 @@ namespace MCC_Mod_Manager
         public static int CopyFile(string src, string dest, bool overwrite)
         {
             //TODO: check source file exists before deleting the destination file
-            if (File.Exists(dest))
-            {
-                if (overwrite)
-                {
-                    if (!DeleteFile(dest))
-                    {
+            if (File.Exists(dest)) {
+                if (overwrite) {
+                    if (!DeleteFile(dest)) {
                         return 2;   // fail - file in use
                     }
-                }
-                else
-                {
+                } else {
                     return 1;   // success - not overwriting the existing file
                 }
             }
-            try
-            {
+            try {
                 File.Copy(src, dest);
-            }
-            catch (IOException)
-            {
+            } catch (IOException) {
                 return 3;   // fail - file access error
             }
             return 0;   // success

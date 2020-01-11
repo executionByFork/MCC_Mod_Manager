@@ -29,29 +29,42 @@ namespace MCC_Mod_Manager
 
 
         public static Form1 form1;  // this is set on form load
-        public static string MCC_home
-        {
-            get { return _cfg["MCC_home"]; }
-            set { _cfg["MCC_home"] = value; }
+        public static string MCC_home {
+            get {
+                return _cfg["MCC_home"];
+            }
+            set {
+                _cfg["MCC_home"] = value;
+            }
         }
-        public static string backup_dir
-        {
-            get { return _cfg["backup_dir"]; }
-            set { _cfg["backup_dir"] = value; }
+        public static string backup_dir {
+            get {
+                return _cfg["backup_dir"];
+            }
+            set {
+                _cfg["backup_dir"] = value;
+            }
         }
-        public static string backupCfg
-        {
-            get { return _cfg["backup_dir"] + _bakcfgName; }
+        public static string backupCfg {
+            get {
+                return _cfg["backup_dir"] + _bakcfgName;
+            }
         }
-        public static string modpack_dir
-        {
-            get { return _cfg["modpack_dir"]; }
-            set { _cfg["modpack_dir"] = value; }
+        public static string modpack_dir {
+            get {
+                return _cfg["modpack_dir"];
+            }
+            set {
+                _cfg["modpack_dir"] = value;
+            }
         }
-        public static bool deleteOldBaks
-        {
-            get { return (_cfg["deleteOldBaks"] == "true"); }
-            set { _cfg["deleteOldBaks"] = (value) ? "true" : "false"; }
+        public static bool deleteOldBaks {
+            get {
+                return (_cfg["deleteOldBaks"] == "true");
+            }
+            set {
+                _cfg["deleteOldBaks"] = (value) ? "true" : "false";
+            }
         }
 
         public static bool createDefaultCfg()
@@ -112,16 +125,13 @@ namespace MCC_Mod_Manager
 
         public static bool chkHomeDir(String dir)
         {
-            if (!File.Exists(dir + @"\haloreach\haloreach.dll"))
-            {
+            if (!File.Exists(dir + @"\haloreach\haloreach.dll")) {
                 return false;
             }
-            if (!File.Exists(dir + @"\MCC\Content\Paks\MCC-WindowsNoEditor.pak"))
-            {
+            if (!File.Exists(dir + @"\MCC\Content\Paks\MCC-WindowsNoEditor.pak")) {
                 return false;
             }
-            if (!File.Exists(dir + @"\mcclauncher.exe"))
-            {
+            if (!File.Exists(dir + @"\mcclauncher.exe")) {
                 return false;
             }
 
