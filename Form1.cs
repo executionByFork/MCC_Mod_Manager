@@ -21,11 +21,11 @@ namespace MCC_Mod_Manager
             InitializeComponent();
         }
 
-        Config _config;
         Dictionary<string, string> baks = new Dictionary<string, string>();
         private void Form1_Load(object sender, EventArgs e)
         {
-            _config = new Config(this);
+            Config.form1 = this;
+            Config.loadCfg();
             ensureBackupFolderExists();
             loadBackups();
             ensureModpackFolderExists();
@@ -50,16 +50,16 @@ namespace MCC_Mod_Manager
 
         private bool ensureModpackFolderExists()
         {
-            if (!Directory.Exists(_config.modpack_dir)) {
-                Directory.CreateDirectory(_config.modpack_dir);
+            if (!Directory.Exists(Config.modpack_dir)) {
+                Directory.CreateDirectory(Config.modpack_dir);
             }
 
             return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
         }
         private bool ensureBackupFolderExists()
         {
-            if (!Directory.Exists(_config.backup_dir)) {
-                Directory.CreateDirectory(_config.backup_dir);
+            if (!Directory.Exists(Config.backup_dir)) {
+                Directory.CreateDirectory(Config.backup_dir);
             }
 
             return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
@@ -70,7 +70,7 @@ namespace MCC_Mod_Manager
         {
             modListPanel.Controls.Clear();
 
-            string[] fileEntries = Directory.GetFiles(_config.modpack_dir);
+            string[] fileEntries = Directory.GetFiles(Config.modpack_dir);
             foreach (string file in fileEntries) {
                 CheckBox chb = new CheckBox();
                 chb.AutoSize = true;
@@ -86,7 +86,7 @@ namespace MCC_Mod_Manager
         private bool saveBackups()
         {
             string json = JsonConvert.SerializeObject(baks, Formatting.Indented);
-            using (FileStream fs = File.Create(_config.backupCfg)) {
+            using (FileStream fs = File.Create(Config.backupCfg)) {
                 byte[] info = new UTF8Encoding(true).GetBytes(json);
                 fs.Write(info, 0, info.Length);
             }
@@ -109,11 +109,11 @@ namespace MCC_Mod_Manager
 
         private bool loadBackups()
         {
-            if (!File.Exists(_config.backupCfg)) {
+            if (!File.Exists(Config.backupCfg)) {
                 return false;
             }
 
-            string json = File.ReadAllText(_config.backupCfg);
+            string json = File.ReadAllText(Config.backupCfg);
             try {
                 baks = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
                 updateBackupList();
@@ -126,7 +126,7 @@ namespace MCC_Mod_Manager
                     MessageBoxIcon.Question
                 );
                 if (ans == DialogResult.Yes) {
-                    if (!IO.DeleteFile(_config.backupCfg)) {
+                    if (!IO.DeleteFile(Config.backupCfg)) {
                         MessageBox.Show("The backup file could not be deleted. Is it open somewhere?", "Error");
                     }
                 }
@@ -138,7 +138,7 @@ namespace MCC_Mod_Manager
         private int createBackup(string path, bool overwrite)
         {
             String fileName = Path.GetFileName(path);
-            int res = IO.CopyFile(path, _config.backup_dir + @"\" + fileName, overwrite);
+            int res = IO.CopyFile(path, Config.backup_dir + @"\" + fileName, overwrite);
             if (res == 0 || res == 1) {
                 baks[fileName] = path;
                 saveBackups();
@@ -177,7 +177,7 @@ namespace MCC_Mod_Manager
 
         private void refreshButton_Click(object sender, EventArgs e)
         {
-            _config.loadCfg();
+            Config.loadCfg();
             loadBackups();
             loadModpacks();
         }
@@ -211,8 +211,8 @@ namespace MCC_Mod_Manager
                     chk = true;
                     string modpackname = chb.Text.Replace(dirtyPadding, "");
                     try {
-                        using (ZipArchive archive = ZipFile.OpenRead(_config.modpack_dir + @"\" + modpackname + ".zip")) {
-                            ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpack_config.cfg");
+                        using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpackname + ".zip")) {
+                            ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpackConfig.cfg");
                             if (modpackConfigEntry == null) {
                                 MessageBox.Show("Could not open modpack config file. The file '" + modpackname + ".zip' is not a compatible modpack." +
                                     "\r\nTry using the 'Create Modpack' Tab to convert this mod into a compatible modpack.", "Error");
@@ -233,7 +233,7 @@ namespace MCC_Mod_Manager
                             List<string> modpackBakList = new List<string>();   // track patched files in case of failure mid patch
                             foreach (Dictionary<string, string> dict in modpackConfig) {
                                 ZipArchiveEntry modFile = archive.GetEntry(dict["src"]);
-                                string destination = dict["dest"].Replace("$MCC_home", _config.MCC_home);
+                                string destination = dict["dest"].Replace("$MCC_home", Config.MCC_home);
                                 bool err = false;
                                 if (File.Exists(destination)) {
                                     if (createBackup(destination, false) == 0) {
@@ -303,7 +303,7 @@ namespace MCC_Mod_Manager
                 if (chb.Checked) {
                     chk = true;
                     string modpackname = chb.Text.Replace(dirtyPadding, "");
-                    if (!IO.DeleteFile(_config.modpack_dir + @"\" + modpackname + ".zip")) {
+                    if (!IO.DeleteFile(Config.modpack_dir + @"\" + modpackname + ".zip")) {
                         MessageBox.Show("Could not delete '" + modpackname + ".zip'. Is the zip file open somewhere?", "Error");
                     }
                     chb.Checked = false;
@@ -427,7 +427,7 @@ namespace MCC_Mod_Manager
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.CheckFileExists = false;    // allow modpack creators to type in a filename for creating new files
-            ofd.InitialDirectory = _config.MCC_home;
+            ofd.InitialDirectory = Config.MCC_home;
             if (ofd.ShowDialog() == DialogResult.OK) {
                 ((Button)sender).Parent.GetChildAtPoint(destTextBoxPoint).Text = ofd.FileName;
             }
@@ -453,14 +453,14 @@ namespace MCC_Mod_Manager
                     MessageBox.Show("The source file '" + dict["src"] + "' does not exist.", "Error");
                     return;
                 }
-                if (!dict["dest"].StartsWith(_config.MCC_home)) {
+                if (!dict["dest"].StartsWith(Config.MCC_home)) {
                     MessageBox.Show("Destination files must be located within the MCC install directory. " +
                         "You may need to configure this directory if you haven't done so already.", "Error");
                     return;
                 }
 
                 // make modpack compatable with any MCC_home directory
-                dict["dest"] = dict["dest"].Replace(_config.MCC_home, "$MCC_home");
+                dict["dest"] = dict["dest"].Replace(Config.MCC_home, "$MCC_home");
 
                 fileMap.Add(dict);
                 chk.Add(row.GetChildAtPoint(destTextBoxPoint).Text);
@@ -473,7 +473,7 @@ namespace MCC_Mod_Manager
 
             ensureModpackFolderExists();
             String modpackName = modpackName_txt.Text + ".zip";
-            String zipPath = _config.modpack_dir + @"\" + modpackName;
+            String zipPath = Config.modpack_dir + @"\" + modpackName;
             if (File.Exists(zipPath)) {
                 MessageBox.Show("A modpack with that name already exists.", "Error");
                 return;
@@ -489,7 +489,7 @@ namespace MCC_Mod_Manager
                     // change src path to just modpack after archive creation but before json serialization
                     entry["src"] = fileName;
                 }
-                ZipArchiveEntry configFile = archive.CreateEntry("modpack_config.cfg");
+                ZipArchiveEntry configFile = archive.CreateEntry("modpackConfig.cfg");
                 string json = JsonConvert.SerializeObject(fileMap, Formatting.Indented);
                 using (StreamWriter writer = new StreamWriter(configFile.Open())) {
                     writer.WriteLine(json);
@@ -536,7 +536,7 @@ namespace MCC_Mod_Manager
         private void cfgFolderBrowseBtn_Click(object sender, EventArgs e)
         {
             var dialog = new FolderSelectDialog {
-                InitialDirectory = _config.MCC_home,
+                InitialDirectory = Config.MCC_home,
                 Title = "Select a folder"
             };
             if (dialog.Show(Handle)) {
@@ -582,20 +582,20 @@ namespace MCC_Mod_Manager
                 if (!correctHomeDir(cfgTextBox1.Text)) {
                     MessageBox.Show("It seems you have selected the wrong MCC install directory. " +
                         "Please make sure to select the folder named 'Halo The Master Chief Collection' in your Steam files.", "Error");
-                    cfgTextBox1.Text = _config.MCC_home;
+                    cfgTextBox1.Text = Config.MCC_home;
                     return;
                 }
-                _config.MCC_home = cfgTextBox1.Text;
+                Config.MCC_home = cfgTextBox1.Text;
             }
             if (!String.IsNullOrEmpty(cfgTextBox2.Text)) {
-                _config.backup_dir = cfgTextBox2.Text;
+                Config.backup_dir = cfgTextBox2.Text;
             }
             if (!String.IsNullOrEmpty(cfgTextBox3.Text)) {
-                _config.modpack_dir = cfgTextBox3.Text;
+                Config.modpack_dir = cfgTextBox3.Text;
             }
-            _config.deleteOldBaks = delOldBaks_chb.Checked;
+            Config.deleteOldBaks = delOldBaks_chb.Checked;
 
-            _config.saveCfg();
+            Config.saveCfg();
 
             MessageBox.Show("Config Updated!", "Info");
         }
@@ -620,9 +620,9 @@ namespace MCC_Mod_Manager
         private void makeBakBtn_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.InitialDirectory = _config.MCC_home;
+            ofd.InitialDirectory = Config.MCC_home;
             if (ofd.ShowDialog() == DialogResult.OK) {
-                if (File.Exists(_config.backup_dir + @"\" + Path.GetFileName(ofd.FileName))) {
+                if (File.Exists(Config.backup_dir + @"\" + Path.GetFileName(ofd.FileName))) {
                     DialogResult ans = MessageBox.Show(
                         "A backup of that file already exists. Would you like to overwrite?",
                         "Error",
@@ -656,9 +656,9 @@ namespace MCC_Mod_Manager
             bool err = false;
             foreach (string fileName in backupNames) {
                 pBar.PerformStep();
-                if (IO.CopyFile(_config.backup_dir + @"\" + fileName, baks[fileName], true) == 0) {
-                    if (_config.deleteOldBaks) {
-                        if (IO.DeleteFile(_config.backup_dir + @"\" + fileName)) {
+                if (IO.CopyFile(Config.backup_dir + @"\" + fileName, baks[fileName], true) == 0) {
+                    if (Config.deleteOldBaks) {
+                        if (IO.DeleteFile(Config.backup_dir + @"\" + fileName)) {
                             baks.Remove(fileName);
                         } else {
                             MessageBox.Show("Could not remove old backup '" + fileName + "'. Is the file open somewhere?", "Error");
@@ -715,9 +715,9 @@ namespace MCC_Mod_Manager
             bool chk = false;
             foreach (KeyValuePair<string, string> entry in baks) {
                 pBar.PerformStep();
-                if (IO.CopyFile(_config.backup_dir + @"\" + entry.Key, entry.Value, true) == 0) {
-                    if (_config.deleteOldBaks) {
-                        if (!IO.DeleteFile(_config.backup_dir + @"\" + entry.Key)) {
+                if (IO.CopyFile(Config.backup_dir + @"\" + entry.Key, entry.Value, true) == 0) {
+                    if (Config.deleteOldBaks) {
+                        if (!IO.DeleteFile(Config.backup_dir + @"\" + entry.Key)) {
                             remainingBaks.Add(entry.Key);
                             MessageBox.Show("Could not remove old backup '" + entry.Key + "'. Is the file open somewhere?", "Error");
                         }
@@ -729,7 +729,7 @@ namespace MCC_Mod_Manager
                 }
             }
 
-            if (_config.deleteOldBaks) {
+            if (Config.deleteOldBaks) {
                 if (remainingBaks.Count() == 0) {
                     baks = new Dictionary<string, string>();
                 } else {
@@ -770,7 +770,7 @@ namespace MCC_Mod_Manager
                 if (chb.Checked) {
                     chk = true;
                     string fileName = chb.Text.Replace(dirtyPadding, "");
-                    if (IO.DeleteFile(_config.backup_dir + @"\" + fileName)) {
+                    if (IO.DeleteFile(Config.backup_dir + @"\" + fileName)) {
                         baks.Remove(fileName);
                     } else {
                         MessageBox.Show("Could not delete '" + fileName + "'. Is the file open somewhere?", "Error");
@@ -806,7 +806,7 @@ namespace MCC_Mod_Manager
             List<string> remainingBaks = new List<string>();
             foreach (KeyValuePair<string, string> entry in baks) {
                 pBar.PerformStep();
-                if (!IO.DeleteFile(_config.backup_dir + @"\" + entry.Key)) {
+                if (!IO.DeleteFile(Config.backup_dir + @"\" + entry.Key)) {
                     remainingBaks.Add(entry.Key);
                     MessageBox.Show("Could not delete '" + entry.Key + "'. Is the file open somewhere?", "Error");
                 }

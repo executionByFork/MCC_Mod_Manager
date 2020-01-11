@@ -9,45 +9,39 @@ using Newtonsoft.Json;
 
 namespace MCC_Mod_Manager
 {
-    class Config
+    static class Config
     {
-        private readonly Form1 form1;
-        private readonly string _cfgLocation = @".\MCC_Mod_Manager.cfg";
-        private readonly string _bakcfgName = @"\backups.cfg";
-        private Dictionary<string, string> _cfg = new Dictionary<string, string>();
+        private static readonly string _cfgLocation = @".\MCC_Mod_Manager.cfg";
+        private static readonly string _bakcfgName = @"\backups.cfg";
+        private static Dictionary<string, string> _cfg = new Dictionary<string, string>();
 
-        public Config(Form1 caller)
-        {
-            form1 = caller;
-            loadCfg();
-        }
-
-        public string MCC_home
+        public static Form1 form1;
+        public static string MCC_home
         {
             get { return _cfg["MCC_home"]; }
             set { _cfg["MCC_home"] = value; }
         }
-        public string backup_dir
+        public static string backup_dir
         {
             get { return _cfg["backup_dir"]; }
             set { _cfg["backup_dir"] = value; }
         }
-        public string backupCfg
+        public static string backupCfg
         {
             get { return _cfg["backup_dir"] + _bakcfgName; }
         }
-        public string modpack_dir
+        public static string modpack_dir
         {
             get { return _cfg["modpack_dir"]; }
             set { _cfg["modpack_dir"] = value; }
         }
-        public bool deleteOldBaks
+        public static bool deleteOldBaks
         {
             get { return (_cfg["deleteOldBaks"] == "true"); }
             set { _cfg["deleteOldBaks"] = (value) ? "true" : "false"; }
         }
 
-        public bool createDefaultCfg()
+        public static bool createDefaultCfg()
         {
             // TODO: Ask user if they want to use default config first
             MCC_home = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
@@ -59,7 +53,7 @@ namespace MCC_Mod_Manager
             return true;
         }
 
-        public void saveCfg()
+        public static void saveCfg()
         {
             string json = JsonConvert.SerializeObject(_cfg, Formatting.Indented);
             using (FileStream fs = File.Create(_cfgLocation)) {
@@ -68,7 +62,7 @@ namespace MCC_Mod_Manager
             }
         }
 
-        public bool loadCfg()
+        public static bool loadCfg()
         {
             bool err = false;
             if (!File.Exists(_cfgLocation)) {
