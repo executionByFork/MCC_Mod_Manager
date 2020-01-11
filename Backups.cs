@@ -15,7 +15,7 @@ namespace MCC_Mod_Manager
         public static Form1 form1;  // this is set on form load
         public static Dictionary<string, string> _baks = new Dictionary<string, string>();
 
-        public static bool ensureBackupFolderExists()
+        private static bool ensureBackupFolderExists()
         {
             if (!Directory.Exists(Config.backup_dir))
             {
@@ -27,6 +27,8 @@ namespace MCC_Mod_Manager
 
         public static bool saveBackups()
         {
+            ensureBackupFolderExists();
+
             string json = JsonConvert.SerializeObject(_baks, Formatting.Indented);
             using (FileStream fs = File.Create(Config.backupCfg))
             {
@@ -38,6 +40,8 @@ namespace MCC_Mod_Manager
 
         public static bool updateBackupList()
         {
+            ensureBackupFolderExists();
+
             form1.bakListPanel_clear();
             foreach (KeyValuePair<string, string> entry in _baks)
             {
@@ -53,6 +57,7 @@ namespace MCC_Mod_Manager
 
         public static bool loadBackups()
         {
+            ensureBackupFolderExists();
             if (!File.Exists(Config.backupCfg))
             {
                 return false;
@@ -87,6 +92,8 @@ namespace MCC_Mod_Manager
 
         public static int createBackup(string path, bool overwrite)
         {
+            ensureBackupFolderExists();
+
             String fileName = Path.GetFileName(path);
             int res = IO.CopyFile(path, Config.backup_dir + @"\" + fileName, overwrite);
             if (res == 0 || res == 1)
@@ -100,6 +107,8 @@ namespace MCC_Mod_Manager
 
         public static int restoreBaks(List<string> backupNames)
         {
+            ensureBackupFolderExists();
+
             if (backupNames.Count() == 0)
             {
                 return 0;
@@ -148,6 +157,8 @@ namespace MCC_Mod_Manager
 
         public static void newBackup()
         {
+            ensureBackupFolderExists();
+
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = Config.MCC_home;
             if (ofd.ShowDialog() == DialogResult.OK)
@@ -209,6 +220,8 @@ namespace MCC_Mod_Manager
 
         public static void restoreAll()
         {
+            ensureBackupFolderExists();
+
             form1.pBar_show(_baks.Count());
             List<string> remainingBaks = new List<string>();
             bool chk = false;
@@ -262,6 +275,8 @@ namespace MCC_Mod_Manager
 
         public static void deleteSelected(IEnumerable<CheckBox> bakList)
         {
+            ensureBackupFolderExists();
+
             DialogResult ans = MessageBox.Show(
                 "Are you sure you want to delete the selected backup(s)?\r\nNo crying afterwards?",
                 "Warning",
@@ -308,6 +323,8 @@ namespace MCC_Mod_Manager
 
         public static void deleteAll()
         {
+            ensureBackupFolderExists();
+
             DialogResult ans = MessageBox.Show(
                 "Are you sure you want to delete ALL of your backup(s)?\r\nNo crying afterwards?",
                 "Warning",

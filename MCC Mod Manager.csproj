@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Backups.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="CreateModpack.cs" />
     <Compile Include="FolderSelectDialog.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

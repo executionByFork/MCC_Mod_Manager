@@ -26,7 +26,6 @@ namespace MCC_Mod_Manager
             Config.form1 = this;
             Config.loadCfg();
             Backups.form1 = this;
-            Backups.ensureBackupFolderExists();
             Backups.loadBackups();
             ensureModpackFolderExists();
             loadModpacks();
