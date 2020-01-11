@@ -24,6 +24,7 @@ namespace MCC_Mod_Manager
         }
         public static int CopyFile(string src, string dest, bool overwrite)
         {
+            //TODO: check source file exists before deleting the destination file
             if (File.Exists(dest))
             {
                 if (overwrite)

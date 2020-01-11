@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -14,7 +15,18 @@ namespace MCC_Mod_Manager
         private static readonly string _cfgLocation = @".\MCC_Mod_Manager.cfg";
         private static readonly string _bakcfgName = @"\backups.cfg";
         private static Dictionary<string, string> _cfg = new Dictionary<string, string>();
+
+        // UI elements
         public static string dirtyPadding = "              ";
+        public static readonly Point delBtnPoint = new Point(0, 3);
+        public static readonly Point sourceTextBoxPoint = new Point(20, 1);
+        public static readonly Point sourceBtnPoint = new Point(203, 0);
+        public static readonly Point arrowPoint = new Point(245, -5);
+        public static readonly Point destTextBoxPoint = new Point(278, 1);
+        public static readonly Point destBtnPoint = new Point(461, 0);
+        public static readonly Font btnFont = new Font("Lucida Console", 10, FontStyle.Regular);
+        public static readonly Font arrowFont = new Font("Reem Kufi", 12, FontStyle.Bold);
+
 
         public static Form1 form1;  // this is set on form load
         public static string MCC_home

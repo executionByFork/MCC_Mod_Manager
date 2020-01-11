@@ -27,8 +27,8 @@ namespace MCC_Mod_Manager
             Config.loadCfg();
             Backups.form1 = this;
             Backups.loadBackups();
-            ensureModpackFolderExists();
-            loadModpacks();
+            Modpacks.form1 = this;
+            Modpacks.loadModpacks();
         }
 
         ///////////////////////////////////
@@ -45,32 +45,6 @@ namespace MCC_Mod_Manager
         {
             this.Cursor = Cursors.Default;
             this.Refresh();
-        }
-
-        private bool ensureModpackFolderExists()
-        {
-            if (!Directory.Exists(Config.modpack_dir)) {
-                Directory.CreateDirectory(Config.modpack_dir);
-            }
-
-            return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
-        }
-
-        private bool loadModpacks()
-        {
-            modListPanel.Controls.Clear();
-
-            string[] fileEntries = Directory.GetFiles(Config.modpack_dir);
-            foreach (string file in fileEntries) {
-                CheckBox chb = new CheckBox();
-                chb.AutoSize = true;
-                chb.Text = Config.dirtyPadding + Path.GetFileName(file).Replace(".zip", "");
-                chb.Location = new Point(30, modListPanel.Controls.Count * 20);
-
-                modListPanel.Controls.Add(chb);
-            }
-
-            return true;
         }
 
         ///////////////////////////////////
@@ -105,7 +79,7 @@ namespace MCC_Mod_Manager
         {
             Config.loadCfg();
             Backups.loadBackups();
-            loadModpacks();
+            Modpacks.loadModpacks();
         }
 
         //////////////////////////////////
@@ -126,123 +100,27 @@ namespace MCC_Mod_Manager
         }
 
         private void patchButton_Click(object sender, EventArgs e) {
-            bool baksMade = false;
-            bool chk = false;
-            bool packErr = false;
-            pBar.Visible = true;
-            pBar.Maximum = modListPanel.Controls.OfType<CheckBox>().Count();
-            foreach (CheckBox chb in modListPanel.Controls.OfType<CheckBox>()) {
-                pBar.PerformStep();
-                if (chb.Checked) {
-                    chk = true;
-                    string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
-                    try {
-                        using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpackname + ".zip")) {
-                            ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpackConfig.cfg");
-                            if (modpackConfigEntry == null) {
-                                MessageBox.Show("Could not open modpack config file. The file '" + modpackname + ".zip' is not a compatible modpack." +
-                                    "\r\nTry using the 'Create Modpack' Tab to convert this mod into a compatible modpack.", "Error");
-                                packErr = true;
-                                continue;
-                            }
-                            List<Dictionary<string, string>> modpackConfig;
-                            using (Stream jsonStream = modpackConfigEntry.Open()) {
-                                StreamReader reader = new StreamReader(jsonStream);
-                                try {
-                                    modpackConfig = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(reader.ReadToEnd());
-                                } catch (JsonSerializationException) {
-                                    MessageBox.Show("The configuration file in '" + modpackname + ".zip' is corrupted." +
-                                    "\r\nThis modpack cannot be installed.", "Error");
-                                    continue;
-                                }
-                            }
-                            List<string> modpackBakList = new List<string>();   // track patched files in case of failure mid patch
-                            foreach (Dictionary<string, string> dict in modpackConfig) {
-                                ZipArchiveEntry modFile = archive.GetEntry(dict["src"]);
-                                string destination = dict["dest"].Replace("$MCC_home", Config.MCC_home);
-                                bool err = false;
-                                if (File.Exists(destination)) {
-                                    if (Backups.createBackup(destination, false) == 0) {
-                                        baksMade = true;
-                                    }
-                                    if (!IO.DeleteFile(destination)) {
-                                        err = true;
-                                    }
-                                }
-                                if (!err) {
-                                    try {
-                                        modFile.ExtractToFile(destination);
-                                    } catch (IOException) {
-                                        err = true;     // strange edge case which will *probably* never happen
-                                    }
-                                }
-                                if (err) {
-                                    MessageBox.Show("File Access Exception. If the game is running, exit it and try again." +
-                                            "\r\nCould not install the '" + modpackname + "' modpack.", "Error");
-                                    if (Backups.restoreBaks(modpackBakList) != 0) {
-                                        MessageBox.Show("At least one file restore failed. Your game may be in an unstable state.", "Warning");
-                                    }
-                                    packErr = true;
-                                    break;
-                                }
-                                modpackBakList.Add(Path.GetFileName(dict["dest"]));
-                            }
-                        }
-                    } catch (FileNotFoundException) {
-                        MessageBox.Show("Could not find the '" + modpackname + "' modpack.", "Error");
-                        packErr = true;
-                    }
-                    chb.Checked = false;
-                }
-            }
-
-            if (!chk) { // fail - no boxes checked
-                MessageBox.Show("No modpacks selected.", "Error");
-            } else if (packErr) {   // fail / partial success - At least one modpack was not patched
-                MessageBox.Show("One or more of the selected modpacks were not patched to the game.", "Warning");
-            } else if (baksMade) {  // success and new backup(s) created
-                MessageBox.Show("The selected mods have been patched to the game.\r\nNew backups were created.", "Info");
-            } else {
-                MessageBox.Show("The selected mods have been patched to the game.", "Info");
-            }
-            pBar.Value = 0;
-            pBar.Visible = false;
+            Modpacks.patchModpack(modListPanel.Controls.OfType<CheckBox>());
         }
 
         private void delModpack_Click(object sender, EventArgs e)
         {
-            DialogResult ans = MessageBox.Show(
-                "Are you sure you want to delete the selected modpacks(s)?\r\nNo crying afterwards?",
-                "Warning",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question
-            );
-            if (ans == DialogResult.No) {
-                return;
-            }
+            Modpacks.delModpack(modListPanel.Controls.OfType<CheckBox>());
+        }
 
-            bool chk = false;
-            pBar.Visible = true;
-            pBar.Maximum = modListPanel.Controls.OfType<CheckBox>().Count();
-            foreach (CheckBox chb in modListPanel.Controls.OfType<CheckBox>()) {
-                pBar.PerformStep();
-                if (chb.Checked) {
-                    chk = true;
-                    string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
-                    if (!IO.DeleteFile(Config.modpack_dir + @"\" + modpackname + ".zip")) {
-                        MessageBox.Show("Could not delete '" + modpackname + ".zip'. Is the zip file open somewhere?", "Error");
-                    }
-                    chb.Checked = false;
-                }
-            }
-            if (!chk) {
-                MessageBox.Show("No items selected from the list.", "Error");
-            } else {
-                MessageBox.Show("Selected modpacks have been deleted.", "Info");
-                loadModpacks();
-            }
-            pBar.Value = 0;
-            pBar.Visible = false;
+        public int modListPanel_getCount()
+        {
+            return modListPanel.Controls.Count;
+        }
+
+        public void modListPanel_clear()
+        {
+            modListPanel.Controls.Clear();
+        }
+
+        public void modListPanel_add(CheckBox chb)
+        {
+            modListPanel.Controls.Add(chb);
         }
 
         //////////////////////////////////
@@ -262,15 +140,7 @@ namespace MCC_Mod_Manager
             backupPanel.Visible = false;
         }
 
-        List<Panel> createPageList = new List<Panel>();
-        Point delBtnPoint = new Point(0, 3);
-        Point sourceTextBoxPoint = new Point(20, 1);
-        Point sourceBtnPoint = new Point(203, 0);
-        Point arrowPoint = new Point(245, -5);
-        Point destTextBoxPoint = new Point(278, 1);
-        Point destBtnPoint = new Point(461, 0);
-        Font btnFont = new Font("Lucida Console", 10, FontStyle.Regular);
-        Font arrowFont = new Font("Reem Kufi", 12, FontStyle.Bold);
+        private List<Panel> createPageList = new List<Panel>(); // used to redraw UI list when deleting one row at a time
         private void addRowButton_Click(object sender, EventArgs e)
         {
             PictureBox del = new PictureBox();
@@ -280,42 +150,39 @@ namespace MCC_Mod_Manager
             del.MouseEnter += btnHoverOn;
             del.MouseLeave += btnHoverOff;
             del.Click += deleteRow;
-            del.Location = delBtnPoint;
+            del.Location = Config.delBtnPoint;
 
             TextBox txt1 = new TextBox();
             txt1.Width = 180;
-            //txt1.Enabled = false;
-            txt1.Location = sourceTextBoxPoint;
+            txt1.Location = Config.sourceTextBoxPoint;
 
             Button btn1 = new Button();
             btn1.BackColor = SystemColors.ButtonFace;
             btn1.Width = 39;
-            btn1.Font = btnFont;
+            btn1.Font = Config.btnFont;
             btn1.Text = "...";
-            btn1.Click += create_fileBrowse1;
-            btn1.Location = sourceBtnPoint;
+            btn1.Click += Modpacks.create_fileBrowse1;
+            btn1.Location = Config.sourceBtnPoint;
 
             Label lbl = new Label();
             lbl.Width = 33;
-            lbl.Font = arrowFont;
+            lbl.Font = Config.arrowFont;
             lbl.Text = ">>";
-            lbl.Location = arrowPoint;
+            lbl.Location = Config.arrowPoint;
 
             TextBox txt2 = new TextBox();
             txt2.Width = 180;
-            //txt2.Enabled = false;
-            txt2.Location = destTextBoxPoint;
+            txt2.Location = Config.destTextBoxPoint;
 
             Button btn2 = new Button();
             btn2.BackColor = SystemColors.ButtonFace;
             btn2.Width = 39;
-            btn2.Font = btnFont;
+            btn2.Font = Config.btnFont;
             btn2.Text = "...";
-            btn2.Click += create_fileBrowse2;
-            btn2.Location = destBtnPoint;
+            btn2.Click += Modpacks.create_fileBrowse2;
+            btn2.Location = Config.destBtnPoint;
 
             Panel p = new Panel();
-            //p.BackColor = Color.Aqua;
             p.Width = 500;
             p.Height = 25;
             p.Location = new Point(10, (createFilesPanel.Controls.Count * 25) + 5);
@@ -340,106 +207,21 @@ namespace MCC_Mod_Manager
             }
         }
 
-        private void create_fileBrowse1(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.InitialDirectory = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}";  // using the GUID for 'This PC' folder
-            if (ofd.ShowDialog() == DialogResult.OK) {
-                ((Button)sender).Parent.GetChildAtPoint(sourceTextBoxPoint).Text = ofd.FileName;
-            }
-        }
-
-        private void create_fileBrowse2(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.CheckFileExists = false;    // allow modpack creators to type in a filename for creating new files
-            ofd.InitialDirectory = Config.MCC_home;
-            if (ofd.ShowDialog() == DialogResult.OK) {
-                ((Button)sender).Parent.GetChildAtPoint(destTextBoxPoint).Text = ofd.FileName;
-            }
-        }
         private void createModpackBtn_Click(object sender, EventArgs e)
         {
-            if (String.IsNullOrEmpty(modpackName_txt.Text)) {
-                MessageBox.Show("Please enter a modpack name", "Error");
-                return;
-            }
-
-            List<String> chk = new List<String>();
-            List<Dictionary<string, string>> fileMap = new List<Dictionary<string, string>>();
-            foreach (Panel row in createFilesPanel.Controls.OfType<Panel>()) {
-                Dictionary<string, string> dict = new Dictionary<string, string>();
-                dict["src"] = row.GetChildAtPoint(sourceTextBoxPoint).Text;
-                dict["dest"] = row.GetChildAtPoint(destTextBoxPoint).Text;
-                if (String.IsNullOrEmpty(dict["src"]) || String.IsNullOrEmpty(dict["dest"])) {
-                    MessageBox.Show("Filepaths cannot be empty.", "Error");
-                    return;
-                }
-                if (!File.Exists(dict["src"])) {
-                    MessageBox.Show("The source file '" + dict["src"] + "' does not exist.", "Error");
-                    return;
-                }
-                if (!dict["dest"].StartsWith(Config.MCC_home)) {
-                    MessageBox.Show("Destination files must be located within the MCC install directory. " +
-                        "You may need to configure this directory if you haven't done so already.", "Error");
-                    return;
-                }
-
-                // make modpack compatable with any MCC_home directory
-                dict["dest"] = dict["dest"].Replace(Config.MCC_home, "$MCC_home");
-
-                fileMap.Add(dict);
-                chk.Add(row.GetChildAtPoint(destTextBoxPoint).Text);
-            }
-
-            if (chk.Distinct().Count() != chk.Count()) {
-                MessageBox.Show("You have multiple files trying to write to the same destination.", "Error");
-                return;
-            }
-
-            ensureModpackFolderExists();
-            String modpackName = modpackName_txt.Text + ".zip";
-            String zipPath = Config.modpack_dir + @"\" + modpackName;
-            if (File.Exists(zipPath)) {
-                MessageBox.Show("A modpack with that name already exists.", "Error");
-                return;
-            }
-
-            pBar.Visible = true;
-            pBar.Maximum = fileMap.Count();
-            using (var archive = ZipFile.Open(zipPath, ZipArchiveMode.Create)) {
-                foreach (var entry in fileMap) {
-                    pBar.PerformStep();
-                    String fileName = Path.GetFileName(entry["src"]);
-                    archive.CreateEntryFromFile(entry["src"], fileName);    // TODO: Fix issues when two source files have same name but diff path
-                    // change src path to just modpack after archive creation but before json serialization
-                    entry["src"] = fileName;
-                }
-                ZipArchiveEntry configFile = archive.CreateEntry("modpackConfig.cfg");
-                string json = JsonConvert.SerializeObject(fileMap, Formatting.Indented);
-                using (StreamWriter writer = new StreamWriter(configFile.Open())) {
-                    writer.WriteLine(json);
-                }
-                ZipArchiveEntry readmeFile = archive.CreateEntry("README.txt");
-                using (StreamWriter writer = new StreamWriter(readmeFile.Open())) {
-                    writer.WriteLine("Install using MCC Mod Manager: https://github.com/executionByFork/MCC_Mod_Manager/tree/master");
-                }
-            }
-
-            MessageBox.Show("Modpack '" + modpackName + "' created.", "Info");
-            pBar.Value = 0;
-            pBar.Visible = false;
-            createFilesPanel.Controls.Clear();
-            createPageList = new List<Panel>(); // garbage collector magic
-            modpackName_txt.Text = "";
-            loadModpacks();
-            return;
+            Modpacks.createModpack(modpackName_txt.Text, createFilesPanel.Controls.OfType<Panel>());
         }
 
         private void clearBtn_Click(object sender, EventArgs e)
         {
+            resetCreateModpacksTab();
+        }
+
+        public void resetCreateModpacksTab()
+        {
             createFilesPanel.Controls.Clear();
             createPageList = new List<Panel>(); // garbage collector magic
+            modpackName_txt.Text = "";
         }
 
         //////////////////////////////////
