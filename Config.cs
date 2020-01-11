@@ -97,5 +97,23 @@ namespace MCC_Mod_Manager
 
             return true;
         }
+
+        public static bool chkHomeDir(String dir)
+        {
+            if (!File.Exists(dir + @"\haloreach\haloreach.dll"))
+            {
+                return false;
+            }
+            if (!File.Exists(dir + @"\MCC\Content\Paks\MCC-WindowsNoEditor.pak"))
+            {
+                return false;
+            }
+            if (!File.Exists(dir + @"\mcclauncher.exe"))
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

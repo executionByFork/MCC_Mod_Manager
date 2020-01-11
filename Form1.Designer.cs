@@ -54,6 +54,7 @@
             this.createLabel1 = new System.Windows.Forms.Label();
             this.createFilesPanel = new System.Windows.Forms.Panel();
             this.configPanel = new System.Windows.Forms.Panel();
+            this.delOldBaks_chb = new System.Windows.Forms.CheckBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.cfgTextBox3 = new System.Windows.Forms.TextBox();
             this.cfgBrowseBtn3 = new System.Windows.Forms.Button();
@@ -78,7 +79,6 @@
             this.bakLabel1 = new System.Windows.Forms.Label();
             this.bakListPanel = new System.Windows.Forms.Panel();
             this.pBar = new System.Windows.Forms.ProgressBar();
-            this.delOldBaks_chb = new System.Windows.Forms.CheckBox();
             this.topBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minButton)).BeginInit();
@@ -118,7 +118,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(40, 19);
             this.label1.TabIndex = 6;
-            this.label1.Text = "v0.4";
+            this.label1.Text = "v0.5";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.label1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
             this.label1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
@@ -404,6 +404,16 @@
             this.configPanel.TabIndex = 6;
             this.configPanel.Visible = false;
             // 
+            // delOldBaks_chb
+            // 
+            this.delOldBaks_chb.AutoSize = true;
+            this.delOldBaks_chb.Location = new System.Drawing.Point(217, 82);
+            this.delOldBaks_chb.Name = "delOldBaks_chb";
+            this.delOldBaks_chb.Size = new System.Drawing.Size(243, 17);
+            this.delOldBaks_chb.TabIndex = 15;
+            this.delOldBaks_chb.Text = "Delete backups after restoring? (saves space)";
+            this.delOldBaks_chb.UseVisualStyleBackColor = true;
+            // 
             // panel3
             // 
             this.panel3.Controls.Add(this.cfgTextBox3);
@@ -666,16 +676,6 @@
             this.pBar.Step = 1;
             this.pBar.TabIndex = 9;
             this.pBar.Visible = false;
-            // 
-            // delOldBaks_chb
-            // 
-            this.delOldBaks_chb.AutoSize = true;
-            this.delOldBaks_chb.Location = new System.Drawing.Point(217, 82);
-            this.delOldBaks_chb.Name = "delOldBaks_chb";
-            this.delOldBaks_chb.Size = new System.Drawing.Size(243, 17);
-            this.delOldBaks_chb.TabIndex = 15;
-            this.delOldBaks_chb.Text = "Delete backups after restoring? (saves space)";
-            this.delOldBaks_chb.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 

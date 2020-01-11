@@ -488,38 +488,22 @@ namespace MCC_Mod_Manager
             set { delOldBaks_chb.Checked = value; }
         }
 
-        private bool correctHomeDir(String dir)
-        {
-            if (!File.Exists(dir + @"\haloreach\haloreach.dll")) {
-                return false;
-            }
-            if (!File.Exists(dir + @"\MCC\Content\Paks\MCC-WindowsNoEditor.pak")) {
-                return false;
-            }
-            if (!File.Exists(dir + @"\mcclauncher.exe")) {
-                return false;
-            }
-
-            return true;
-        }
-
         private void cfgUpdateBtn_Click(object sender, EventArgs e)
         {
-            if (!String.IsNullOrEmpty(cfgTextBox1.Text)) {
-                if (!correctHomeDir(cfgTextBox1.Text)) {
-                    MessageBox.Show("It seems you have selected the wrong MCC install directory. " +
-                        "Please make sure to select the folder named 'Halo The Master Chief Collection' in your Steam files.", "Error");
-                    cfgTextBox1.Text = Config.MCC_home;
-                    return;
-                }
-                Config.MCC_home = cfgTextBox1.Text;
+            if (String.IsNullOrEmpty(cfgTextBox1.Text) || String.IsNullOrEmpty(cfgTextBox2.Text) || String.IsNullOrEmpty(cfgTextBox3.Text)) {
+                MessageBox.Show("Config entries must not be empty.", "Error");
+                return;
             }
-            if (!String.IsNullOrEmpty(cfgTextBox2.Text)) {
-                Config.backup_dir = cfgTextBox2.Text;
+
+            if (!Config.chkHomeDir(cfgTextBox1.Text)) {
+                MessageBox.Show("It seems you have selected the wrong MCC install directory. " +
+                    "Please make sure to select the folder named 'Halo The Master Chief Collection' in your Steam files.", "Error");
+                cfgTextBox1.Text = Config.MCC_home;
+                return;
             }
-            if (!String.IsNullOrEmpty(cfgTextBox3.Text)) {
-                Config.modpack_dir = cfgTextBox3.Text;
-            }
+            Config.MCC_home = cfgTextBox1.Text;
+            Config.backup_dir = cfgTextBox2.Text;
+            Config.modpack_dir = cfgTextBox3.Text;
             Config.deleteOldBaks = delOldBaks_chb.Checked;
 
             Config.saveCfg();
