@@ -42,6 +42,32 @@ namespace MCC_Mod_Manager
             this.Refresh();
         }
 
+        public DialogResult showMsg(string msg, string type)
+        {
+            if (type == "Info") {
+                return MessageBox.Show(
+                    msg, "Info", MessageBoxButtons.OK,
+                    MessageBoxIcon.None, MessageBoxDefaultButton.Button1
+                );
+            } else if (type == "Question") {
+                return MessageBox.Show(
+                    msg, "Question", MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question, MessageBoxDefaultButton.Button1
+                );
+            } else if (type == "Warning") {
+                return MessageBox.Show(
+                    msg, "Warning", MessageBoxButtons.OK,
+                    MessageBoxIcon.None, MessageBoxDefaultButton.Button1
+                );
+            } else if (type == "Error") {
+                return MessageBox.Show(
+                    msg, "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.None, MessageBoxDefaultButton.Button1
+                );
+            }
+            throw new FormatException("Please notify the developer: " + type + " is not a valid type for showMsg.");
+        }
+
         ///////////////////////////////////
         /////         TOP BAR         /////
         ///////////////////////////////////
@@ -278,12 +304,12 @@ namespace MCC_Mod_Manager
         private void cfgUpdateBtn_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(cfgTextBox1.Text) || string.IsNullOrEmpty(cfgTextBox2.Text) || string.IsNullOrEmpty(cfgTextBox3.Text)) {
-                MessageBox.Show("Config entries must not be empty.", "Error");
+                showMsg("Config entries must not be empty.", "Error");
                 return;
             }
 
             if (!Config.chkHomeDir(cfgTextBox1.Text)) {
-                MessageBox.Show("It seems you have selected the wrong MCC install directory. " +
+                showMsg("It seems you have selected the wrong MCC install directory. " +
                     "Please make sure to select the folder named 'Halo The Master Chief Collection' in your Steam files.", "Error");
                 cfgTextBox1.Text = Config.MCC_home;
                 return;
@@ -295,7 +321,7 @@ namespace MCC_Mod_Manager
 
             Config.saveCfg();
 
-            MessageBox.Show("Config Updated!", "Info");
+            showMsg("Config Updated!", "Info");
         }
 
         //////////////////////////////////

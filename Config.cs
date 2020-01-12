@@ -110,7 +110,7 @@ namespace MCC_Mod_Manager
                 }
             }
             if (err) {
-                MessageBox.Show("There was an error in your configuration file. A default config has been created. Please review and update it if needed.", "Error");
+                form1.showMsg("There was an error in your configuration file. A default config has been created. Please review and update it if needed.", "Error");
             }
 
             // Update config tab

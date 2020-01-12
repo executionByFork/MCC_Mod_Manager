@@ -64,11 +64,11 @@ namespace MCC_Mod_Manager
         public static void createModpack(string modpackName, IEnumerable<Panel> modFilesList)
         {
             if (modFilesList.Count() == 0) {
-                MessageBox.Show("Please add at least one modded file entry", "Error");
+                form1.showMsg("Please add at least one modded file entry", "Error");
                 return;
             }
             if (String.IsNullOrEmpty(modpackName)) {
-                MessageBox.Show("Please enter a modpack name", "Error");
+                form1.showMsg("Please enter a modpack name", "Error");
                 return;
             }
 
@@ -80,15 +80,15 @@ namespace MCC_Mod_Manager
                     ["dest"] = row.GetChildAtPoint(Config.destTextBoxPoint).Text
                 };
                 if (string.IsNullOrEmpty(dict["src"]) || string.IsNullOrEmpty(dict["dest"])) {
-                    MessageBox.Show("Filepaths cannot be empty.", "Error");
+                    form1.showMsg("Filepaths cannot be empty.", "Error");
                     return;
                 }
                 if (!File.Exists(dict["src"])) {
-                    MessageBox.Show("The source file '" + dict["src"] + "' does not exist.", "Error");
+                    form1.showMsg("The source file '" + dict["src"] + "' does not exist.", "Error");
                     return;
                 }
                 if (!dict["dest"].StartsWith(Config.MCC_home)) {
-                    MessageBox.Show("Destination files must be located within the MCC install directory. " +
+                    form1.showMsg("Destination files must be located within the MCC install directory. " +
                         "You may need to configure this directory if you haven't done so already.", "Error");
                     return;
                 }
@@ -101,7 +101,7 @@ namespace MCC_Mod_Manager
             }
 
             if (chk.Distinct().Count() != chk.Count()) {
-                MessageBox.Show("You have multiple files trying to write to the same destination.", "Error");
+                form1.showMsg("You have multiple files trying to write to the same destination.", "Error");
                 return;
             }
 
@@ -109,7 +109,7 @@ namespace MCC_Mod_Manager
             String modpackFilename = modpackName + ".zip";
             String zipPath = Config.modpack_dir + @"\" + modpackFilename;
             if (File.Exists(zipPath)) {
-                MessageBox.Show("A modpack with that name already exists.", "Error");
+                form1.showMsg("A modpack with that name already exists.", "Error");
                 return;
             }
 
@@ -134,7 +134,7 @@ namespace MCC_Mod_Manager
                 }
             }
 
-            MessageBox.Show("Modpack '" + modpackFilename + "' created.", "Info");
+            form1.showMsg("Modpack '" + modpackFilename + "' created.", "Info");
             form1.pBar_hide();
             form1.resetCreateModpacksTab();
             loadModpacks();
@@ -143,12 +143,7 @@ namespace MCC_Mod_Manager
 
         public static void delModpack(IEnumerable<CheckBox> modpacksList)
         {
-            DialogResult ans = MessageBox.Show(
-                "Are you sure you want to delete the selected modpacks(s)?\r\nNo crying afterwards?",
-                "Warning",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question
-            );
+            DialogResult ans = form1.showMsg("Are you sure you want to delete the selected modpacks(s)?\r\nNo crying afterwards?", "Question");
             if (ans == DialogResult.No) {
                 return;
             }
@@ -161,15 +156,15 @@ namespace MCC_Mod_Manager
                     chk = true;
                     string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
                     if (!IO.DeleteFile(Config.modpack_dir + @"\" + modpackname + ".zip")) {
-                        MessageBox.Show("Could not delete '" + modpackname + ".zip'. Is the zip file open somewhere?", "Error");
+                        form1.showMsg("Could not delete '" + modpackname + ".zip'. Is the zip file open somewhere?", "Error");
                     }
                     chb.Checked = false;
                 }
             }
             if (!chk) {
-                MessageBox.Show("No items selected from the list.", "Error");
+                form1.showMsg("No items selected from the list.", "Error");
             } else {
-                MessageBox.Show("Selected modpacks have been deleted.", "Info");
+                form1.showMsg("Selected modpacks have been deleted.", "Info");
                 loadModpacks();
             }
             form1.pBar_hide();
@@ -190,7 +185,7 @@ namespace MCC_Mod_Manager
                         using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpackname + ".zip")) {
                             ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpackConfig.cfg");
                             if (modpackConfigEntry == null) {
-                                MessageBox.Show("Could not open modpack config file. The file '" + modpackname + ".zip' is not a compatible modpack." +
+                                form1.showMsg("Could not open modpack config file. The file '" + modpackname + ".zip' is not a compatible modpack." +
                                     "\r\nTry using the 'Create Modpack' Tab to convert this mod into a compatible modpack.", "Error");
                                 packErr = true;
                                 continue;
@@ -201,7 +196,7 @@ namespace MCC_Mod_Manager
                                 try {
                                     modpackConfig = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(reader.ReadToEnd());
                                 } catch (JsonSerializationException) {
-                                    MessageBox.Show("The configuration file in '" + modpackname + ".zip' is corrupted." +
+                                    form1.showMsg("The configuration file in '" + modpackname + ".zip' is corrupted." +
                                     "\r\nThis modpack cannot be installed.", "Error");
                                     continue;
                                 }
@@ -227,10 +222,10 @@ namespace MCC_Mod_Manager
                                     }
                                 }
                                 if (err) {
-                                    MessageBox.Show("File Access Exception. If the game is running, exit it and try again." +
+                                    form1.showMsg("File Access Exception. If the game is running, exit it and try again." +
                                             "\r\nCould not install the '" + modpackname + "' modpack.", "Error");
                                     if (Backups.restoreBaks(modpackBakList) != 0) {
-                                        MessageBox.Show("At least one file restore failed. Your game may be in an unstable state.", "Warning");
+                                        form1.showMsg("At least one file restore failed. Your game may be in an unstable state.", "Warning");
                                     }
                                     packErr = true;
                                     break;
@@ -239,7 +234,7 @@ namespace MCC_Mod_Manager
                             }
                         }
                     } catch (FileNotFoundException) {
-                        MessageBox.Show("Could not find the '" + modpackname + "' modpack.", "Error");
+                        form1.showMsg("Could not find the '" + modpackname + "' modpack.", "Error");
                         packErr = true;
                     }
                     chb.Checked = false;
@@ -247,13 +242,13 @@ namespace MCC_Mod_Manager
             }
 
             if (!chk) { // fail - no boxes checked
-                MessageBox.Show("No modpacks selected.", "Error");
+                form1.showMsg("No modpacks selected.", "Error");
             } else if (packErr) {   // fail / partial success - At least one modpack was not patched
-                MessageBox.Show("One or more of the selected modpacks were not patched to the game.", "Warning");
+                form1.showMsg("One or more of the selected modpacks were not patched to the game.", "Warning");
             } else if (baksMade) {  // success and new backup(s) created
-                MessageBox.Show("The selected mods have been patched to the game.\r\nNew backups were created.", "Info");
+                form1.showMsg("The selected mods have been patched to the game.\r\nNew backups were created.", "Info");
             } else {
-                MessageBox.Show("The selected mods have been patched to the game.", "Info");
+                form1.showMsg("The selected mods have been patched to the game.", "Info");
             }
             form1.pBar_hide();
         }
