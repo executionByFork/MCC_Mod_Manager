@@ -390,9 +390,10 @@ namespace MCC_Mod_Manager
             for (int i = 0; i < (int)(16 / pBarSections); i++) {
                 betterPBar.Controls[pBarCounter].Visible = true;
                 pBarCounter++;
+                Thread.Sleep(10);
+                Application.DoEvents();     // I know this isn't "correct" but...
             }
-
-            Application.DoEvents();     // I know this isn't "correct" but...
+            
             return true;
         }
 
