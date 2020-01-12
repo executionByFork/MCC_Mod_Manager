@@ -63,6 +63,10 @@ namespace MCC_Mod_Manager
 
         public static void createModpack(string modpackName, IEnumerable<Panel> modFilesList)
         {
+            if (modFilesList.Count() == 0) {
+                MessageBox.Show("Please add at least one modded file entry", "Error");
+                return;
+            }
             if (String.IsNullOrEmpty(modpackName)) {
                 MessageBox.Show("Please enter a modpack name", "Error");
                 return;
