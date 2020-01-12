@@ -8,11 +8,20 @@ using Newtonsoft.Json;
 
 namespace MCC_Mod_Manager
 {
+    public class mainCfg
+    {
+        //default values
+        public string MCC_home = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
+        public string backup_dir = @".\backups";
+        public string modpack_dir = @".\modpacks";
+        public bool deleteOldBaks = false;
+        public List<string> patched = new List<string>();
+    }
+
     static class Config
     {
         private static readonly string _cfgLocation = @".\MCC_Mod_Manager.cfg";
         private static readonly string _bakcfgName = @"\backups.cfg";
-        private static Dictionary<string, string> _cfg = new Dictionary<string, string>();
 
         // UI elements
         public static string dirtyPadding = "              ";
@@ -25,54 +34,60 @@ namespace MCC_Mod_Manager
         public static readonly Font btnFont = new Font("Lucida Console", 10, FontStyle.Regular);
         public static readonly Font arrowFont = new Font("Reem Kufi", 12, FontStyle.Bold);
 
-
         public static Form1 form1;  // this is set on form load
+        private static mainCfg _cfg = new mainCfg(); // this is set on form load
         public static bool fullBakPath = false;
+        
         public static string MCC_home {
             get {
-                return _cfg["MCC_home"];
+                return _cfg.MCC_home;
             }
             set {
-                _cfg["MCC_home"] = value;
+                _cfg.MCC_home = value;
             }
         }
         public static string backup_dir {
             get {
-                return _cfg["backup_dir"];
+                return _cfg.backup_dir;
             }
             set {
-                _cfg["backup_dir"] = value;
+                _cfg.backup_dir = value;
             }
         }
         public static string backupCfg {
             get {
-                return _cfg["backup_dir"] + _bakcfgName;
+                return _cfg.backup_dir + _bakcfgName;
             }
         }
         public static string modpack_dir {
             get {
-                return _cfg["modpack_dir"];
+                return _cfg.modpack_dir;
             }
             set {
-                _cfg["modpack_dir"] = value;
+                _cfg.modpack_dir = value;
             }
         }
         public static bool deleteOldBaks {
             get {
-                return (_cfg["deleteOldBaks"] == "true");
+                return _cfg.deleteOldBaks;
             }
             set {
-                _cfg["deleteOldBaks"] = (value) ? "true" : "false";
+                _cfg.deleteOldBaks = value;
+            }
+        }
+        private static List<string> patched {
+            get {
+                return _cfg.patched;
+            }
+            set {
+                _cfg.patched = value;
             }
         }
 
         public static bool createDefaultCfg()
         {
             // TODO: Ask user if they want to use default config first
-            MCC_home = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
-            backup_dir = @".\backups";
-            modpack_dir = @".\modpacks";
-            deleteOldBaks = false;
+            _cfg = new mainCfg();
             saveCfg();
 
             return true;
@@ -95,12 +110,13 @@ namespace MCC_Mod_Manager
             } else {
                 string json = File.ReadAllText(_cfgLocation);
                 try {
-                    Dictionary<string, string> values = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                    mainCfg values = JsonConvert.DeserializeObject<mainCfg>(json);
 
-                    MCC_home = values["MCC_home"];
-                    backup_dir = values["backup_dir"];
-                    modpack_dir = values["modpack_dir"];
-                    deleteOldBaks = (values["deleteOldBaks"] == "true");
+                    MCC_home = values.MCC_home;
+                    backup_dir = values.backup_dir;
+                    modpack_dir = values.modpack_dir;
+                    deleteOldBaks = values.deleteOldBaks;
+                    patched = values.patched;
                 } catch (JsonSerializationException) {
                     err = true;
                     createDefaultCfg();
