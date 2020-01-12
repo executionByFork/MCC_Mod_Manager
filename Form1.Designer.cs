@@ -78,7 +78,7 @@
             this.bakLabel2 = new System.Windows.Forms.Label();
             this.bakLabel1 = new System.Windows.Forms.Label();
             this.bakListPanel = new System.Windows.Forms.Panel();
-            this.pBar = new System.Windows.Forms.ProgressBar();
+            this.betterPBar = new System.Windows.Forms.Panel();
             this.topBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minButton)).BeginInit();
@@ -668,22 +668,20 @@
             this.bakListPanel.Size = new System.Drawing.Size(402, 322);
             this.bakListPanel.TabIndex = 0;
             // 
-            // pBar
+            // betterPBar
             // 
-            this.pBar.Location = new System.Drawing.Point(20, 451);
-            this.pBar.Name = "pBar";
-            this.pBar.Size = new System.Drawing.Size(554, 23);
-            this.pBar.Step = 1;
-            this.pBar.TabIndex = 9;
-            this.pBar.Visible = false;
+            this.betterPBar.Location = new System.Drawing.Point(4, 448);
+            this.betterPBar.Name = "betterPBar";
+            this.betterPBar.Size = new System.Drawing.Size(570, 44);
+            this.betterPBar.TabIndex = 10;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.ClientSize = new System.Drawing.Size(582, 485);
-            this.Controls.Add(this.pBar);
+            this.ClientSize = new System.Drawing.Size(582, 497);
+            this.Controls.Add(this.betterPBar);
             this.Controls.Add(this.backupTab);
             this.Controls.Add(this.configTab);
             this.Controls.Add(this.createTab);
@@ -772,8 +770,8 @@
         private System.Windows.Forms.Button restoreSelectedBtn;
         private System.Windows.Forms.Button delModpack;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ProgressBar pBar;
         private System.Windows.Forms.CheckBox delOldBaks_chb;
+        private System.Windows.Forms.Panel betterPBar;
     }
 }
 

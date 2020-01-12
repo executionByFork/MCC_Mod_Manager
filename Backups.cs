@@ -155,12 +155,12 @@ namespace MCC_Mod_Manager
                     }
                 }
 
-                if (Backups.createBackup(ofd.FileName, true) != 0) {
+                if (createBackup(ofd.FileName, true) != 0) {
                     MessageBox.Show("Could not create a backup of the chosen file. Is the file open somewhere?", "Error");
                 } else {
                     MessageBox.Show("New Backup Created");
-                    Backups.saveBackups();
-                    Backups.loadBackups();
+                    saveBackups();
+                    loadBackups();
                 }
             }
         }
@@ -179,7 +179,7 @@ namespace MCC_Mod_Manager
                 MessageBox.Show("No items selected from the list.", "Error");
                 return;
             }
-            int r = Backups.restoreBaks(backupNames);
+            int r = restoreBaks(backupNames);
             if (r == 0) {
                 MessageBox.Show("Selected files have been restored.", "Info");
             } else if (r == 1) {

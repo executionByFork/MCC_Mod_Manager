@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 
 
@@ -23,6 +23,7 @@ namespace MCC_Mod_Manager
             Backups.loadBackups();
             Modpacks.form1 = this;
             Modpacks.loadModpacks();
+            pBar_init();
         }
 
         ///////////////////////////////////
@@ -358,23 +359,49 @@ namespace MCC_Mod_Manager
         /////      PROGRESS BAR      /////
         //////////////////////////////////
 
-        public bool pBar_show(int maxVal)
+        private bool pBar_init()
         {
-            pBar.Value = 0;
-            pBar.Maximum = maxVal;
-            pBar.Visible = true;
+            for (int i = 0; i < 16; i++) {
+                PictureBox x = new PictureBox {
+                    Image = Properties.Resources.HaloHelmetIcon_small,
+                    Width = 35,
+                    Height = 40,
+                    Location = new Point((i * 35) + 5, 0),
+                    Visible = false
+                };
+                betterPBar.Controls.Add(x);
+            }
+
+            return true;
+        }
+
+        private int pBarSections;
+        private int pBarCounter = 0;
+        public bool pBar_show(int sections)
+        {
+            pBarSections = sections;
+            pBarCounter = 0;
 
             return true;
         }
         public bool pBar_update()
         {
-            pBar.PerformStep();
+            // casting to int drops decimal values, flooring the divide
+            for (int i = 0; i < (int)(16 / pBarSections); i++) {
+                betterPBar.Controls[pBarCounter].Visible = true;
+                pBarCounter++;
+            }
+
+            Application.DoEvents();     // I know this isn't "correct" but...
             return true;
         }
 
         public bool pBar_hide()
         {
-            pBar.Visible = false;
+            foreach (PictureBox helm in betterPBar.Controls.OfType<PictureBox>()) {
+                helm.Visible = false;
+            }
+
             return true;
         }
     }
