@@ -79,6 +79,7 @@
             this.bakLabel1 = new System.Windows.Forms.Label();
             this.bakListPanel = new System.Windows.Forms.Panel();
             this.betterPBar = new System.Windows.Forms.Panel();
+            this.fullBakPath_chb = new System.Windows.Forms.CheckBox();
             this.topBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minButton)).BeginInit();
@@ -558,6 +559,7 @@
             // backupPanel
             // 
             this.backupPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.backupPanel.Controls.Add(this.fullBakPath_chb);
             this.backupPanel.Controls.Add(this.restoreSelectedBtn);
             this.backupPanel.Controls.Add(this.delAllBaksBtn);
             this.backupPanel.Controls.Add(this.makeBakBtn);
@@ -675,6 +677,17 @@
             this.betterPBar.Size = new System.Drawing.Size(570, 44);
             this.betterPBar.TabIndex = 10;
             // 
+            // fullBakPath_chb
+            // 
+            this.fullBakPath_chb.AutoSize = true;
+            this.fullBakPath_chb.Location = new System.Drawing.Point(427, 120);
+            this.fullBakPath_chb.Name = "fullBakPath_chb";
+            this.fullBakPath_chb.Size = new System.Drawing.Size(93, 17);
+            this.fullBakPath_chb.TabIndex = 8;
+            this.fullBakPath_chb.Text = "Show full path";
+            this.fullBakPath_chb.UseVisualStyleBackColor = true;
+            this.fullBakPath_chb.CheckedChanged += new System.EventHandler(this.fullBakPath_chb_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -687,10 +700,10 @@
             this.Controls.Add(this.createTab);
             this.Controls.Add(this.homeTab);
             this.Controls.Add(this.topBar);
-            this.Controls.Add(this.configPanel);
-            this.Controls.Add(this.homePanel);
             this.Controls.Add(this.backupPanel);
             this.Controls.Add(this.createPanel);
+            this.Controls.Add(this.configPanel);
+            this.Controls.Add(this.homePanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
@@ -772,6 +785,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox delOldBaks_chb;
         private System.Windows.Forms.Panel betterPBar;
+        private System.Windows.Forms.CheckBox fullBakPath_chb;
     }
 }
 

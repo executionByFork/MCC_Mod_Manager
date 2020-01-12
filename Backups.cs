@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
 using System.Windows.Forms;
@@ -42,9 +41,15 @@ namespace MCC_Mod_Manager
 
             form1.bakListPanel_clear();
             foreach (KeyValuePair<string, string> entry in _baks) {
+                string entryName;
+                if (Config.fullBakPath) {
+                    entryName = entry.Value;
+                } else {
+                    entryName = Path.GetFileName(entry.Value);
+                }
                 CheckBox chb = new CheckBox {
                     AutoSize = true,
-                    Text = Config.dirtyPadding + entry.Key,
+                    Text = Config.dirtyPadding + entryName,
                     Location = new Point(30, form1.bakListPanel_getCount() * 20)
                 };
 
@@ -85,11 +90,28 @@ namespace MCC_Mod_Manager
         public static int createBackup(string path, bool overwrite)
         {
             ensureBackupFolderExists();
+            string fileName = Path.GetFileName(path);
+            string bakPath = Config.backup_dir + @"\" + fileName;
+            
+            if (File.Exists(bakPath)) {
+                bool reBak = false;
+                foreach (KeyValuePair<string, string> entry in _baks) {
+                    if (entry.Value == path) {
+                        reBak = true;
+                    }
+                }
+                if (!reBak) {   // if file exists in backups folder but the original filepaths differ, rename
+                    int num = 0;
+                    do {
+                        num++;
+                        bakPath = Config.backup_dir + @"\(" + num + ")" + fileName;
+                    } while (File.Exists(bakPath));
+                }
+            }
 
-            String fileName = Path.GetFileName(path);
-            int res = IO.CopyFile(path, Config.backup_dir + @"\" + fileName, overwrite);
+            int res = IO.CopyFile(path, bakPath, overwrite);
             if (res == 0 || res == 1) {
-                _baks[fileName] = path;
+                _baks[Path.GetFileName(bakPath)] = path;
                 saveBackups();
                 updateBackupList();
             }
@@ -143,15 +165,19 @@ namespace MCC_Mod_Manager
                 InitialDirectory = Config.MCC_home
             };
             if (ofd.ShowDialog() == DialogResult.OK) {
-                if (File.Exists(Config.backup_dir + @"\" + Path.GetFileName(ofd.FileName))) {
-                    DialogResult ans = MessageBox.Show(
-                        "A backup of that file already exists. Would you like to overwrite?",
-                        "Error",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question
-                    );
-                    if (ans == DialogResult.No) {
-                        return;
+                foreach (KeyValuePair<string, string> entry in _baks) {
+                    if (entry.Value == ofd.FileName) {
+                        DialogResult ans = MessageBox.Show(
+                            "A backup of that file already exists. Would you like to overwrite?",
+                            "Error",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question
+                        );
+                        if (ans == DialogResult.No) {
+                            return;
+                        } else {
+                            break;
+                        }
                     }
                 }
 

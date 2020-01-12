@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using System.IO.Compression;
 
 namespace MCC_Mod_Manager
 {
@@ -19,6 +16,7 @@ namespace MCC_Mod_Manager
             }
             return true;
         }
+
         public static int CopyFile(string src, string dest, bool overwrite)
         {
             //TODO: check source file exists before deleting the destination file

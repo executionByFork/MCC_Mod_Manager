@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
@@ -29,6 +27,7 @@ namespace MCC_Mod_Manager
 
 
         public static Form1 form1;  // this is set on form load
+        public static bool fullBakPath = false;
         public static string MCC_home {
             get {
                 return _cfg["MCC_home"];

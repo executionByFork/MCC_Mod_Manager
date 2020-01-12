@@ -340,6 +340,12 @@ namespace MCC_Mod_Manager
             Backups.deleteAll();
         }
 
+        private void fullBakPath_chb_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.fullBakPath = fullBakPath_chb.Checked;
+            Backups.updateBackupList();
+        }
+
         public int bakListPanel_getCount()
         {
             return bakListPanel.Controls.Count;
