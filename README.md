@@ -58,9 +58,6 @@ This tool manages backups for you, however, there are times you may need to remo
 The 'Restore Selected' and 'Restore All Files' buttons restore from backups the selected files/all files, respectively.  
 The 'Delete Selected' and 'Delete All Backups' buttons remove the selected/all backup files, respectively, after confirming that you actually want to delete them.  
 
-## Known Issues / Future Improvements
-- Need to add tracking for which mods are currently installed. Two modpacks which overwrite the same files will overwrite one another.
-- Add support for using Assembly patch files to install mods
-- Add support for installing mods in Halo's %APPDATA% folders.
-- Add button to check for/install updates
+## Known Issues
+- Two modpacks which overwrite the same files will overwrite one another.
 - The progress bar doesn't update properly when creating modpacks
