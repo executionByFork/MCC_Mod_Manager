@@ -373,7 +373,15 @@ namespace MCC_Mod_Manager
         private void fullBakPath_chb_CheckedChanged(object sender, EventArgs e)
         {
             Config.fullBakPath = fullBakPath_chb.Checked;
-            Backups.updateBackupList();
+            if (Config.fullBakPath) {   // swapping from filename to full path
+                foreach (CheckBox chb in bakListPanel.Controls.OfType<CheckBox>()) {
+                    chb.Text = Config.dirtyPadding + Backups.getBakKey(chb.Text.Replace(Config.dirtyPadding, ""));
+                }
+            } else {    // swapping from full path to filename
+                foreach (CheckBox chb in bakListPanel.Controls.OfType<CheckBox>()) {
+                    chb.Text = Config.dirtyPadding + Backups._baks[chb.Text.Replace(Config.dirtyPadding, "")];
+                }
+            }
         }
 
         public bool fullBakPath_Checked()

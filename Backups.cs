@@ -23,7 +23,7 @@ namespace MCC_Mod_Manager
             return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
         }
 
-        private static string getBakKey(string bakFileName)
+        public static string getBakKey(string bakFileName)
         {
             foreach (KeyValuePair<string, string> entry in _baks) {
                 if (entry.Value == bakFileName) {
