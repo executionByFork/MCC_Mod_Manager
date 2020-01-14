@@ -17,8 +17,12 @@ namespace MCC_Mod_Manager
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            version_lbl.Text = Config.version;
             Config.form1 = this;
-            Config.loadCfg();
+            if (!Config.loadCfg()) {
+                showMsg("MCC Mod Manager cannot load because there are problems with the configuration file.", "Error");
+                Environment.Exit(1);
+            }
             Backups.form1 = this;
             Backups.loadBackups();
             Modpacks.form1 = this;

@@ -10,16 +10,17 @@ namespace MCC_Mod_Manager
 {
     public class mainCfg
     {
-        //default values
-        public string MCC_home = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
-        public string backup_dir = @".\backups";
-        public string modpack_dir = @".\modpacks";
-        public bool deleteOldBaks = false;
-        public List<string> patched = new List<string>();
+        public string version;
+        public string MCC_home;
+        public string backup_dir;
+        public string modpack_dir;
+        public bool deleteOldBaks;
+        public List<string> patched;
     }
 
     static class Config
     {
+        public static readonly string version = "v0.5";
         private static readonly string _cfgLocation = @".\MCC_Mod_Manager.cfg";
         private static readonly string _bakcfgName = @"\backups.cfg";
 
@@ -86,9 +87,17 @@ namespace MCC_Mod_Manager
 
         public static bool createDefaultCfg()
         {
-            // TODO: Ask user if they want to use default config first
             _cfg = new mainCfg();
+            // default values declared here so that mainCfg class does not implicitly set defaults and bypass warning triggers
+            _cfg.version = Config.version;
+            MCC_home = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
+            backup_dir = @".\backups";
+            modpack_dir = @".\modpacks";
+            deleteOldBaks = false;
+            patched = new List<string>();
+
             saveCfg();
+            form1.showMsg("A default configuration file has been created. Please review and update it as needed.", "Info");
 
             return true;
         }
@@ -102,31 +111,51 @@ namespace MCC_Mod_Manager
             }
         }
 
+        private static int checkCfg()
+        {
+            string json = File.ReadAllText(_cfgLocation);
+            try {
+                mainCfg values = JsonConvert.DeserializeObject<mainCfg>(json);
+                // Future config version handling: float.Parse(values.version.Substring(1)) < 0.5
+                if (String.IsNullOrEmpty(values.version)) {
+                    return 2;
+                }
+
+                MCC_home = values.MCC_home;
+                backup_dir = values.backup_dir;
+                modpack_dir = values.modpack_dir;
+                deleteOldBaks = values.deleteOldBaks;
+                patched = values.patched;
+            } catch (JsonSerializationException) {
+                return 1;
+            } catch (JsonReaderException) {
+                return 1;
+            } catch (KeyNotFoundException) {
+                return 1;
+            }
+
+            return 0;
+        }
+
         public static bool loadCfg()
         {
-            bool err = false;
             if (!File.Exists(_cfgLocation)) {
                 createDefaultCfg();
             } else {
-                string json = File.ReadAllText(_cfgLocation);
-                try {
-                    mainCfg values = JsonConvert.DeserializeObject<mainCfg>(json);
-
-                    MCC_home = values.MCC_home;
-                    backup_dir = values.backup_dir;
-                    modpack_dir = values.modpack_dir;
-                    deleteOldBaks = values.deleteOldBaks;
-                    patched = values.patched;
-                } catch (JsonSerializationException) {
-                    err = true;
+                int r = checkCfg();
+                if (r == 1) {
+                    DialogResult ans = form1.showMsg("Your configuration has format errors, would you like to overwrite it with a default config?", "Question");
+                    if (ans == DialogResult.No) {
+                        return false;
+                    }
                     createDefaultCfg();
-                } catch (KeyNotFoundException) {
-                    err = true;
+                } else if (r == 2) {
+                    DialogResult ans = form1.showMsg("Your config file is using an old format, would you like to overwrite it with a default config?", "Question");
+                    if (ans == DialogResult.No) {
+                        return false;
+                    }
                     createDefaultCfg();
                 }
-            }
-            if (err) {
-                form1.showMsg("There was an error in your configuration file. A default config has been created. Please review and update it if needed.", "Error");
             }
 
             // Update config tab
