@@ -376,6 +376,11 @@ namespace MCC_Mod_Manager
             Backups.updateBackupList();
         }
 
+        public bool fullBakPath_Checked()
+        {
+            return fullBakPath_chb.Checked;
+        }
+
         public int bakListPanel_getCount()
         {
             return bakListPanel.Controls.Count;

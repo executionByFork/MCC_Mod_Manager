@@ -23,6 +23,16 @@ namespace MCC_Mod_Manager
             return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
         }
 
+        private static string getBakKey(string bakFileName)
+        {
+            foreach (KeyValuePair<string, string> entry in _baks) {
+                if (entry.Value == bakFileName) {
+                    return entry.Key;
+                }
+            }
+            return null;
+        }
+
         public static bool saveBackups()
         {
             ensureBackupFolderExists();
@@ -43,9 +53,9 @@ namespace MCC_Mod_Manager
             foreach (KeyValuePair<string, string> entry in _baks) {
                 string entryName;
                 if (Config.fullBakPath) {
-                    entryName = entry.Value;
+                    entryName = entry.Key;
                 } else {
-                    entryName = Path.GetFileName(entry.Value);
+                    entryName = entry.Value;
                 }
                 CheckBox chb = new CheckBox {
                     AutoSize = true,
@@ -61,15 +71,21 @@ namespace MCC_Mod_Manager
         public static bool loadBackups()
         {
             ensureBackupFolderExists();
-            if (!File.Exists(Config.backupCfg)) {
+            if (!File.Exists(Config.backupCfg)) {   //TODO: create blank config
                 return false;
             }
 
+            bool err = false;
             string json = File.ReadAllText(Config.backupCfg);
             try {
                 _baks = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
                 updateBackupList();
             } catch (JsonSerializationException) {
+                err = true;
+            } catch (JsonReaderException) {
+                err = true;
+            }
+            if (err) {
                 DialogResult ans = form1.showMsg(
                     "The backup configuration file is corrupted. You may need to verify your game files on steam or reinstall." +
                     "Would you like to delete the corrupted backup config file?",
@@ -88,58 +104,66 @@ namespace MCC_Mod_Manager
         public static int createBackup(string path, bool overwrite)
         {
             ensureBackupFolderExists();
-            string fileName = Path.GetFileName(path);
-            string bakPath = Config.backup_dir + @"\" + fileName;
+            string fileName = Path.GetFileNameWithoutExtension(path);
+            string fileExt = Path.GetExtension(path);
+            string bakPath = Config.backup_dir + @"\" + fileName + fileExt;
             
             if (File.Exists(bakPath)) {
-                bool reBak = false;
-                foreach (KeyValuePair<string, string> entry in _baks) {
-                    if (entry.Value == path) {
-                        reBak = true;
-                    }
-                }
-                if (!reBak) {   // if file exists in backups folder but the original filepaths differ, rename
+                if (!_baks.ContainsKey(path)) { // if file exists in backups folder but the original filepaths differ, rename
                     int num = 0;
                     do {
                         num++;
-                        bakPath = Config.backup_dir + @"\(" + num + ")" + fileName;
+                        bakPath = Config.backup_dir + @"\" + fileName + "(" + num + ")" + fileExt;
                     } while (File.Exists(bakPath));
                 }
             }
 
             int res = IO.CopyFile(path, bakPath, overwrite);
             if (res == 0 || res == 1) {
-                _baks[Path.GetFileName(bakPath)] = path;
+                _baks[path] = Path.GetFileName(bakPath);
                 saveBackups();
                 updateBackupList();
             }
             return res;
         }
 
-        public static int restoreBaks(List<string> backupNames)
+        public static bool restoreBak(string filePath)
+        {
+            if (String.IsNullOrEmpty(filePath)) {
+                return false;
+            }
+
+            if (IO.CopyFile(Config.backup_dir + @"\" + _baks[filePath], filePath, true) == 0) {
+                if (Config.deleteOldBaks) {
+                    if (IO.DeleteFile(Config.backup_dir + @"\" + _baks[filePath])) {
+                        _baks.Remove(filePath);
+                    } else {
+                        form1.showMsg("Could not remove old backup '" + _baks[filePath] + "'. Is the file open somewhere?", "Error");
+                    }
+                }
+                return true;
+            } else {
+                form1.showMsg("Could not restore '" + _baks[filePath] + "'. If the game is open, close it and try again.", "Error");
+                return false;
+            }
+        }
+
+        public static int restoreBaks(List<string> backupPathList)
         {
             ensureBackupFolderExists();
 
-            if (backupNames.Count() == 0) {
+            if (backupPathList.Count() == 0) {
                 return 0;
             }
 
-            form1.pBar_show(backupNames.Count());
+            form1.pBar_show(backupPathList.Count());
             bool chk = false;
             bool err = false;
-            foreach (string fileName in backupNames) {
+            foreach (string path in backupPathList) {
                 form1.pBar_update();
-                if (IO.CopyFile(Config.backup_dir + @"\" + fileName, _baks[fileName], true) == 0) {
-                    if (Config.deleteOldBaks) {
-                        if (IO.DeleteFile(Config.backup_dir + @"\" + fileName)) {
-                            _baks.Remove(fileName);
-                        } else {
-                            form1.showMsg("Could not remove old backup '" + fileName + "'. Is the file open somewhere?", "Error");
-                        }
-                    }
+                if (restoreBak(path)) {
                     chk = true;
                 } else {
-                    form1.showMsg("Could not restore '" + fileName + "'. If the game is open, close it and try again.", "Error");
                     err = true;
                 }
             }
@@ -163,14 +187,10 @@ namespace MCC_Mod_Manager
                 InitialDirectory = Config.MCC_home
             };
             if (ofd.ShowDialog() == DialogResult.OK) {
-                foreach (KeyValuePair<string, string> entry in _baks) {
-                    if (entry.Value == ofd.FileName) {
-                        DialogResult ans = form1.showMsg("A backup of that file already exists. Would you like to overwrite?", "Question");
-                        if (ans == DialogResult.No) {
-                            return;
-                        } else {
-                            break;
-                        }
+                if (_baks.ContainsKey(ofd.FileName)) {
+                    DialogResult ans = form1.showMsg("A backup of that file already exists. Would you like to overwrite?", "Question");
+                    if (ans == DialogResult.No) {
+                        return;
                     }
                 }
 
@@ -186,19 +206,23 @@ namespace MCC_Mod_Manager
 
         public static void restoreSelected(IEnumerable<CheckBox> bakList)
         {
-            List<string> backupNames = new List<string>();
+            List<string> backupPaths = new List<string>();
             foreach (CheckBox chb in bakList) {
                 if (chb.Checked) {
-                    backupNames.Add(chb.Text.Replace(Config.dirtyPadding, ""));
+                    if (form1.fullBakPath_Checked()) {
+                        backupPaths.Add(chb.Text.Replace(Config.dirtyPadding, ""));
+                    } else {
+                        backupPaths.Add(getBakKey(chb.Text.Replace(Config.dirtyPadding, "")));
+                    }
                     chb.Checked = false;
                 }
             }
 
-            if (backupNames.Count() == 0) {
+            if (backupPaths.Count() == 0) {
                 form1.showMsg("No items selected from the list.", "Error");
                 return;
             }
-            int r = restoreBaks(backupNames);
+            int r = restoreBaks(backupPaths);
             if (r == 0) {
                 form1.showMsg("Selected files have been restored.", "Info");
             } else if (r == 1) {
@@ -215,17 +239,18 @@ namespace MCC_Mod_Manager
             bool chk = false;
             foreach (KeyValuePair<string, string> entry in _baks) {
                 form1.pBar_update();
-                if (IO.CopyFile(Config.backup_dir + @"\" + entry.Key, entry.Value, true) == 0) {
+                string bakPath = Config.backup_dir + @"\" + entry.Value;
+                if (IO.CopyFile(bakPath, entry.Key, true) == 0) {
                     if (Config.deleteOldBaks) {
-                        if (!IO.DeleteFile(Config.backup_dir + @"\" + entry.Key)) {
+                        if (!IO.DeleteFile(bakPath)) {
                             remainingBaks.Add(entry.Key);
-                            form1.showMsg("Could not remove old backup '" + entry.Key + "'. Is the file open somewhere?", "Error");
+                            form1.showMsg("Could not remove old backup '" + entry.Value + "'. Is the file open somewhere?", "Error");
                         }
                     }
                     chk = true;
                 } else {
                     remainingBaks.Add(entry.Key);
-                    form1.showMsg("Could not restore '" + entry.Key + "'. If the game is open, close it and try again.", "Error");
+                    form1.showMsg("Could not restore '" + Path.GetFileName(entry.Key) + "'. If the game is open, close it and try again.", "Error");
                 }
             }
 
@@ -234,8 +259,8 @@ namespace MCC_Mod_Manager
                     _baks = new Dictionary<string, string>();
                 } else {
                     Dictionary<string, string> tmp = new Dictionary<string, string>();
-                    foreach (string file in remainingBaks) {    // create backup config of files which couldn't be restored and removed
-                        tmp[file] = Backups._baks[file];
+                    foreach (string path in remainingBaks) {    // create backup config of files which couldn't be restored/removed
+                        tmp[path] = _baks[path];
                     }
                     _baks = tmp;
                 }
@@ -264,11 +289,17 @@ namespace MCC_Mod_Manager
                 form1.pBar_update();
                 if (chb.Checked) {
                     chk = true;
-                    string fileName = chb.Text.Replace(Config.dirtyPadding, "");
-                    if (IO.DeleteFile(Config.backup_dir + @"\" + fileName)) {
-                        _baks.Remove(fileName);
+                    string path;
+                    if (form1.fullBakPath_Checked()) {
+                        path = chb.Text.Replace(Config.dirtyPadding, "");
                     } else {
-                        form1.showMsg("Could not delete '" + fileName + "'. Is the file open somewhere?", "Error");
+                        path = getBakKey(chb.Text.Replace(Config.dirtyPadding, ""));
+                    }
+
+                    if (IO.DeleteFile(Config.backup_dir + @"\" + _baks[path])) {
+                        _baks.Remove(path);
+                    } else {
+                        form1.showMsg("Could not delete '" + _baks[path] + "'. Is the file open somewhere?", "Error");
                     }
                     chb.Checked = false;
                 }
@@ -296,9 +327,9 @@ namespace MCC_Mod_Manager
             List<string> remainingBaks = new List<string>();
             foreach (KeyValuePair<string, string> entry in _baks) {
                 form1.pBar_update();
-                if (!IO.DeleteFile(Config.backup_dir + @"\" + entry.Key)) {
+                if (!IO.DeleteFile(Config.backup_dir + @"\" + entry.Value)) {
                     remainingBaks.Add(entry.Key);
-                    form1.showMsg("Could not delete '" + entry.Key + "'. Is the file open somewhere?", "Error");
+                    form1.showMsg("Could not delete '" + entry.Value + "'. Is the file open somewhere?", "Error");
                 }
             }
             if (remainingBaks.Count() == 0) {
@@ -306,8 +337,8 @@ namespace MCC_Mod_Manager
                 form1.showMsg("All backups deleted.", "Info");
             } else {
                 Dictionary<string, string> tmp = new Dictionary<string, string>();
-                foreach (string file in remainingBaks) {    // create backup config of files which couldn't be deleted
-                    tmp[file] = _baks[file];
+                foreach (string path in remainingBaks) {    // create backup config of files which couldn't be deleted
+                    tmp[path] = _baks[path];
                 }
                 _baks = tmp;
             }
