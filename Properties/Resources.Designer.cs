@@ -63,9 +63,29 @@ namespace MCC_Mod_Manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap greenDot_15px {
+            get {
+                object obj = ResourceManager.GetObject("greenDot_15px", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap HaloHelmetIcon_small {
             get {
                 object obj = ResourceManager.GetObject("HaloHelmetIcon_small", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap redDot_15px {
+            get {
+                object obj = ResourceManager.GetObject("redDot_15px", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

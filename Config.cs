@@ -10,7 +10,7 @@ namespace MCC_Mod_Manager
 {
     public class mainCfg
     {
-        public string version;
+        public string version = Config.version;
         public string MCC_home;
         public string backup_dir;
         public string modpack_dir;
@@ -25,7 +25,7 @@ namespace MCC_Mod_Manager
         private static readonly string _bakcfgName = @"\backups.cfg";
 
         // UI elements
-        public static string dirtyPadding = "              ";
+        public static string dirtyPadding = "        ";
         public static readonly Point delBtnPoint = new Point(0, 3);
         public static readonly Point sourceTextBoxPoint = new Point(20, 1);
         public static readonly Point sourceBtnPoint = new Point(203, 0);
@@ -85,11 +85,23 @@ namespace MCC_Mod_Manager
             }
         }
 
+        public static bool isPatched(string modpackName)
+        {
+            return _cfg.patched.Contains(modpackName);
+        }
+        public static void addPatched(string modpackName)
+        {
+            _cfg.patched.Add(modpackName);
+        }
+        public static void rmPatched(string modpackName)
+        {
+            _cfg.patched.Remove(modpackName);
+        }
+
         public static bool createDefaultCfg()
         {
             _cfg = new mainCfg();
             // default values declared here so that mainCfg class does not implicitly set defaults and bypass warning triggers
-            _cfg.version = Config.version;
             MCC_home = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
             backup_dir = @".\backups";
             modpack_dir = @".\modpacks";

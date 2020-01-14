@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.topBar = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
+            this.version_lbl = new System.Windows.Forms.Label();
             this.refreshButton = new System.Windows.Forms.PictureBox();
             this.minButton = new System.Windows.Forms.PictureBox();
             this.titleLabel = new System.Windows.Forms.Label();
@@ -38,10 +38,12 @@
             this.homeTab = new System.Windows.Forms.Button();
             this.createTab = new System.Windows.Forms.Button();
             this.homePanel = new System.Windows.Forms.Panel();
+            this.selectEnabled_chb = new System.Windows.Forms.CheckBox();
+            this.homeEnabledLabel = new System.Windows.Forms.Label();
             this.delModpack = new System.Windows.Forms.Button();
             this.patchButton = new System.Windows.Forms.Button();
             this.homeNameLabel = new System.Windows.Forms.Label();
-            this.homeEnableLabel = new System.Windows.Forms.Label();
+            this.homeSelectLabel = new System.Windows.Forms.Label();
             this.modListPanel = new System.Windows.Forms.Panel();
             this.configTab = new System.Windows.Forms.Button();
             this.createPanel = new System.Windows.Forms.Panel();
@@ -70,6 +72,7 @@
             this.configLabel1 = new System.Windows.Forms.Label();
             this.backupTab = new System.Windows.Forms.Button();
             this.backupPanel = new System.Windows.Forms.Panel();
+            this.fullBakPath_chb = new System.Windows.Forms.CheckBox();
             this.restoreSelectedBtn = new System.Windows.Forms.Button();
             this.delAllBaksBtn = new System.Windows.Forms.Button();
             this.makeBakBtn = new System.Windows.Forms.Button();
@@ -79,7 +82,6 @@
             this.bakLabel1 = new System.Windows.Forms.Label();
             this.bakListPanel = new System.Windows.Forms.Panel();
             this.betterPBar = new System.Windows.Forms.Panel();
-            this.fullBakPath_chb = new System.Windows.Forms.CheckBox();
             this.topBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minButton)).BeginInit();
@@ -97,7 +99,7 @@
             // topBar
             // 
             this.topBar.BackColor = System.Drawing.Color.DarkGray;
-            this.topBar.Controls.Add(this.label1);
+            this.topBar.Controls.Add(this.version_lbl);
             this.topBar.Controls.Add(this.refreshButton);
             this.topBar.Controls.Add(this.minButton);
             this.topBar.Controls.Add(this.titleLabel);
@@ -110,19 +112,19 @@
             this.topBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
             this.topBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
             // 
-            // label1
+            // version_lbl
             // 
-            this.label1.AutoSize = true;
-            this.label1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.label1.Font = new System.Drawing.Font("Gadugi", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(429, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(40, 19);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "v0.5";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.label1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
-            this.label1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
+            this.version_lbl.AutoSize = true;
+            this.version_lbl.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.version_lbl.Font = new System.Drawing.Font("Gadugi", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.version_lbl.Location = new System.Drawing.Point(429, 9);
+            this.version_lbl.Name = "version_lbl";
+            this.version_lbl.Size = new System.Drawing.Size(39, 19);
+            this.version_lbl.TabIndex = 6;
+            this.version_lbl.Text = "v???";
+            this.version_lbl.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.version_lbl.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
+            this.version_lbl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
             // 
             // refreshButton
             // 
@@ -211,15 +213,40 @@
             // homePanel
             // 
             this.homePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.homePanel.Controls.Add(this.selectEnabled_chb);
+            this.homePanel.Controls.Add(this.homeEnabledLabel);
             this.homePanel.Controls.Add(this.delModpack);
             this.homePanel.Controls.Add(this.patchButton);
             this.homePanel.Controls.Add(this.homeNameLabel);
-            this.homePanel.Controls.Add(this.homeEnableLabel);
+            this.homePanel.Controls.Add(this.homeSelectLabel);
             this.homePanel.Controls.Add(this.modListPanel);
             this.homePanel.Location = new System.Drawing.Point(5, 89);
             this.homePanel.Name = "homePanel";
             this.homePanel.Size = new System.Drawing.Size(563, 356);
             this.homePanel.TabIndex = 4;
+            // 
+            // selectEnabled_chb
+            // 
+            this.selectEnabled_chb.AutoSize = true;
+            this.selectEnabled_chb.Checked = true;
+            this.selectEnabled_chb.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.selectEnabled_chb.Location = new System.Drawing.Point(434, 247);
+            this.selectEnabled_chb.Name = "selectEnabled_chb";
+            this.selectEnabled_chb.Size = new System.Drawing.Size(98, 17);
+            this.selectEnabled_chb.TabIndex = 7;
+            this.selectEnabled_chb.Text = "Select Enabled";
+            this.selectEnabled_chb.UseVisualStyleBackColor = true;
+            this.selectEnabled_chb.CheckedChanged += new System.EventHandler(this.selectEnabled_chb_CheckedChanged);
+            // 
+            // homeEnabledLabel
+            // 
+            this.homeEnabledLabel.AutoSize = true;
+            this.homeEnabledLabel.Font = new System.Drawing.Font("Reem Kufi", 8.999999F);
+            this.homeEnabledLabel.Location = new System.Drawing.Point(10, 7);
+            this.homeEnabledLabel.Name = "homeEnabledLabel";
+            this.homeEnabledLabel.Size = new System.Drawing.Size(55, 23);
+            this.homeEnabledLabel.TabIndex = 6;
+            this.homeEnabledLabel.Text = "Enabled";
             // 
             // delModpack
             // 
@@ -240,7 +267,7 @@
             this.patchButton.Name = "patchButton";
             this.patchButton.Size = new System.Drawing.Size(124, 35);
             this.patchButton.TabIndex = 3;
-            this.patchButton.Text = "Patch Game";
+            this.patchButton.Text = "Patch/Unpatch";
             this.patchButton.UseVisualStyleBackColor = true;
             this.patchButton.Click += new System.EventHandler(this.patchButton_Click);
             this.patchButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
@@ -250,21 +277,21 @@
             // 
             this.homeNameLabel.AutoSize = true;
             this.homeNameLabel.Font = new System.Drawing.Font("Reem Kufi", 8.999999F);
-            this.homeNameLabel.Location = new System.Drawing.Point(100, 7);
+            this.homeNameLabel.Location = new System.Drawing.Point(112, 7);
             this.homeNameLabel.Name = "homeNameLabel";
             this.homeNameLabel.Size = new System.Drawing.Size(96, 23);
             this.homeNameLabel.TabIndex = 2;
             this.homeNameLabel.Text = "Modpack Name";
             // 
-            // homeEnableLabel
+            // homeSelectLabel
             // 
-            this.homeEnableLabel.AutoSize = true;
-            this.homeEnableLabel.Font = new System.Drawing.Font("Reem Kufi", 8.999999F);
-            this.homeEnableLabel.Location = new System.Drawing.Point(32, 7);
-            this.homeEnableLabel.Name = "homeEnableLabel";
-            this.homeEnableLabel.Size = new System.Drawing.Size(42, 23);
-            this.homeEnableLabel.TabIndex = 1;
-            this.homeEnableLabel.Text = "Select";
+            this.homeSelectLabel.AutoSize = true;
+            this.homeSelectLabel.Font = new System.Drawing.Font("Reem Kufi", 8.999999F);
+            this.homeSelectLabel.Location = new System.Drawing.Point(64, 7);
+            this.homeSelectLabel.Name = "homeSelectLabel";
+            this.homeSelectLabel.Size = new System.Drawing.Size(42, 23);
+            this.homeSelectLabel.TabIndex = 1;
+            this.homeSelectLabel.Text = "Select";
             // 
             // modListPanel
             // 
@@ -574,6 +601,17 @@
             this.backupPanel.TabIndex = 8;
             this.backupPanel.Visible = false;
             // 
+            // fullBakPath_chb
+            // 
+            this.fullBakPath_chb.AutoSize = true;
+            this.fullBakPath_chb.Location = new System.Drawing.Point(427, 120);
+            this.fullBakPath_chb.Name = "fullBakPath_chb";
+            this.fullBakPath_chb.Size = new System.Drawing.Size(93, 17);
+            this.fullBakPath_chb.TabIndex = 8;
+            this.fullBakPath_chb.Text = "Show full path";
+            this.fullBakPath_chb.UseVisualStyleBackColor = true;
+            this.fullBakPath_chb.CheckedChanged += new System.EventHandler(this.fullBakPath_chb_CheckedChanged);
+            // 
             // restoreSelectedBtn
             // 
             this.restoreSelectedBtn.Font = new System.Drawing.Font("Reem Kufi", 9.749999F);
@@ -645,7 +683,7 @@
             // 
             this.bakLabel2.AutoSize = true;
             this.bakLabel2.Font = new System.Drawing.Font("Reem Kufi", 8.999999F);
-            this.bakLabel2.Location = new System.Drawing.Point(100, 7);
+            this.bakLabel2.Location = new System.Drawing.Point(86, 7);
             this.bakLabel2.Name = "bakLabel2";
             this.bakLabel2.Size = new System.Drawing.Size(68, 23);
             this.bakLabel2.TabIndex = 2;
@@ -677,17 +715,6 @@
             this.betterPBar.Size = new System.Drawing.Size(570, 44);
             this.betterPBar.TabIndex = 10;
             // 
-            // fullBakPath_chb
-            // 
-            this.fullBakPath_chb.AutoSize = true;
-            this.fullBakPath_chb.Location = new System.Drawing.Point(427, 120);
-            this.fullBakPath_chb.Name = "fullBakPath_chb";
-            this.fullBakPath_chb.Size = new System.Drawing.Size(93, 17);
-            this.fullBakPath_chb.TabIndex = 8;
-            this.fullBakPath_chb.Text = "Show full path";
-            this.fullBakPath_chb.UseVisualStyleBackColor = true;
-            this.fullBakPath_chb.CheckedChanged += new System.EventHandler(this.fullBakPath_chb_CheckedChanged);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -700,10 +727,10 @@
             this.Controls.Add(this.createTab);
             this.Controls.Add(this.homeTab);
             this.Controls.Add(this.topBar);
+            this.Controls.Add(this.homePanel);
             this.Controls.Add(this.backupPanel);
             this.Controls.Add(this.createPanel);
             this.Controls.Add(this.configPanel);
-            this.Controls.Add(this.homePanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
@@ -744,7 +771,7 @@
         private System.Windows.Forms.Panel homePanel;
         private System.Windows.Forms.Button configTab;
         private System.Windows.Forms.Panel modListPanel;
-        private System.Windows.Forms.Label homeEnableLabel;
+        private System.Windows.Forms.Label homeSelectLabel;
         private System.Windows.Forms.Label homeNameLabel;
         private System.Windows.Forms.Button patchButton;
         private System.Windows.Forms.PictureBox refreshButton;
@@ -782,10 +809,12 @@
         private System.Windows.Forms.Button delAllBaksBtn;
         private System.Windows.Forms.Button restoreSelectedBtn;
         private System.Windows.Forms.Button delModpack;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label version_lbl;
         private System.Windows.Forms.CheckBox delOldBaks_chb;
         private System.Windows.Forms.Panel betterPBar;
         private System.Windows.Forms.CheckBox fullBakPath_chb;
+        private System.Windows.Forms.Label homeEnabledLabel;
+        private System.Windows.Forms.CheckBox selectEnabled_chb;
     }
 }
 

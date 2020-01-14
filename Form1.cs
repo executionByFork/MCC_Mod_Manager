@@ -124,9 +124,19 @@ namespace MCC_Mod_Manager
             backupPanel.Visible = false;
         }
 
+        private void selectEnabled_chb_CheckedChanged(object sender, EventArgs e)
+        {
+            foreach (CheckBox chb in modListPanel.Controls.OfType<CheckBox>()) {
+                string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
+                if (Config.isPatched(modpackname)) {
+                    chb.Checked = ((CheckBox)sender).Checked;
+                }
+            }
+        }
+
         private void patchButton_Click(object sender, EventArgs e)
         {
-            Modpacks.patchModpack(modListPanel.Controls.OfType<CheckBox>());
+            Modpacks.runPatchUnpatch(modListPanel.Controls.OfType<CheckBox>());
         }
 
         private void delModpack_Click(object sender, EventArgs e)
@@ -136,7 +146,7 @@ namespace MCC_Mod_Manager
 
         public int modListPanel_getCount()
         {
-            return modListPanel.Controls.Count;
+            return modListPanel.Controls.OfType<CheckBox>().Count();
         }
 
         public void modListPanel_clear()
@@ -144,8 +154,9 @@ namespace MCC_Mod_Manager
             modListPanel.Controls.Clear();
         }
 
-        public void modListPanel_add(CheckBox chb)
+        public void modListPanel_add(PictureBox p, CheckBox chb)
         {
+            modListPanel.Controls.Add(p);
             modListPanel.Controls.Add(chb);
         }
 

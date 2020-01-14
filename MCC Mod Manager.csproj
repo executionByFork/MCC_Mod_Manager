@@ -105,6 +105,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HaloHelmetIcon.ico" />
+    <None Include="Resources\redDot_15px.png" />
+    <None Include="Resources\greenDot_15px.png" />
     <None Include="Resources\HaloHelmetIcon_small.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
