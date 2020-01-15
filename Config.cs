@@ -87,15 +87,15 @@ namespace MCC_Mod_Manager
 
         public static bool isPatched(string modpackName)
         {
-            return _cfg.patched.Contains(modpackName);
+            return patched.Contains(modpackName);
         }
         public static void addPatched(string modpackName)
         {
-            _cfg.patched.Add(modpackName);
+            patched.Add(modpackName);
         }
         public static void rmPatched(string modpackName)
         {
-            _cfg.patched.Remove(modpackName);
+            patched.Remove(modpackName);
         }
 
         public static bool createDefaultCfg()
@@ -169,6 +169,24 @@ namespace MCC_Mod_Manager
                     createDefaultCfg();
                 }
             }
+
+            bool msg = false;
+            List<string> tmp = new List<string>();
+            foreach (string modpack in patched) {
+                if (!Modpacks.verifyExists(modpack)) {
+                    if (!msg) {
+                        msg = true;
+                        form1.showMsg("One or more of your enabled modpacks is missing from the modpacks folder. This likely means your game " +
+                            "is in an unstable state. You should restore from backups or verify the game files through Steam." +
+                            "\r\nThis warning will only show once.", "Warning");
+                    }
+                    tmp.Add(modpack);
+                }
+            }
+            foreach (string modpack in tmp) {
+                rmPatched(modpack);
+            }
+            saveCfg();
 
             // Update config tab
             form1.cfgTextBox1Text = MCC_home;
