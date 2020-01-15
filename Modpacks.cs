@@ -160,18 +160,31 @@ namespace MCC_Mod_Manager
 
         public static void delModpack(IEnumerable<CheckBox> modpacksList)
         {
-            DialogResult ans = form1.showMsg("Are you sure you want to delete the selected modpacks(s)?\r\nNo crying afterwards?", "Question");
-            if (ans == DialogResult.No) {
-                return;
-            }
-
             bool chk = false;
+            bool partial = false;
             form1.pBar_show(modpacksList.Count());
             foreach (CheckBox chb in modpacksList) {
                 form1.pBar_update();
                 if (chb.Checked) {
+                    if (!chk) { // only prompt user once
+                        DialogResult ans = form1.showMsg("Are you sure you want to delete the selected modpacks(s)?\r\nNo crying afterwards?", "Question");
+                        if (ans == DialogResult.No) {
+                            return;
+                        }
+                    }
                     chk = true;
+
                     string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
+                    if (Config.isPatched(modpackname)) {    // deliberately prompt for each modpack that is enabled
+                        DialogResult ans = form1.showMsg("WARNING: The " + modpackname + " modpack is showing as currently installed." +
+                            "\r\nIf you delete this modpack, the mod manager will NOT be able to unpatch it. You will have to manually " +
+                            "restore using the backup tab to remove the mods. Continue with deletion?", "Question");
+                        if (ans == DialogResult.No) {
+                            partial = true;
+                            continue;
+                        }
+                    }
+
                     if (!IO.DeleteFile(Config.modpack_dir + @"\" + modpackname + ".zip")) {
                         form1.showMsg("Could not delete '" + modpackname + ".zip'. Is the zip file open somewhere?", "Error");
                     }
@@ -180,6 +193,9 @@ namespace MCC_Mod_Manager
             }
             if (!chk) {
                 form1.showMsg("No items selected from the list.", "Error");
+            } else if (partial) {
+                form1.showMsg("Only some of the selected modpacks have been deleted.", "Warning");
+                loadModpacks();
             } else {
                 form1.showMsg("Selected modpacks have been deleted.", "Info");
                 loadModpacks();
