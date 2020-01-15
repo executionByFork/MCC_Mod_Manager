@@ -76,7 +76,7 @@ namespace MCC_Mod_Manager
                 _cfg.deleteOldBaks = value;
             }
         }
-        private static List<string> patched {
+        public static List<string> patched {
             get {
                 return _cfg.patched;
             }

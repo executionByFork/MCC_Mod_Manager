@@ -243,6 +243,32 @@ namespace MCC_Mod_Manager
             return modpackConfig;
         }
 
+        private static string willOverwriteOtherMod(string modpack)
+        {
+            List<Dictionary<string, string>> primaryConfig;
+            using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpack + ".zip")) {
+                primaryConfig = getModpackConfig(archive);
+            }
+
+            foreach (string enabledModpack in Config.patched) {
+                List<Dictionary<string, string>> modpackConfig;
+                using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + enabledModpack + ".zip")) {
+                    modpackConfig = getModpackConfig(archive);
+                }
+                // Deliberately not checking for null so program throws a stack trace
+                // This should never happen, but if it does I want the user to let me know about it
+                foreach (Dictionary<string, string> dict in modpackConfig) {
+                    foreach (Dictionary<string, string> primary in primaryConfig) {
+                        if (dict["dest"] == primary["dest"]) {
+                            return enabledModpack;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
         private static int patchFile(ZipArchive archive, string src, string dest)
         {
             string destination = expandPath(dest);
@@ -276,6 +302,12 @@ namespace MCC_Mod_Manager
 
         private static int patchModpack(string modpackname)
         {
+            string retStr = willOverwriteOtherMod(modpackname);
+            if (!String.IsNullOrEmpty(retStr)) {
+                form1.showMsg("Installing '" + modpackname + "' would overwrite files for '" + retStr + "'. Modpack will be skipped.", "Error");
+                return 2;
+            }
+
             bool baksMade = false;
             try {
                 using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpackname + ".zip")) {
