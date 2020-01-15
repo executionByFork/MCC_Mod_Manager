@@ -78,6 +78,14 @@ namespace MCC_Mod_Manager
             return true;
         }
 
+        public static bool verifyExists(string modpackname)
+        {
+            if (File.Exists(Config.modpack_dir + @"\" + modpackname + ".zip")) {
+                return true;
+            }
+            return false;
+        }
+
         public static void createModpack(string modpackName, IEnumerable<Panel> modFilesList)
         {
             if (modFilesList.Count() == 0) {
@@ -161,6 +169,7 @@ namespace MCC_Mod_Manager
         public static void delModpack(IEnumerable<CheckBox> modpacksList)
         {
             bool chk = false;
+            bool del = false;
             bool partial = false;
             form1.pBar_show(modpacksList.Count());
             foreach (CheckBox chb in modpacksList) {
@@ -169,6 +178,7 @@ namespace MCC_Mod_Manager
                     if (!chk) { // only prompt user once
                         DialogResult ans = form1.showMsg("Are you sure you want to delete the selected modpacks(s)?\r\nNo crying afterwards?", "Question");
                         if (ans == DialogResult.No) {
+                            form1.pBar_hide();
                             return;
                         }
                     }
@@ -176,30 +186,39 @@ namespace MCC_Mod_Manager
 
                     string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
                     if (Config.isPatched(modpackname)) {    // deliberately prompt for each modpack that is enabled
-                        DialogResult ans = form1.showMsg("WARNING: The " + modpackname + " modpack is showing as currently installed." +
-                            "\r\nIf you delete this modpack, the mod manager will NOT be able to unpatch it. You will have to manually " +
-                            "restore using the backup tab to remove the mods. Continue with deletion?", "Question");
+                        DialogResult ans = form1.showMsg("WARNING: The " + modpackname + " modpack is showing as currently installed. " +
+                            "Deleting this modpack will also unpatch it from the game. Continue?", "Question");
                         if (ans == DialogResult.No) {
                             partial = true;
                             continue;
+                        } else {
+                            if (unpatchModpack(modpackname) == 2) {
+                                partial = true;
+                                continue;
+                            }
+                            Config.rmPatched(modpackname);
                         }
                     }
 
                     if (!IO.DeleteFile(Config.modpack_dir + @"\" + modpackname + ".zip")) {
                         form1.showMsg("Could not delete '" + modpackname + ".zip'. Is the zip file open somewhere?", "Error");
                     }
+                    del = true;
                     chb.Checked = false;
                 }
             }
             if (!chk) {
                 form1.showMsg("No items selected from the list.", "Error");
-            } else if (partial) {
+            } else if (!del) {
+                form1.showMsg("No modpacks were deleted.", "Warning");
+            } else if (del && partial) {
                 form1.showMsg("Only some of the selected modpacks have been deleted.", "Warning");
                 loadModpacks();
             } else {
                 form1.showMsg("Selected modpacks have been deleted.", "Info");
                 loadModpacks();
             }
+            Config.saveCfg();
             form1.pBar_hide();
         }
 
