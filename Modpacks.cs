@@ -138,25 +138,29 @@ namespace MCC_Mod_Manager
                 return;
             }
 
-
             form1.pBar_show(fileMap.Count());
-            using (var archive = ZipFile.Open(zipPath, ZipArchiveMode.Create)) {
-                foreach (var entry in fileMap) {
-                    form1.pBar_update();
-                    String fileName = Path.GetFileName(entry["src"]);
-                    archive.CreateEntryFromFile(entry["src"], fileName);    // TODO: Fix issues when two source files have same name but diff path
-                    // change src path to just modpack after archive creation but before json serialization
-                    entry["src"] = fileName;
+            try {
+                using (var archive = ZipFile.Open(zipPath, ZipArchiveMode.Create)) {
+                    foreach (var entry in fileMap) {
+                        form1.pBar_update();
+                        String fileName = Path.GetFileName(entry["src"]);
+                        archive.CreateEntryFromFile(entry["src"], fileName);    // TODO: Fix issues when two source files have same name but diff path
+                                                                                // change src path to just modpack after archive creation but before json serialization
+                        entry["src"] = fileName;
+                    }
+                    ZipArchiveEntry configFile = archive.CreateEntry("modpackConfig.cfg");
+                    string json = JsonConvert.SerializeObject(fileMap, Formatting.Indented);
+                    using (StreamWriter writer = new StreamWriter(configFile.Open())) {
+                        writer.WriteLine(json);
+                    }
+                    ZipArchiveEntry readmeFile = archive.CreateEntry("README.txt");
+                    using (StreamWriter writer = new StreamWriter(readmeFile.Open())) {
+                        writer.WriteLine("Install using MCC Mod Manager: https://github.com/executionByFork/MCC_Mod_Manager/tree/master");
+                    }
                 }
-                ZipArchiveEntry configFile = archive.CreateEntry("modpackConfig.cfg");
-                string json = JsonConvert.SerializeObject(fileMap, Formatting.Indented);
-                using (StreamWriter writer = new StreamWriter(configFile.Open())) {
-                    writer.WriteLine(json);
-                }
-                ZipArchiveEntry readmeFile = archive.CreateEntry("README.txt");
-                using (StreamWriter writer = new StreamWriter(readmeFile.Open())) {
-                    writer.WriteLine("Install using MCC Mod Manager: https://github.com/executionByFork/MCC_Mod_Manager/tree/master");
-                }
+            } catch (NotSupportedException) {
+                form1.showMsg("The modpack name you have provided is not a valid filename on Windows.", "Error");
+                return;
             }
 
             form1.showMsg("Modpack '" + modpackFilename + "' created.", "Info");
