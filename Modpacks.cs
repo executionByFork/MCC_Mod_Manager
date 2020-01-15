@@ -228,7 +228,7 @@ namespace MCC_Mod_Manager
 
         private static List<Dictionary<string, string>> getModpackConfig(ZipArchive archive)
         {
-            ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpackConfig.cfg");
+            ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpack_config.cfg");
             if (modpackConfigEntry == null) {
                 return null;
             }
