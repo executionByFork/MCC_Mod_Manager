@@ -87,7 +87,11 @@ namespace MCC_Mod_Manager
 
         public static bool isPatched(string modpackName)
         {
-            return patched.Contains(modpackName);
+            try {
+                return patched.Contains(modpackName);
+            } catch (NullReferenceException) {
+                return false;
+            }
         }
         public static void addPatched(string modpackName)
         {
@@ -170,6 +174,13 @@ namespace MCC_Mod_Manager
                 }
             }
 
+            if (patched == null) {
+                DialogResult ans = form1.showMsg("Your config file is using an old format, would you like to overwrite it with a default config?", "Question");
+                if (ans == DialogResult.No) {
+                    return false;
+                }
+                createDefaultCfg();
+            }
             bool msg = false;
             List<string> tmp = new List<string>();
             foreach (string modpack in patched) {
