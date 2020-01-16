@@ -148,7 +148,7 @@ namespace MCC_Mod_Manager
                                                                                 // change src path to just modpack after archive creation but before json serialization
                         entry["src"] = fileName;
                     }
-                    ZipArchiveEntry configFile = archive.CreateEntry("modpackConfig.cfg");
+                    ZipArchiveEntry configFile = archive.CreateEntry("modpack_config.cfg");
                     string json = JsonConvert.SerializeObject(fileMap, Formatting.Indented);
                     using (StreamWriter writer = new StreamWriter(configFile.Open())) {
                         writer.WriteLine(json);
