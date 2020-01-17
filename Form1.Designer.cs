@@ -262,6 +262,8 @@
             this.delModpack.Text = "Delete Selected";
             this.delModpack.UseVisualStyleBackColor = true;
             this.delModpack.Click += new System.EventHandler(this.delModpack_Click);
+            this.delModpack.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.delModpack.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // patchButton
             // 
@@ -365,6 +367,8 @@
             this.clearBtn.Text = "Clear All";
             this.clearBtn.UseVisualStyleBackColor = true;
             this.clearBtn.Click += new System.EventHandler(this.clearBtn_Click);
+            this.clearBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.clearBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // addRowButton
             // 
@@ -389,6 +393,8 @@
             this.createModpackBtn.Text = "Create Modpack";
             this.createModpackBtn.UseVisualStyleBackColor = true;
             this.createModpackBtn.Click += new System.EventHandler(this.createModpackBtn_Click);
+            this.createModpackBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.createModpackBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // createLabel2
             // 
@@ -560,6 +566,8 @@
             this.cfgUpdateBtn.Text = "Update";
             this.cfgUpdateBtn.UseVisualStyleBackColor = true;
             this.cfgUpdateBtn.Click += new System.EventHandler(this.cfgUpdateBtn_Click);
+            this.cfgUpdateBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.cfgUpdateBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // configLabel1
             // 
@@ -757,10 +765,10 @@
             this.Controls.Add(this.createTab);
             this.Controls.Add(this.homeTab);
             this.Controls.Add(this.topBar);
+            this.Controls.Add(this.createPanel);
             this.Controls.Add(this.configPanel);
             this.Controls.Add(this.homePanel);
             this.Controls.Add(this.backupPanel);
-            this.Controls.Add(this.createPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
