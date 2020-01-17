@@ -66,7 +66,7 @@ namespace MCC_Mod_Manager
             } else if (type == "Error") {
                 return MessageBox.Show(
                     msg, "Error", MessageBoxButtons.OK,
-                    MessageBoxIcon.None, MessageBoxDefaultButton.Button1
+                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1
                 );
             }
             throw new FormatException("Please notify the developer: " + type + " is not a valid type for showMsg.");
