@@ -82,6 +82,8 @@
             this.bakLabel1 = new System.Windows.Forms.Label();
             this.bakListPanel = new System.Windows.Forms.Panel();
             this.betterPBar = new System.Windows.Forms.Panel();
+            this.manualOverride = new System.Windows.Forms.CheckBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.topBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minButton)).BeginInit();
@@ -213,6 +215,7 @@
             // homePanel
             // 
             this.homePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.homePanel.Controls.Add(this.manualOverride);
             this.homePanel.Controls.Add(this.selectEnabled_chb);
             this.homePanel.Controls.Add(this.homeEnabledLabel);
             this.homePanel.Controls.Add(this.delModpack);
@@ -418,6 +421,7 @@
             // 
             // configPanel
             // 
+            this.configPanel.Controls.Add(this.button1);
             this.configPanel.Controls.Add(this.delOldBaks_chb);
             this.configPanel.Controls.Add(this.panel3);
             this.configPanel.Controls.Add(this.panel2);
@@ -715,6 +719,32 @@
             this.betterPBar.Size = new System.Drawing.Size(570, 44);
             this.betterPBar.TabIndex = 10;
             // 
+            // manualOverride
+            // 
+            this.manualOverride.AutoSize = true;
+            this.manualOverride.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.manualOverride.ForeColor = System.Drawing.Color.DarkRed;
+            this.manualOverride.Location = new System.Drawing.Point(289, 13);
+            this.manualOverride.Name = "manualOverride";
+            this.manualOverride.Size = new System.Drawing.Size(132, 17);
+            this.manualOverride.TabIndex = 8;
+            this.manualOverride.Text = "Allow Manual Override";
+            this.manualOverride.UseVisualStyleBackColor = true;
+            this.manualOverride.CheckedChanged += new System.EventHandler(this.manualOverride_CheckedChanged);
+            // 
+            // button1
+            // 
+            this.button1.Font = new System.Drawing.Font("Reem Kufi", 9.749999F);
+            this.button1.ForeColor = System.Drawing.Color.Red;
+            this.button1.Location = new System.Drawing.Point(290, 221);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(96, 35);
+            this.button1.TabIndex = 16;
+            this.button1.Text = "Reset App";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.button1.MouseLeave += new System.EventHandler(this.btnHoverOff);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -727,10 +757,10 @@
             this.Controls.Add(this.createTab);
             this.Controls.Add(this.homeTab);
             this.Controls.Add(this.topBar);
+            this.Controls.Add(this.configPanel);
             this.Controls.Add(this.homePanel);
             this.Controls.Add(this.backupPanel);
             this.Controls.Add(this.createPanel);
-            this.Controls.Add(this.configPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
@@ -815,6 +845,8 @@
         private System.Windows.Forms.CheckBox fullBakPath_chb;
         private System.Windows.Forms.Label homeEnabledLabel;
         private System.Windows.Forms.CheckBox selectEnabled_chb;
+        private System.Windows.Forms.CheckBox manualOverride;
+        private System.Windows.Forms.Button button1;
     }
 }
 

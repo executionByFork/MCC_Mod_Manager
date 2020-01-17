@@ -34,13 +34,13 @@ namespace MCC_Mod_Manager
         /////    GENERAL FUNCTIONS    /////
         ///////////////////////////////////
 
-        private void btnHoverOn(object sender, EventArgs e)
+        public void btnHoverOn(object sender, EventArgs e)
         {
             this.Cursor = Cursors.Hand;
             this.Refresh();
         }
 
-        private void btnHoverOff(object sender, EventArgs e)
+        public void btnHoverOff(object sender, EventArgs e)
         {
             this.Cursor = Cursors.Default;
             this.Refresh();
@@ -137,6 +137,27 @@ namespace MCC_Mod_Manager
         private void patchButton_Click(object sender, EventArgs e)
         {
             Modpacks.runPatchUnpatch(modListPanel.Controls.OfType<CheckBox>());
+        }
+
+        private void manualOverride_CheckedChanged(object sender, EventArgs e)
+        {
+            if (manualOverride.Checked == true) {   // make warning only show if checkbox is getting enabled
+                DialogResult ans = showMsg("Please do not mess with this unless you know what you are doing or are trying to fix a syncing issue.\r\n" +
+                    "This option allows you to click the red/green icons beside modpack entries to force the mod manager to flag a modpack as enabled/disabled. " +
+                    "This does not make changes to files, but it does make the mod manager 'think' that modpacks are/aren't installed. If the game was just patched, " +
+                    "you should use the 'Reset App' button in the Config tab instead.\r\nEnable this feature?", "Question");
+                if (ans == DialogResult.No) {
+                    manualOverride.Checked = false;
+                    return;
+                }
+            }
+
+            Modpacks.loadModpacks();
+        }
+
+        public bool manualOverrideEnabled()
+        {
+            return manualOverride.Checked;
         }
 
         private void delModpack_Click(object sender, EventArgs e)
