@@ -314,15 +314,18 @@ namespace MCC_Mod_Manager
             form1.pBar_hide();
         }
 
-        public static void deleteAll()
+        public static bool deleteAll(bool y)
         {
             ensureBackupFolderExists();
 
-            DialogResult ans = form1.showMsg("Are you sure you want to delete ALL of your backup(s)?\r\nNo crying afterwards?", "Question");
-            if (ans == DialogResult.No) {
-                return;
+            if (!y) {
+                DialogResult ans = form1.showMsg("Are you sure you want to delete ALL of your backup(s)?\r\nNo crying afterwards?", "Question");
+                if (ans == DialogResult.No) {
+                    return true;
+                }
             }
 
+            bool err = false;
             form1.pBar_show(_baks.Count());
             List<string> remainingBaks = new List<string>();
             foreach (KeyValuePair<string, string> entry in _baks) {
@@ -330,6 +333,7 @@ namespace MCC_Mod_Manager
                 if (!IO.DeleteFile(Config.backup_dir + @"\" + entry.Value)) {
                     remainingBaks.Add(entry.Key);
                     form1.showMsg("Could not delete '" + entry.Value + "'. Is the file open somewhere?", "Error");
+                    err = true;
                 }
             }
             if (remainingBaks.Count() == 0) {
@@ -345,6 +349,8 @@ namespace MCC_Mod_Manager
             saveBackups();
             updateBackupList();
             form1.pBar_hide();
+
+            return !err;
         }
     }
 }
