@@ -54,6 +54,7 @@ namespace MCC_Mod_Manager
 
         public static bool loadModpacks()
         {
+            ensureModpackFolderExists();
             form1.modListPanel_clear();
 
             string[] fileEntries = Directory.GetFiles(Config.modpack_dir);
