@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace MCC_Mod_Manager
 {
@@ -9,6 +10,8 @@ namespace MCC_Mod_Manager
             try {
                 File.Delete(path);
             } catch (IOException) {
+                return false;
+            } catch (UnauthorizedAccessException) {
                 return false;
             }
             return true;
