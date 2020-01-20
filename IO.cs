@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace MCC_Mod_Manager
 {
@@ -35,6 +36,17 @@ namespace MCC_Mod_Manager
                 return 3;   // fail - file access error
             }
             return 0;   // success
+        }
+
+        public static string readFirstLine(string filePath)
+        {
+            try {
+                return File.ReadLines(filePath).First();
+            } catch (IOException) {
+                return null;
+            } catch (UnauthorizedAccessException) {
+                return null;
+            }
         }
     }
 }

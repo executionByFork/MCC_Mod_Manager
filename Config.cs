@@ -5,12 +5,14 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace MCC_Mod_Manager
 {
     public class mainCfg
     {
         public string version = Config.version;
+        public string MCC_version;
         public string MCC_home;
         public string backup_dir;
         public string modpack_dir;
@@ -20,7 +22,7 @@ namespace MCC_Mod_Manager
 
     static class Config
     {
-        public static readonly string version = "v0.5";
+        public static readonly string version = "v0.7";
         private static readonly string _cfgLocation = @".\MCC_Mod_Manager.cfg";
         private static readonly string _bakcfgName = @"\backups.cfg";
 
@@ -38,7 +40,15 @@ namespace MCC_Mod_Manager
         public static Form1 form1;  // this is set on form load
         private static mainCfg _cfg = new mainCfg(); // this is set on form load
         public static bool fullBakPath = false;
-        
+
+        public static string MCC_version {
+            get {
+                return _cfg.MCC_version;
+            }
+            set {
+                _cfg.MCC_version = value;
+            }
+        }
         public static string MCC_home {
             get {
                 return _cfg.MCC_home;
@@ -105,6 +115,7 @@ namespace MCC_Mod_Manager
         public static void doResetApp()
         {
             patched = new List<string>();
+            MCC_version = IO.readFirstLine(MCC_home + @"\build_tag.txt");
             saveCfg();
             Modpacks.loadModpacks();
             if (!Backups.deleteAll(true)) {
@@ -119,6 +130,7 @@ namespace MCC_Mod_Manager
             _cfg = new mainCfg();
             // default values declared here so that mainCfg class does not implicitly set defaults and bypass warning triggers
             MCC_home = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
+            MCC_version = IO.readFirstLine(MCC_home + @"\build_tag.txt");   // sets MCC_version to null if not found
             backup_dir = @".\backups";
             modpack_dir = @".\modpacks";
             deleteOldBaks = false;
@@ -139,7 +151,7 @@ namespace MCC_Mod_Manager
             }
         }
 
-        private static int checkCfg()
+        private static int readCfg()
         {
             string json = File.ReadAllText(_cfgLocation);
             try {
@@ -150,6 +162,7 @@ namespace MCC_Mod_Manager
                 }
 
                 MCC_home = values.MCC_home;
+                MCC_version = String.IsNullOrEmpty(values.MCC_version) ? IO.readFirstLine(MCC_home + @"\build_tag.txt") : values.MCC_version;
                 backup_dir = values.backup_dir;
                 modpack_dir = values.modpack_dir;
                 deleteOldBaks = values.deleteOldBaks;
@@ -161,6 +174,9 @@ namespace MCC_Mod_Manager
             } catch (KeyNotFoundException) {
                 return 1;
             }
+            if (patched == null) {
+                return 2;
+            }
 
             return 0;
         }
@@ -170,9 +186,9 @@ namespace MCC_Mod_Manager
             if (!File.Exists(_cfgLocation)) {
                 createDefaultCfg();
             } else {
-                int r = checkCfg();
+                int r = readCfg();
                 if (r == 1) {
-                    DialogResult ans = form1.showMsg("Your configuration has format errors, would you like to overwrite it with a default config?", "Question");
+                    DialogResult ans = form1.showMsg("Your configuration has formatting errors, would you like to overwrite it with a default config?", "Question");
                     if (ans == DialogResult.No) {
                         return false;
                     }
@@ -183,16 +199,21 @@ namespace MCC_Mod_Manager
                         return false;
                     }
                     createDefaultCfg();
+                } else {
+                    // check if game was updated
+                    if (MCC_version != IO.readFirstLine(MCC_home + @"\build_tag.txt")) {
+                        //DialogResult ans = form1.showMsg("It appears that MCC has been updated. Would you like to reset the state of the mod manager?" +
+                        //    "\r\n\r\nDoing so will set all modpacks to unpatched and delete all current backups (since there was an update, these backups are old " +
+                        //    "and musn't be repatched to the game). Your configuration and all modpacks will be preserved.", "Question");
+                        //if (ans == DialogResult.Yes) {
+                        //    doResetApp();
+                        //}
+                        form1.showMsg("It appears that MCC has been updated. It is strongly suggested you use the 'Reset App' button in the Config tab " +
+                            "before attempting to patch or unpatch any modpacks to/from the game. If you do not do this, you will likely encounter issues.", "Error");
+                    }
                 }
             }
 
-            if (patched == null) {
-                DialogResult ans = form1.showMsg("Your config file is using an old format, would you like to overwrite it with a default config?", "Question");
-                if (ans == DialogResult.No) {
-                    return false;
-                }
-                createDefaultCfg();
-            }
             bool msg = false;
             List<string> tmp = new List<string>();
             foreach (string modpack in patched) {
