@@ -139,6 +139,13 @@ namespace MCC_Mod_Manager
                         "You may need to configure this directory if you haven't done so already.", "Error");
                     return;
                 }
+                if (Path.GetExtension(dict["src"]) == ".asmp") {
+                    dict["type"] = "patch";
+                } else if (File.Exists(dict["dest"])) {
+                    dict["type"] = "replace";
+                } else {
+                    dict["type"] = "create";
+                }
 
                 // make modpack compatable with any MCC_home directory
                 dict["dest"] = compressPath(dict["dest"]);
