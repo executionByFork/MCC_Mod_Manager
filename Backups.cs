@@ -133,7 +133,13 @@ namespace MCC_Mod_Manager
                 return false;
             }
 
-            if (IO.CopyFile(Config.backup_dir + @"\" + _baks[filePath], filePath, true) == 0) {
+            int ret;
+            try {
+                ret = IO.CopyFile(Config.backup_dir + @"\" + _baks[filePath], filePath, true);
+            } catch (KeyNotFoundException) {
+                ret = 99;
+            }
+            if (ret == 0) {
                 if (Config.deleteOldBaks) {
                     if (IO.DeleteFile(Config.backup_dir + @"\" + _baks[filePath])) {
                         _baks.Remove(filePath);
@@ -142,6 +148,9 @@ namespace MCC_Mod_Manager
                     }
                 }
                 return true;
+            } else if (ret == 99) {
+                form1.showMsg("Could not locate a backup for the file at '" + filePath + "'.", "Error");
+                return false;
             } else {
                 form1.showMsg("Could not restore '" + _baks[filePath] + "'. If the game is open, close it and try again.", "Error");
                 return false;
