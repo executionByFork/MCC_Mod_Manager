@@ -302,34 +302,49 @@ namespace MCC_Mod_Manager
             return null;
         }
 
-        private static int patchFile(ZipArchive archive, string src, string dest)
+        private static int patchFile(ZipArchive archive, Dictionary<string,string> entry)
         {
-            string destination = expandPath(dest);
+            string destination = expandPath(entry["dest"]);
             bool baksMade = false;
-            ZipArchiveEntry modFile = archive.GetEntry(src);
+            ZipArchiveEntry modFile = archive.GetEntry(entry["src"]);
             if (modFile == null) {
                 return 3;
             }
-
-            if (File.Exists(destination)) {
-                if (Backups.createBackup(destination, false) == 0) {
-                    baksMade = true;
+            if (entry["type"] == "patch") {
+                return 0;   // TODO: Add patching functionality
+            } else if (entry["type"] == "create") {
+                if (File.Exists(destination)) {
+                    if (!IO.DeleteFile(destination)) {
+                        return 2;
+                    }
                 }
-                if (!IO.DeleteFile(destination)) {
+                try {
+                    modFile.ExtractToFile(destination);
+                } catch (IOException) {
                     return 2;
                 }
-            }
 
-            try {
-                modFile.ExtractToFile(destination);
-            } catch (IOException) {
-                return 2;
-            }
-
-            if (baksMade) {
-                return 1;
-            } else {
                 return 0;
+            } else {    // assume replace
+                if (File.Exists(destination)) {
+                    if (Backups.createBackup(destination, false) == 0) {
+                        baksMade = true;
+                    }
+                    if (!IO.DeleteFile(destination)) {
+                        return 2;
+                    }
+                }
+                try {
+                    modFile.ExtractToFile(destination);
+                } catch (IOException) {
+                    return 2;
+                }
+
+                if (baksMade) {
+                    return 1;
+                } else {
+                    return 0;
+                }
             }
         }
 
@@ -353,7 +368,7 @@ namespace MCC_Mod_Manager
 
                     List<string> patched = new List<string>();   // track patched files in case of failure mid patch
                     foreach (Dictionary<string, string> dict in modpackConfig) {
-                        int r = patchFile(archive, dict["src"], dict["dest"]);
+                        int r = patchFile(archive, dict);
                         if (r == 2 || r == 3) {
                             string errMsg;
                             if (r == 2) {
@@ -425,21 +440,30 @@ namespace MCC_Mod_Manager
                     List<Dictionary<string, string>> modpackConfig = getModpackConfig(archive);
                     if (modpackConfig == null) {
                         form1.showMsg("Could not unpatch '" + modpackname + "' because the modpack's configuration is corrupted or missing." +
-                            "\r\nPlease manually restore from backups or verify integrity of game files on Steam.", "Error");
+                            "\r\nPlease restore from backups using the Backups tab or verify integrity of game files on Steam.", "Error");
                         return 2;
                     }
                     List<Dictionary<string, string>> restored = new List<Dictionary<string, string>>(); // track restored files in case of failure mid unpatch
                     foreach (Dictionary<string, string> dict in modpackConfig) {
-                        if (!Backups.restoreBak(expandPath(dict["dest"]))) {
-                            // repatch restored mod files
-                            foreach (Dictionary<string, string> entry in restored) {
-                                int r = patchFile(archive, entry["src"], entry["dest"]);
-                                if (r == 2 || r == 3) {
-                                    form1.showMsg("Critical error encountered while unpatching '" + modpackname + "'." +
-                                        "\r\nYou may need to verify your game files on steam or reinstall.", "Error");
-                                }
+                        if (dict["type"] == "patch") {
+                            //TODO: Add patch funtionality
+                        } else if (dict["type"] == "create") {
+                            if (!IO.DeleteFile(dict["dest"])) {
+                                form1.showMsg("Could not delete the file '" + dict["dest"] + "'. This may affect your game. " +
+                                    "if you encounter issue please delete this file manually.", "Warning");
                             }
-                            return 2;
+                        } else {    // assume replace type entry
+                            if (!Backups.restoreBak(expandPath(dict["dest"]))) {
+                                // repatch restored mod files
+                                foreach (Dictionary<string, string> entry in restored) {
+                                    int r = patchFile(archive, entry);
+                                    if (r == 2 || r == 3) {
+                                        form1.showMsg("Critical error encountered while unpatching '" + modpackname + "'." +
+                                            "\r\nYou may need to verify your game files on steam or reinstall.", "Error");
+                                    }
+                                }
+                                return 2;
+                            }
                         }
                         restored.Add(dict);
                     }
@@ -465,11 +489,11 @@ namespace MCC_Mod_Manager
                 int ret = unpatchModpack(modpackname);
                 if (ret == 2) {
                     packErr = true;
-                } else {    // modpack was patched
-                    Config.rmPatched(modpackname); // modpack was unpatched
+                    chb.Checked = true;
+                } else {    // modpack was unpatched
+                    Config.rmPatched(modpackname);
                     ((PictureBox)chb.Parent.GetChildAtPoint(new Point(chb.Location.X - 45, chb.Location.Y))).Image = Properties.Resources.redDot_15px;
                 }
-                chb.Checked = false;
             }
 
             form1.pBar_hide();

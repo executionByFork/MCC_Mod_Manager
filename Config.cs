@@ -119,7 +119,7 @@ namespace MCC_Mod_Manager
             saveCfg();
             Modpacks.loadModpacks();
             if (!Backups.deleteAll(true)) {
-                form1.showMsg("There was an issue deleting at least one backup. Please delete this manually in the Backups tab to avoid restoring an old " +
+                form1.showMsg("There was an issue deleting at least one backup. Please delete these in the Backups tab to avoid restoring an old " +
                     "version of the file in the future.", "Error");
             }
             Backups.loadBackups();
