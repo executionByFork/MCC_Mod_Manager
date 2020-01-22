@@ -448,8 +448,8 @@ namespace MCC_Mod_Manager
                         if (dict["type"] == "patch") {
                             //TODO: Add patch funtionality
                         } else if (dict["type"] == "create") {
-                            if (!IO.DeleteFile(dict["dest"])) {
-                                form1.showMsg("Could not delete the file '" + dict["dest"] + "'. This may affect your game. " +
+                            if (!IO.DeleteFile(expandPath(dict["dest"]))) {
+                                form1.showMsg("Could not delete the file '" + expandPath(dict["dest"]) + "'. This may affect your game. " +
                                     "if you encounter issue please delete this file manually.", "Warning");
                             }
                         } else {    // assume replace type entry
