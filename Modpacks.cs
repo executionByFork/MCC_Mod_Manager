@@ -310,22 +310,7 @@ namespace MCC_Mod_Manager
             if (modFile == null) {
                 return 3;
             }
-            if (entry["type"] == "patch") {
-                return 0;   // TODO: Add patching functionality
-            } else if (entry["type"] == "create") {
-                if (File.Exists(destination)) {
-                    if (!IO.DeleteFile(destination)) {
-                        return 2;
-                    }
-                }
-                try {
-                    modFile.ExtractToFile(destination);
-                } catch (IOException) {
-                    return 2;
-                }
-
-                return 0;
-            } else {    // assume replace
+            if (!entry.ContainsKey("type") || String.IsNullOrEmpty(entry["type"]) || entry["type"] == "replace") {  // assume replace type entry
                 if (File.Exists(destination)) {
                     if (Backups.createBackup(destination, false) == 0) {
                         baksMade = true;
@@ -345,6 +330,23 @@ namespace MCC_Mod_Manager
                 } else {
                     return 0;
                 }
+            } else if (entry["type"] == "patch") {
+                return 0;   // TODO: Add patching functionality
+            } else if (entry["type"] == "create") {
+                if (File.Exists(destination)) {
+                    if (!IO.DeleteFile(destination)) {
+                        return 2;
+                    }
+                }
+                try {
+                    modFile.ExtractToFile(destination);
+                } catch (IOException) {
+                    return 2;
+                }
+
+                return 0;
+            } else {
+                return 4;
             }
         }
 
@@ -369,12 +371,14 @@ namespace MCC_Mod_Manager
                     List<string> patched = new List<string>();   // track patched files in case of failure mid patch
                     foreach (Dictionary<string, string> dict in modpackConfig) {
                         int r = patchFile(archive, dict);
-                        if (r == 2 || r == 3) {
+                        if (r != 0 && r != 1) {
                             string errMsg;
                             if (r == 2) {
                                 errMsg = "File Access Exception. If the game is running, exit it and try again.";
-                            } else {    // r == 3
+                            } else if (r == 3) {
                                 errMsg = "This modpack appears to be missing files.";
+                            } else {    // r == 4
+                                errMsg = "Unknown modfile type in modpack config.";
                             }
                             form1.showMsg(errMsg + "\r\nCould not install the '" + modpackname + "' modpack.", "Error");
 
@@ -445,14 +449,7 @@ namespace MCC_Mod_Manager
                     }
                     List<Dictionary<string, string>> restored = new List<Dictionary<string, string>>(); // track restored files in case of failure mid unpatch
                     foreach (Dictionary<string, string> dict in modpackConfig) {
-                        if (dict["type"] == "patch") {
-                            //TODO: Add patch funtionality
-                        } else if (dict["type"] == "create") {
-                            if (!IO.DeleteFile(expandPath(dict["dest"]))) {
-                                form1.showMsg("Could not delete the file '" + expandPath(dict["dest"]) + "'. This may affect your game. " +
-                                    "if you encounter issue please delete this file manually.", "Warning");
-                            }
-                        } else {    // assume replace type entry
+                        if (!dict.ContainsKey("type") || String.IsNullOrEmpty(dict["type"]) || dict["type"] == "replace") { // assume replace type entry
                             if (!Backups.restoreBak(expandPath(dict["dest"]))) {
                                 // repatch restored mod files
                                 foreach (Dictionary<string, string> entry in restored) {
@@ -464,6 +461,15 @@ namespace MCC_Mod_Manager
                                 }
                                 return 2;
                             }
+                        } else if (dict["type"] == "patch") {
+                            //TODO: Add patch funtionality
+                        } else if (dict["type"] == "create") {
+                            if (!IO.DeleteFile(expandPath(dict["dest"]))) {
+                                form1.showMsg("Could not delete the file '" + expandPath(dict["dest"]) + "'. This may affect your game. " +
+                                    "if you encounter issue please delete this file manually.", "Warning");
+                            }
+                        } else {
+                            form1.showMsg("Unknown modfile type in modpack config.\r\nCould not install the '" + modpackname + "' modpack.", "Error");
                         }
                         restored.Add(dict);
                     }
