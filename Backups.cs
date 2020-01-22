@@ -6,6 +6,7 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Windows.Forms;
 using System.Drawing;
+using System.IO.Compression;
 
 namespace MCC_Mod_Manager
 {
@@ -283,6 +284,26 @@ namespace MCC_Mod_Manager
             form1.pBar_hide();
         }
 
+        private static List<string> filterNeededBackups(List<string> paths)
+        {
+            List<string> requiredBaks = new List<string>();
+            foreach (string enabledModpack in Config.patched) {
+                List<Dictionary<string, string>> modpackConfig;
+                using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + enabledModpack + ".zip")) {
+                    modpackConfig = Modpacks.getModpackConfig(archive);
+                }
+                foreach (Dictionary<string, string> dict in modpackConfig) {
+                    foreach (string path in paths) {
+                        if (path == Modpacks.expandPath(dict["dest"])) {
+                            requiredBaks.Add(path);
+                        }
+                    }
+                }
+            }
+
+            return requiredBaks;
+        }
+
         public static void deleteSelected(IEnumerable<CheckBox> bakList)
         {
             ensureBackupFolderExists();
@@ -294,6 +315,7 @@ namespace MCC_Mod_Manager
 
             bool chk = false;
             form1.pBar_show(bakList.Count());
+            List<string> toDelete = new List<string>();
             foreach (CheckBox chb in bakList) {
                 form1.pBar_update();
                 if (chb.Checked) {
@@ -304,23 +326,37 @@ namespace MCC_Mod_Manager
                     } else {
                         path = getBakKey(chb.Text.Replace(Config.dirtyPadding, ""));
                     }
-
+                    toDelete.Add(path);
+                    chb.Checked = false;
+                }
+            }
+            if (chk) {
+                List<string> requiredBaks = filterNeededBackups(toDelete);
+                foreach (string path in toDelete) {
+                    if (requiredBaks.Contains(path)) {
+                        continue;
+                    }
                     if (IO.DeleteFile(Config.backup_dir + @"\" + _baks[path])) {
                         _baks.Remove(path);
                     } else {
                         form1.showMsg("Could not delete '" + _baks[path] + "'. Is the file open somewhere?", "Error");
                     }
-                    chb.Checked = false;
                 }
-            }
-            if (!chk) {
-                form1.showMsg("No items selected from the list.", "Error");
-            } else {
+
+                if (requiredBaks.Count() == 0) {
+                    form1.showMsg("Selected files have been deleted.", "Info");
+                } else {
+                    form1.showMsg(requiredBaks.Count() + " backups were not deleted because the original file(s) are currently patched with a mod. " +
+                        "Deleting these backups would make it impossible to unpatch the mod(s).", "Info");
+                }
                 saveBackups();
-                form1.showMsg("Selected files have been deleted.", "Info");
                 updateBackupList();
+                form1.pBar_hide();
+            } else {
+                form1.showMsg("No items selected from the list.", "Error");
+                form1.pBar_hide();
+                return;
             }
-            form1.pBar_hide();
         }
 
         public static bool deleteAll(bool y)
@@ -336,15 +372,29 @@ namespace MCC_Mod_Manager
 
             bool err = false;
             form1.pBar_show(_baks.Count());
-            List<string> remainingBaks = new List<string>();
+            List<string> toDelete = new List<string>();
             foreach (KeyValuePair<string, string> entry in _baks) {
-                form1.pBar_update();
-                if (!IO.DeleteFile(Config.backup_dir + @"\" + entry.Value)) {
-                    remainingBaks.Add(entry.Key);
-                    form1.showMsg("Could not delete '" + entry.Value + "'. Is the file open somewhere?", "Error");
+                toDelete.Add(entry.Key);
+            }
+            if (toDelete.Count() == 0) {
+                form1.showMsg("Nothing to delete.", "Info");
+                return true;
+            }
+
+            List<string> remainingBaks = new List<string>();
+            List<string> requiredBaks = filterNeededBackups(toDelete);
+            foreach (string path in toDelete) {
+                if (requiredBaks.Contains(path)) {
+                    remainingBaks.Add(path);
+                    continue;
+                }
+                if (!IO.DeleteFile(Config.backup_dir + @"\" + _baks[path])) {
+                    remainingBaks.Add(path);
+                    form1.showMsg("Could not delete '" + path + "'. Is the file open somewhere?", "Error");
                     err = true;
                 }
             }
+
             if (remainingBaks.Count() == 0) {
                 _baks = new Dictionary<string, string>();
                 form1.showMsg("All backups deleted.", "Info");
@@ -359,6 +409,10 @@ namespace MCC_Mod_Manager
             updateBackupList();
             form1.pBar_hide();
 
+            if (requiredBaks.Count() != 0) {
+                form1.showMsg(requiredBaks.Count() + " backups were not deleted because the original file(s) are currently patched with a mod. " +
+                        "Deleting these backups would make it impossible to unpatch the mod(s).", "Info");
+            }
             return !err;
         }
     }

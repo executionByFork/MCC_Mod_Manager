@@ -22,7 +22,7 @@ namespace MCC_Mod_Manager
             return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
         }
 
-        private static string expandPath(string p)
+        public static string expandPath(string p)
         {
             return p.Replace("$MCC_home", Config.MCC_home);
         }
@@ -255,7 +255,7 @@ namespace MCC_Mod_Manager
             form1.pBar_hide();
         }
 
-        private static List<Dictionary<string, string>> getModpackConfig(ZipArchive archive)
+        public static List<Dictionary<string, string>> getModpackConfig(ZipArchive archive)
         {
             ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpack_config.cfg");
             if (modpackConfigEntry == null) {
