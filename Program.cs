@@ -6,8 +6,10 @@ using System.Windows.Forms;
 
 namespace MCC_Mod_Manager
 {
-    static class Program
+    public static class Program
     {
+        public static MasterForm MasterForm;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -16,7 +18,8 @@ namespace MCC_Mod_Manager
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            MasterForm = new MasterForm();
+            Application.Run(MasterForm);
         }
     }
 }
