@@ -367,6 +367,9 @@ namespace MCC_Mod_Manager
             this.clearBtn.TabIndex = 15;
             this.clearBtn.Text = "Clear All";
             this.clearBtn.UseVisualStyleBackColor = true;
+            this.clearBtn.Click += new System.EventHandler(Modpacks.ClearBtn_Click);
+            this.clearBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.clearBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // addRowButton
             // 
@@ -377,6 +380,9 @@ namespace MCC_Mod_Manager
             this.addRowButton.Size = new System.Drawing.Size(25, 25);
             this.addRowButton.TabIndex = 14;
             this.addRowButton.TabStop = false;
+            this.addRowButton.Click += new System.EventHandler(Modpacks.AddRowButton_Click);
+            this.addRowButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.addRowButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // createModpackBtn
             // 
@@ -387,6 +393,9 @@ namespace MCC_Mod_Manager
             this.createModpackBtn.TabIndex = 13;
             this.createModpackBtn.Text = "Create Modpack";
             this.createModpackBtn.UseVisualStyleBackColor = true;
+            this.createModpackBtn.Click += new System.EventHandler(Modpacks.CreateModpackBtn_Click);
+            this.createModpackBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.createModpackBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // createLabel2
             // 

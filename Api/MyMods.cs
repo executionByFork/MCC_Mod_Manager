@@ -61,7 +61,7 @@ namespace MCC_Mod_Manager
                 {
                     toPatch.Add(chb);
                 }
-                else if (!chb.Checked && Config.IsPatched(modpackname))
+                else if (chb.Checked && Config.IsPatched(modpackname))
                 {
                     toUnpatch.Add(chb);
                 }
