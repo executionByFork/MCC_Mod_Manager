@@ -106,12 +106,12 @@ namespace MCC_Mod_Manager
         {
             EnsureBackupFolderExists();
 
-            Program.MasterForm.pBar_show(_baks.Count());
+            Program.MasterForm.PBar_show(_baks.Count());
             List<string> remainingBaks = new List<string>();
             bool chk = false;
             foreach (KeyValuePair<string, string> entry in _baks)
             {
-                Program.MasterForm.pBar_update();
+                Program.MasterForm.PBar_update();
                 string bakPath = Config.backup_dir + @"\" + entry.Value;
                 if (Utility.CopyFile(bakPath, entry.Key, true) == 0)
                 {
@@ -155,7 +155,7 @@ namespace MCC_Mod_Manager
             }
             SaveBackups();
             UpdateBackupList();
-            Program.MasterForm.pBar_hide();
+            Program.MasterForm.PBar_hide();
         }
 
         public static void DelSelectedBak_Click(object sender, EventArgs e)
@@ -170,10 +170,10 @@ namespace MCC_Mod_Manager
             }
 
             bool chk = false;
-            Program.MasterForm.pBar_show(bakList.Count());
+            Program.MasterForm.PBar_show(bakList.Count());
             foreach (CheckBox chb in bakList)
             {
-                Program.MasterForm.pBar_update();
+                Program.MasterForm.PBar_update();
                 if (chb.Checked)
                 {
                     chk = true;
@@ -208,7 +208,7 @@ namespace MCC_Mod_Manager
                 Utility.ShowMsg("Selected files have been deleted.", "Info");
                 UpdateBackupList();
             }
-            Program.MasterForm.pBar_hide();
+            Program.MasterForm.PBar_hide();
         }
 
         public static void DelAllBaksBtn_Click(object sender, EventArgs e)
@@ -328,12 +328,12 @@ namespace MCC_Mod_Manager
                 return 0;
             }
 
-            Program.MasterForm.pBar_show(backupPathList.Count());
+            Program.MasterForm.PBar_show(backupPathList.Count());
             bool chk = false;
             bool err = false;
             foreach (string path in backupPathList)
             {
-                Program.MasterForm.pBar_update();
+                Program.MasterForm.PBar_update();
                 if (RestoreBak(path))
                 {
                     chk = true;
@@ -345,7 +345,7 @@ namespace MCC_Mod_Manager
             }
             SaveBackups();
             UpdateBackupList();
-            Program.MasterForm.pBar_hide();
+            Program.MasterForm.PBar_hide();
             if (chk)
             {
                 if (err)
@@ -371,11 +371,11 @@ namespace MCC_Mod_Manager
             }
 
             bool err = false;
-            Program.MasterForm.pBar_show(_baks.Count());
+            Program.MasterForm.PBar_show(_baks.Count());
             List<string> remainingBaks = new List<string>();
             foreach (KeyValuePair<string, string> entry in _baks)
             {
-                Program.MasterForm.pBar_update();
+                Program.MasterForm.PBar_update();
                 if (!Utility.DeleteFile(Config.backup_dir + @"\" + entry.Value))
                 {
                     remainingBaks.Add(entry.Key);
@@ -399,7 +399,7 @@ namespace MCC_Mod_Manager
             }
             SaveBackups();
             UpdateBackupList();
-            Program.MasterForm.pBar_hide();
+            Program.MasterForm.PBar_hide();
 
             return !err;
         }

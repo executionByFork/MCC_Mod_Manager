@@ -99,10 +99,10 @@ namespace MCC_Mod_Manager
             bool chk = false;
             bool del = false;
             bool partial = false;
-            Program.MasterForm.pBar_show(modpacksList.Count());
+            Program.MasterForm.PBar_show(modpacksList.Count());
             foreach (CheckBox chb in modpacksList)
             {
-                Program.MasterForm.pBar_update();
+                Program.MasterForm.PBar_update();
                 if (chb.Checked)
                 {
                     if (!chk)
@@ -110,7 +110,7 @@ namespace MCC_Mod_Manager
                         DialogResult ans = Utility.ShowMsg("Are you sure you want to delete the selected modpacks(s)?\r\nNo crying afterwards?", "Question");
                         if (ans == DialogResult.No)
                         {
-                            Program.MasterForm.pBar_hide();
+                            Program.MasterForm.PBar_hide();
                             return;
                         }
                     }
@@ -164,7 +164,7 @@ namespace MCC_Mod_Manager
                 Modpacks.LoadModpacks();
             }
             Config.SaveCfg();
-            Program.MasterForm.pBar_hide();
+            Program.MasterForm.PBar_hide();
         }
 
         #endregion
@@ -176,10 +176,10 @@ namespace MCC_Mod_Manager
         {
             bool baksMade = false;
             bool packErr = false;
-            Program.MasterForm.pBar_show(toPatch.Count());
+            Program.MasterForm.PBar_show(toPatch.Count());
             foreach (CheckBox chb in toPatch)
             {
-                Program.MasterForm.pBar_update();
+                Program.MasterForm.PBar_update();
                 string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
                 int ret = PatchModpack(modpackname);
                 if (ret == 2)
@@ -194,7 +194,7 @@ namespace MCC_Mod_Manager
                 }
             }
 
-            Program.MasterForm.pBar_hide();
+            Program.MasterForm.PBar_hide();
             if (packErr)
             {   // fail / partial success - At least one modpack was not patched
                 return 2;
@@ -322,10 +322,10 @@ namespace MCC_Mod_Manager
         private static int UnpatchModpacks(List<CheckBox> toUnpatch)
         {
             bool packErr = false;
-            Program.MasterForm.pBar_show(toUnpatch.Count());
+            Program.MasterForm.PBar_show(toUnpatch.Count());
             foreach (CheckBox chb in toUnpatch)
             {
-                Program.MasterForm.pBar_update();
+                Program.MasterForm.PBar_update();
                 string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
                 int ret = UnpatchModpack(modpackname);
                 if (ret == 2)
@@ -340,7 +340,7 @@ namespace MCC_Mod_Manager
                 chb.Checked = false;
             }
 
-            Program.MasterForm.pBar_hide();
+            Program.MasterForm.PBar_hide();
             if (packErr)
             { // fail / partial success - At least one modpack was not patched
                 return 2;

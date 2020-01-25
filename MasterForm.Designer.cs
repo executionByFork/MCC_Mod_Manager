@@ -84,6 +84,7 @@ namespace MCC_Mod_Manager
             this.bakLabel2 = new System.Windows.Forms.Label();
             this.bakLabel1 = new System.Windows.Forms.Label();
             this.bakListPanel = new System.Windows.Forms.Panel();
+            this.CreatedByLabel = new System.Windows.Forms.Label();
             this.topBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).BeginInit();
@@ -112,10 +113,8 @@ namespace MCC_Mod_Manager
             this.topBar.Dock = System.Windows.Forms.DockStyle.Top;
             this.topBar.Location = new System.Drawing.Point(0, 0);
             this.topBar.Name = "topBar";
-            this.topBar.Size = new System.Drawing.Size(582, 37);
+            this.topBar.Size = new System.Drawing.Size(577, 37);
             this.topBar.TabIndex = 1;
-            this.topBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
-            this.topBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
             // 
             // pictureBox1
             // 
@@ -137,34 +136,26 @@ namespace MCC_Mod_Manager
             this.version_lbl.TabIndex = 6;
             this.version_lbl.Text = "v???";
             this.version_lbl.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.version_lbl.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
-            this.version_lbl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
             // 
             // refreshButton
             // 
             this.refreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.refreshButton.Image = ((System.Drawing.Image)(resources.GetObject("refreshButton.Image")));
-            this.refreshButton.Location = new System.Drawing.Point(478, 3);
+            this.refreshButton.Location = new System.Drawing.Point(473, 3);
             this.refreshButton.Name = "refreshButton";
             this.refreshButton.Size = new System.Drawing.Size(30, 30);
             this.refreshButton.TabIndex = 5;
             this.refreshButton.TabStop = false;
-            this.refreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
-            this.refreshButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.refreshButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // minButton
             // 
             this.minButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.minButton.Image = ((System.Drawing.Image)(resources.GetObject("minButton.Image")));
-            this.minButton.Location = new System.Drawing.Point(514, 3);
+            this.minButton.Location = new System.Drawing.Point(509, 3);
             this.minButton.Name = "minButton";
             this.minButton.Size = new System.Drawing.Size(30, 30);
             this.minButton.TabIndex = 4;
             this.minButton.TabStop = false;
-            this.minButton.Click += new System.EventHandler(this.minButton_Click);
-            this.minButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.minButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // titleLabel
             // 
@@ -176,21 +167,16 @@ namespace MCC_Mod_Manager
             this.titleLabel.Size = new System.Drawing.Size(240, 19);
             this.titleLabel.TabIndex = 3;
             this.titleLabel.Text = "MCC Mod Manager by MrFRZ0";
-            this.titleLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
-            this.titleLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
             // 
             // exitButton
             // 
             this.exitButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.exitButton.Image = ((System.Drawing.Image)(resources.GetObject("exitButton.Image")));
-            this.exitButton.Location = new System.Drawing.Point(548, 3);
+            this.exitButton.Location = new System.Drawing.Point(543, 3);
             this.exitButton.Name = "exitButton";
             this.exitButton.Size = new System.Drawing.Size(30, 30);
             this.exitButton.TabIndex = 2;
             this.exitButton.TabStop = false;
-            this.exitButton.Click += new System.EventHandler(this.exitButton_Click);
-            this.exitButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.exitButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // betterPBar
             // 
@@ -207,10 +193,10 @@ namespace MCC_Mod_Manager
             this.TabControl.Controls.Add(this.BackupsTab);
             this.TabControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TabControl.ItemSize = new System.Drawing.Size(58, 30);
-            this.TabControl.Location = new System.Drawing.Point(5, 40);
+            this.TabControl.Location = new System.Drawing.Point(0, 40);
             this.TabControl.Name = "TabControl";
             this.TabControl.SelectedIndex = 0;
-            this.TabControl.Size = new System.Drawing.Size(573, 402);
+            this.TabControl.Size = new System.Drawing.Size(577, 402);
             this.TabControl.TabIndex = 11;
             // 
             // MyModsTab
@@ -227,7 +213,7 @@ namespace MCC_Mod_Manager
             this.MyModsTab.Location = new System.Drawing.Point(4, 34);
             this.MyModsTab.Name = "MyModsTab";
             this.MyModsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.MyModsTab.Size = new System.Drawing.Size(565, 364);
+            this.MyModsTab.Size = new System.Drawing.Size(569, 364);
             this.MyModsTab.TabIndex = 0;
             this.MyModsTab.Text = "My Mods";
             // 
@@ -242,7 +228,6 @@ namespace MCC_Mod_Manager
             this.manualOverride.TabIndex = 16;
             this.manualOverride.Text = "Allow Manual Override";
             this.manualOverride.UseVisualStyleBackColor = true;
-            this.manualOverride.CheckedChanged += new System.EventHandler(MyMods.ManualOverride_CheckedChanged);
             // 
             // selectEnabled_chb
             // 
@@ -255,7 +240,6 @@ namespace MCC_Mod_Manager
             this.selectEnabled_chb.TabIndex = 15;
             this.selectEnabled_chb.Text = "Select Enabled";
             this.selectEnabled_chb.UseVisualStyleBackColor = true;
-            this.selectEnabled_chb.CheckedChanged += new System.EventHandler(MyMods.SelectEnabled_chb_CheckedChanged);
             // 
             // homeEnabledLabel
             // 
@@ -277,9 +261,6 @@ namespace MCC_Mod_Manager
             this.delModpack.TabIndex = 13;
             this.delModpack.Text = "Delete Selected";
             this.delModpack.UseVisualStyleBackColor = true;
-            this.delModpack.Click += new System.EventHandler(MyMods.DeleteSelected_Click);
-            this.delModpack.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.delModpack.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // patchButton
             // 
@@ -290,9 +271,6 @@ namespace MCC_Mod_Manager
             this.patchButton.TabIndex = 12;
             this.patchButton.Text = "Patch/Unpatch";
             this.patchButton.UseVisualStyleBackColor = true;
-            this.patchButton.Click += new System.EventHandler(MyMods.PatchUnpatch_Click);
-            this.patchButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.patchButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // homeNameLabel
             // 
@@ -337,7 +315,7 @@ namespace MCC_Mod_Manager
             this.CreateModpackTab.Location = new System.Drawing.Point(4, 34);
             this.CreateModpackTab.Name = "CreateModpackTab";
             this.CreateModpackTab.Padding = new System.Windows.Forms.Padding(3);
-            this.CreateModpackTab.Size = new System.Drawing.Size(565, 364);
+            this.CreateModpackTab.Size = new System.Drawing.Size(569, 364);
             this.CreateModpackTab.TabIndex = 1;
             this.CreateModpackTab.Text = "Create Modpack";
             // 
@@ -367,9 +345,6 @@ namespace MCC_Mod_Manager
             this.clearBtn.TabIndex = 15;
             this.clearBtn.Text = "Clear All";
             this.clearBtn.UseVisualStyleBackColor = true;
-            this.clearBtn.Click += new System.EventHandler(Modpacks.ClearBtn_Click);
-            this.clearBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.clearBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // addRowButton
             // 
@@ -380,9 +355,6 @@ namespace MCC_Mod_Manager
             this.addRowButton.Size = new System.Drawing.Size(25, 25);
             this.addRowButton.TabIndex = 14;
             this.addRowButton.TabStop = false;
-            this.addRowButton.Click += new System.EventHandler(Modpacks.AddRowButton_Click);
-            this.addRowButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.addRowButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // createModpackBtn
             // 
@@ -393,9 +365,6 @@ namespace MCC_Mod_Manager
             this.createModpackBtn.TabIndex = 13;
             this.createModpackBtn.Text = "Create Modpack";
             this.createModpackBtn.UseVisualStyleBackColor = true;
-            this.createModpackBtn.Click += new System.EventHandler(Modpacks.CreateModpackBtn_Click);
-            this.createModpackBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.createModpackBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // createLabel2
             // 
@@ -429,6 +398,7 @@ namespace MCC_Mod_Manager
             // ConfigurationTab
             // 
             this.ConfigurationTab.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.ConfigurationTab.Controls.Add(this.CreatedByLabel);
             this.ConfigurationTab.Controls.Add(this.resetApp);
             this.ConfigurationTab.Controls.Add(this.delOldBaks_chb);
             this.ConfigurationTab.Controls.Add(this.panel3);
@@ -441,7 +411,7 @@ namespace MCC_Mod_Manager
             this.ConfigurationTab.Location = new System.Drawing.Point(4, 34);
             this.ConfigurationTab.Name = "ConfigurationTab";
             this.ConfigurationTab.Padding = new System.Windows.Forms.Padding(3);
-            this.ConfigurationTab.Size = new System.Drawing.Size(565, 364);
+            this.ConfigurationTab.Size = new System.Drawing.Size(569, 364);
             this.ConfigurationTab.TabIndex = 2;
             this.ConfigurationTab.Text = "Configuration";
             // 
@@ -455,9 +425,6 @@ namespace MCC_Mod_Manager
             this.resetApp.TabIndex = 61;
             this.resetApp.Text = "Reset App";
             this.resetApp.UseVisualStyleBackColor = true;
-            this.resetApp.Click += new System.EventHandler(Config.ResetApp_Click);
-            this.resetApp.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.resetApp.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // delOldBaks_chb
             // 
@@ -495,7 +462,6 @@ namespace MCC_Mod_Manager
             this.cfgBrowseBtn3.Text = "...";
             this.cfgBrowseBtn3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.cfgBrowseBtn3.UseVisualStyleBackColor = true;
-            this.cfgBrowseBtn3.Click += new System.EventHandler(Config.BrowseFolderBtn_Click);
             // 
             // panel2
             // 
@@ -523,7 +489,6 @@ namespace MCC_Mod_Manager
             this.cfgBrowseBtn2.Text = "...";
             this.cfgBrowseBtn2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.cfgBrowseBtn2.UseVisualStyleBackColor = true;
-            this.cfgBrowseBtn2.Click += new System.EventHandler(Config.BrowseFolderBtn_Click);
             // 
             // panel1
             // 
@@ -551,7 +516,6 @@ namespace MCC_Mod_Manager
             this.cfgBrowseBtn1.Text = "...";
             this.cfgBrowseBtn1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.cfgBrowseBtn1.UseVisualStyleBackColor = true;
-            this.cfgBrowseBtn1.Click += new System.EventHandler(Config.BrowseFolderBtn_Click);
             // 
             // configLabel3
             // 
@@ -582,9 +546,6 @@ namespace MCC_Mod_Manager
             this.cfgUpdateBtn.TabIndex = 54;
             this.cfgUpdateBtn.Text = "Update";
             this.cfgUpdateBtn.UseVisualStyleBackColor = true;
-            this.cfgUpdateBtn.Click += new System.EventHandler(Config.UpdateBtn_Click);
-            this.cfgUpdateBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.cfgUpdateBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // configLabel1
             // 
@@ -611,7 +572,7 @@ namespace MCC_Mod_Manager
             this.BackupsTab.Location = new System.Drawing.Point(4, 34);
             this.BackupsTab.Name = "BackupsTab";
             this.BackupsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.BackupsTab.Size = new System.Drawing.Size(565, 364);
+            this.BackupsTab.Size = new System.Drawing.Size(569, 364);
             this.BackupsTab.TabIndex = 3;
             this.BackupsTab.Text = "Backups";
             // 
@@ -624,7 +585,6 @@ namespace MCC_Mod_Manager
             this.fullBakPath_chb.TabIndex = 17;
             this.fullBakPath_chb.Text = "Show full path";
             this.fullBakPath_chb.UseVisualStyleBackColor = true;
-            this.fullBakPath_chb.CheckedChanged += new System.EventHandler(Backups.ShowFullPathCheckbox_Click);
             // 
             // restoreSelectedBtn
             // 
@@ -635,9 +595,6 @@ namespace MCC_Mod_Manager
             this.restoreSelectedBtn.TabIndex = 16;
             this.restoreSelectedBtn.Text = "Restore Selected";
             this.restoreSelectedBtn.UseVisualStyleBackColor = true;
-            this.restoreSelectedBtn.Click += new System.EventHandler(Backups.RestoreSelectedBtn_Click);
-            this.restoreSelectedBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.restoreSelectedBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // delAllBaksBtn
             // 
@@ -649,9 +606,6 @@ namespace MCC_Mod_Manager
             this.delAllBaksBtn.TabIndex = 15;
             this.delAllBaksBtn.Text = "Delete All Backups";
             this.delAllBaksBtn.UseVisualStyleBackColor = true;
-            this.delAllBaksBtn.Click += new System.EventHandler(Backups.DelAllBaksBtn_Click);
-            this.delAllBaksBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.delAllBaksBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // makeBakBtn
             // 
@@ -662,9 +616,6 @@ namespace MCC_Mod_Manager
             this.makeBakBtn.TabIndex = 14;
             this.makeBakBtn.Text = "New Backup";
             this.makeBakBtn.UseVisualStyleBackColor = true;
-            this.makeBakBtn.Click += new System.EventHandler(Backups.MakeBakBtn_Click);
-            this.makeBakBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.makeBakBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // restoreAllBaksBtn
             // 
@@ -675,9 +626,6 @@ namespace MCC_Mod_Manager
             this.restoreAllBaksBtn.TabIndex = 13;
             this.restoreAllBaksBtn.Text = "Restore All Files";
             this.restoreAllBaksBtn.UseVisualStyleBackColor = true;
-            this.restoreAllBaksBtn.Click += new System.EventHandler(Backups.RestoreAllBaksBtn_Click);
-            this.restoreAllBaksBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.restoreAllBaksBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // delSelectedBak
             // 
@@ -689,9 +637,6 @@ namespace MCC_Mod_Manager
             this.delSelectedBak.TabIndex = 12;
             this.delSelectedBak.Text = "Delete Selected";
             this.delSelectedBak.UseVisualStyleBackColor = true;
-            this.delSelectedBak.Click += new System.EventHandler(Backups.DelSelectedBak_Click);
-            this.delSelectedBak.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.delSelectedBak.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // bakLabel2
             // 
@@ -722,12 +667,22 @@ namespace MCC_Mod_Manager
             this.bakListPanel.Size = new System.Drawing.Size(402, 322);
             this.bakListPanel.TabIndex = 9;
             // 
+            // label1
+            // 
+            this.CreatedByLabel.AutoSize = true;
+            this.CreatedByLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.CreatedByLabel.Location = new System.Drawing.Point(39, 325);
+            this.CreatedByLabel.Name = "label1";
+            this.CreatedByLabel.Size = new System.Drawing.Size(105, 13);
+            this.CreatedByLabel.TabIndex = 62;
+            this.CreatedByLabel.Text = "Created and built by MrFRZ0 ~ Enhancements by Darksound";
+            // 
             // MasterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.ClientSize = new System.Drawing.Size(582, 497);
+            this.ClientSize = new System.Drawing.Size(577, 443);
             this.Controls.Add(this.TabControl);
             this.Controls.Add(this.betterPBar);
             this.Controls.Add(this.topBar);
@@ -817,6 +772,7 @@ namespace MCC_Mod_Manager
         public System.Windows.Forms.Label createLabel1;
         public System.Windows.Forms.Panel createFilesPanel;
         public System.Windows.Forms.PictureBox pictureBox1;
+        public System.Windows.Forms.Label CreatedByLabel;
     }
 }
 

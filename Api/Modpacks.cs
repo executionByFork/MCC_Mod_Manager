@@ -19,7 +19,7 @@ namespace MCC_Mod_Manager
             del.Image = del.ErrorImage;    // bit of a hack to get the error image to appear
             del.Width = 14;
             del.Height = 16;
-            del.MouseEnter += Program.MasterForm.btnHoverOn;
+            del.MouseEnter += Program.MasterForm.BtnHoverOn;
             del.MouseLeave += Program.MasterForm.btnHoverOff;
             del.Click += Modpacks.DeleteRow;
             del.Location = Config.delBtnPoint;
@@ -155,14 +155,14 @@ namespace MCC_Mod_Manager
                 return;
             }
 
-            Program.MasterForm.pBar_show(fileMap.Count());
+            Program.MasterForm.PBar_show(fileMap.Count());
             try
             {
                 using (var archive = ZipFile.Open(zipPath, ZipArchiveMode.Create))
                 {
                     foreach (var entry in fileMap)
                     {
-                        Program.MasterForm.pBar_update();
+                        Program.MasterForm.PBar_update();
                         String fileName = Path.GetFileName(entry["src"]);
                         archive.CreateEntryFromFile(entry["src"], fileName);    // TODO: Fix issues when two source files have same name but diff path
                                                                                 // change src path to just modpack after archive creation but before json serialization
@@ -188,7 +188,7 @@ namespace MCC_Mod_Manager
             }
 
             Utility.ShowMsg("Modpack '" + modpackFilename + "' created.", "Info");
-            Program.MasterForm.pBar_hide();
+            Program.MasterForm.PBar_hide();
             ResetCreateModpacksTab();
             LoadModpacks();
             return;
@@ -229,7 +229,7 @@ namespace MCC_Mod_Manager
                 if (Program.MasterForm.manualOverride.Checked)
                 {
                     p.Click += ForceModpackState;
-                    p.MouseEnter += Program.MasterForm.btnHoverOn;
+                    p.MouseEnter += Program.MasterForm.BtnHoverOn;
                     p.MouseLeave += Program.MasterForm.btnHoverOff;
                 }
 

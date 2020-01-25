@@ -69,13 +69,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\Utility.cs" />
+    <Compile Include="Api\Utilities\Utility.cs" />
     <Compile Include="Api\Backups.cs" />
     <Compile Include="Api\MyMods.cs" />
     <Compile Include="Api\Config.cs" />
     <Compile Include="Api\Modpacks.cs" />
-    <Compile Include="Enums\Enums.cs" />
-    <Compile Include="Api\FolderSelectDialog.cs" />
+    <Compile Include="Api\Utilities\FolderSelectDialog.cs" />
     <Compile Include="MasterForm.cs">
       <SubType>Form</SubType>
     </Compile>
