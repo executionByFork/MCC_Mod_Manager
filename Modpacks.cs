@@ -331,6 +331,8 @@ namespace MCC_Mod_Manager
                     return 0;
                 }
             } else if (entry["type"] == "patch") {
+                //modFile.ExtractToFile(Config.modpack_dir + "tmp.asmp");
+                //AssemblyPatching.applyPatch(Config.modpack_dir + "tmp.asmp", destination);
                 return 0;   // TODO: Add patching functionality
             } else if (entry["type"] == "create") {
                 if (File.Exists(destination)) {

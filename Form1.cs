@@ -27,6 +27,7 @@ namespace MCC_Mod_Manager
             Backups.loadBackups();
             Modpacks.form1 = this;
             Modpacks.loadModpacks();
+            AssemblyPatching.form1 = this;
             pBar_init();
         }
 
