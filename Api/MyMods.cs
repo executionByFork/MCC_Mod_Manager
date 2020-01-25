@@ -248,7 +248,7 @@ namespace MCC_Mod_Manager
                             }
                             Utility.ShowMsg(errMsg + "\r\nCould not install the '" + modpackname + "' modpack.", "Error");
 
-                            if (Backups.restoreBaks(patched) != 0)
+                            if (Backups.RestoreBaks(patched) != 0)
                             {
                                 Utility.ShowMsg("At least one file restore failed. Your game is likely in an unstable state.", "Warning");
                             }
@@ -367,7 +367,7 @@ namespace MCC_Mod_Manager
                     List<Dictionary<string, string>> restored = new List<Dictionary<string, string>>(); // track restored files in case of failure mid unpatch
                     foreach (Dictionary<string, string> dict in modpackConfig)
                     {
-                        if (!Backups.restoreBak(ExpandPath(dict["dest"])))
+                        if (!Backups.RestoreBak(ExpandPath(dict["dest"])))
                         {
                             // repatch restored mod files
                             foreach (Dictionary<string, string> entry in restored)
@@ -441,7 +441,7 @@ namespace MCC_Mod_Manager
 
             if (File.Exists(destination))
             {
-                if (Backups.createBackup(destination, false) == 0)
+                if (Backups.CreateBackup(destination, false) == 0)
                 {
                     baksMade = true;
                 }

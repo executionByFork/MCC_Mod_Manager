@@ -184,7 +184,7 @@ namespace MCC_Mod_Manager
         private void createModpackBtn_Click(object sender, EventArgs e)
         {
             Modpacks.CreateModpack(modpackName_txt.Text, createFilesPanel.Controls.OfType<Panel>());
-        }
+        }   
 
         private void clearBtn_Click(object sender, EventArgs e)
         {
@@ -196,85 +196,6 @@ namespace MCC_Mod_Manager
             createFilesPanel.Controls.Clear();
             createPageList = new List<Panel>(); // garbage collector magic
             modpackName_txt.Text = "";
-        }
-
-        //////////////////////////////////
-        /////       CONFIG TAB       /////
-        //////////////////////////////////
-
-        private void cfgFolderBrowseBtn_Click(object sender, EventArgs e)
-        {
-            var dialog = new FolderSelectDialog {
-                InitialDirectory = Config.MCC_home,
-                Title = "Select a folder"
-            };
-            if (dialog.Show(Handle)) {
-                ((Button)sender).Parent.GetChildAtPoint(new Point(5, 3)).Text = dialog.FileName;
-            }
-        }
-
-        //////////////////////////////////
-        /////       BACKUP TAB       /////
-        //////////////////////////////////
-
-
-        private void makeBakBtn_Click(object sender, EventArgs e)
-        {
-            Backups.newBackup();
-        }
-
-        private void restoreSelectedBtn_Click(object sender, EventArgs e)
-        {
-            Backups.restoreSelected(bakListPanel.Controls.OfType<CheckBox>());
-        }
-
-        private void restoreAllBaksBtn_Click(object sender, EventArgs e)
-        {
-            Backups.restoreAll();
-        }
-
-        private void delSelectedBak_Click(object sender, EventArgs e)
-        {
-            Backups.deleteSelected(bakListPanel.Controls.OfType<CheckBox>());
-        }
-
-        private void delAllBaksBtn_Click(object sender, EventArgs e)
-        {
-            Backups.deleteAll(false);
-        }
-
-        private void fullBakPath_chb_CheckedChanged(object sender, EventArgs e)
-        {
-            Config.fullBakPath = fullBakPath_chb.Checked;
-            if (Config.fullBakPath) {   // swapping from filename to full path
-                foreach (CheckBox chb in bakListPanel.Controls.OfType<CheckBox>()) {
-                    chb.Text = Config.dirtyPadding + Backups.getBakKey(chb.Text.Replace(Config.dirtyPadding, ""));
-                }
-            } else {    // swapping from full path to filename
-                foreach (CheckBox chb in bakListPanel.Controls.OfType<CheckBox>()) {
-                    chb.Text = Config.dirtyPadding + Backups._baks[chb.Text.Replace(Config.dirtyPadding, "")];
-                }
-            }
-        }
-
-        public bool fullBakPath_Checked()
-        {
-            return fullBakPath_chb.Checked;
-        }
-
-        public int bakListPanel_getCount()
-        {
-            return bakListPanel.Controls.Count;
-        }
-
-        public void bakListPanel_clear()
-        {
-            bakListPanel.Controls.Clear();
-        }
-
-        public void bakListPanel_add(CheckBox chb)
-        {
-            bakListPanel.Controls.Add(chb);
         }
 
         //////////////////////////////////

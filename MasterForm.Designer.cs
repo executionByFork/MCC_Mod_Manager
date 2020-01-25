@@ -615,6 +615,7 @@ namespace MCC_Mod_Manager
             this.fullBakPath_chb.TabIndex = 17;
             this.fullBakPath_chb.Text = "Show full path";
             this.fullBakPath_chb.UseVisualStyleBackColor = true;
+            this.fullBakPath_chb.CheckedChanged += new System.EventHandler(Backups.ShowFullPathCheckbox_Click);
             // 
             // restoreSelectedBtn
             // 
@@ -625,6 +626,9 @@ namespace MCC_Mod_Manager
             this.restoreSelectedBtn.TabIndex = 16;
             this.restoreSelectedBtn.Text = "Restore Selected";
             this.restoreSelectedBtn.UseVisualStyleBackColor = true;
+            this.restoreSelectedBtn.Click += new System.EventHandler(Backups.RestoreSelectedBtn_Click);
+            this.restoreSelectedBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.restoreSelectedBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // delAllBaksBtn
             // 
@@ -636,6 +640,9 @@ namespace MCC_Mod_Manager
             this.delAllBaksBtn.TabIndex = 15;
             this.delAllBaksBtn.Text = "Delete All Backups";
             this.delAllBaksBtn.UseVisualStyleBackColor = true;
+            this.delAllBaksBtn.Click += new System.EventHandler(Backups.DelAllBaksBtn_Click);
+            this.delAllBaksBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.delAllBaksBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // makeBakBtn
             // 
@@ -646,6 +653,9 @@ namespace MCC_Mod_Manager
             this.makeBakBtn.TabIndex = 14;
             this.makeBakBtn.Text = "New Backup";
             this.makeBakBtn.UseVisualStyleBackColor = true;
+            this.makeBakBtn.Click += new System.EventHandler(Backups.MakeBakBtn_Click);
+            this.makeBakBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.makeBakBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // restoreAllBaksBtn
             // 
@@ -656,6 +666,9 @@ namespace MCC_Mod_Manager
             this.restoreAllBaksBtn.TabIndex = 13;
             this.restoreAllBaksBtn.Text = "Restore All Files";
             this.restoreAllBaksBtn.UseVisualStyleBackColor = true;
+            this.restoreAllBaksBtn.Click += new System.EventHandler(Backups.RestoreAllBaksBtn_Click);
+            this.restoreAllBaksBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.restoreAllBaksBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // delSelectedBak
             // 
@@ -667,6 +680,9 @@ namespace MCC_Mod_Manager
             this.delSelectedBak.TabIndex = 12;
             this.delSelectedBak.Text = "Delete Selected";
             this.delSelectedBak.UseVisualStyleBackColor = true;
+            this.delSelectedBak.Click += new System.EventHandler(Backups.DelSelectedBak_Click);
+            this.delSelectedBak.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.delSelectedBak.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // bakLabel2
             // 
