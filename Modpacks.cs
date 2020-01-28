@@ -9,6 +9,19 @@ using Newtonsoft.Json;
 
 namespace MCC_Mod_Manager
 {
+    public class modpackEntry
+    {
+        public string src;
+        public string orig;
+        public string dest;
+        public string type;
+    }
+    public class modpackCfg
+    {
+        public string MCC_version;
+        public List<modpackEntry> entries = new List<modpackEntry>();
+    }
+
     static class Modpacks
     {
         public static Form1 form1;  // this is set on form load
@@ -120,38 +133,39 @@ namespace MCC_Mod_Manager
             }
 
             List<String> chk = new List<string>();
-            List<Dictionary<string, string>> fileMap = new List<Dictionary<string, string>>();
+            modpackCfg mCfg = new modpackCfg();
+            mCfg.MCC_version = IO.readFirstLine(Config.MCC_home + @"\build_tag.txt");
             foreach (Panel row in modFilesList) {
-                Dictionary<string, string> dict = new Dictionary<string, string> {
-                    ["src"] = row.GetChildAtPoint(Config.sourceTextBoxPoint).Text,
-                    ["dest"] = row.GetChildAtPoint(Config.destTextBoxPoint).Text
-                };
-                if (string.IsNullOrEmpty(dict["src"]) || string.IsNullOrEmpty(dict["dest"])) {
+                string srcText = row.GetChildAtPoint(Config.sourceTextBoxPoint).Text;
+                string destText = row.GetChildAtPoint(Config.destTextBoxPoint).Text;
+                if (string.IsNullOrEmpty(srcText) || string.IsNullOrEmpty(destText)) {
                     form1.showMsg("Filepaths cannot be empty.", "Error");
                     return;
                 }
-                if (!File.Exists(dict["src"])) {
-                    form1.showMsg("The source file '" + dict["src"] + "' does not exist.", "Error");
+                if (!File.Exists(srcText)) {
+                    form1.showMsg("The source file '" + srcText + "' does not exist.", "Error");
                     return;
                 }
-                if (!dict["dest"].StartsWith(Config.MCC_home)) {
+                if (!destText.StartsWith(Config.MCC_home)) {
                     form1.showMsg("Destination files must be located within the MCC install directory. " +
                         "You may need to configure this directory if you haven't done so already.", "Error");
                     return;
                 }
-                if (Path.GetExtension(dict["src"]) == ".asmp") {
-                    dict["type"] = "patch";
-                } else if (File.Exists(dict["dest"])) {
-                    dict["type"] = "replace";
+                string patchType;
+                if (Path.GetExtension(srcText) == ".asmp") {
+                    patchType = "patch";
+                } else if (File.Exists(destText)) {
+                    patchType = "replace";
                 } else {
-                    dict["type"] = "create";
+                    patchType = "create";
                 }
 
-                // make modpack compatable with any MCC_home directory
-                dict["dest"] = compressPath(dict["dest"]);
-
-                fileMap.Add(dict);
-                chk.Add(row.GetChildAtPoint(Config.destTextBoxPoint).Text);
+                mCfg.entries.Add(new modpackEntry {
+                    src = srcText,
+                    dest = compressPath(destText),  // make modpack compatable with any MCC_home directory
+                    type = patchType
+                });
+                chk.Add(destText);
             }
 
             if (chk.Distinct().Count() != chk.Count()) {
@@ -167,18 +181,17 @@ namespace MCC_Mod_Manager
                 return;
             }
 
-            form1.pBar_show(fileMap.Count());
+            form1.pBar_show(mCfg.entries.Count());
             try {
                 using (var archive = ZipFile.Open(zipPath, ZipArchiveMode.Create)) {
-                    foreach (var entry in fileMap) {
+                    foreach (var entry in mCfg.entries) {
                         form1.pBar_update();
-                        String fileName = Path.GetFileName(entry["src"]);
-                        archive.CreateEntryFromFile(entry["src"], fileName);    // TODO: Fix issues when two source files have same name but diff path
-                                                                                // change src path to just modpack after archive creation but before json serialization
-                        entry["src"] = fileName;
+                        String fileName = Path.GetFileName(entry.src);
+                        archive.CreateEntryFromFile(entry.src, fileName);    // TODO: Fix issues when two source files have same name but diff path
+                        entry.src = fileName;   // change src path to just modpack after archive creation but before json serialization
                     }
                     ZipArchiveEntry configFile = archive.CreateEntry("modpack_config.cfg");
-                    string json = JsonConvert.SerializeObject(fileMap, Formatting.Indented);
+                    string json = JsonConvert.SerializeObject(mCfg, Formatting.Indented);
                     using (StreamWriter writer = new StreamWriter(configFile.Open())) {
                         writer.WriteLine(json);
                     }
@@ -255,17 +268,17 @@ namespace MCC_Mod_Manager
             form1.pBar_hide();
         }
 
-        public static List<Dictionary<string, string>> getModpackConfig(ZipArchive archive)
+        public static modpackCfg getModpackConfig(ZipArchive archive)
         {
             ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpack_config.cfg");
             if (modpackConfigEntry == null) {
                 return null;
             }
-            List<Dictionary<string, string>> modpackConfig;
+            modpackCfg modpackConfig;
             using (Stream jsonStream = modpackConfigEntry.Open()) {
                 StreamReader reader = new StreamReader(jsonStream);
                 try {
-                    modpackConfig = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(reader.ReadToEnd());
+                    modpackConfig = JsonConvert.DeserializeObject<modpackCfg>(reader.ReadToEnd());
                 } catch (JsonSerializationException) {
                     return null;
                 } catch (JsonReaderException) {
@@ -278,21 +291,21 @@ namespace MCC_Mod_Manager
 
         private static string willOverwriteOtherMod(string modpack)
         {
-            List<Dictionary<string, string>> primaryConfig;
+            modpackCfg primaryConfig;
             using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpack + ".zip")) {
                 primaryConfig = getModpackConfig(archive);
             }
 
             foreach (string enabledModpack in Config.patched) {
-                List<Dictionary<string, string>> modpackConfig;
+                modpackCfg modpackConfig;
                 using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + enabledModpack + ".zip")) {
                     modpackConfig = getModpackConfig(archive);
                 }
                 // Deliberately not checking for null so program throws a stack trace
                 // This should never happen, but if it does I want the user to let me know about it
-                foreach (Dictionary<string, string> dict in modpackConfig) {
-                    foreach (Dictionary<string, string> primary in primaryConfig) {
-                        if (dict["dest"] == primary["dest"]) {
+                foreach (modpackEntry entry in modpackConfig.entries) {
+                    foreach (modpackEntry primary in primaryConfig.entries) {
+                        if (entry.dest == primary.dest) {
                             return enabledModpack;
                         }
                     }
@@ -302,15 +315,15 @@ namespace MCC_Mod_Manager
             return null;
         }
 
-        private static int patchFile(ZipArchive archive, Dictionary<string,string> entry)
+        private static int patchFile(ZipArchive archive, modpackEntry entry)
         {
-            string destination = expandPath(entry["dest"]);
+            string destination = expandPath(entry.dest);
             bool baksMade = false;
-            ZipArchiveEntry modFile = archive.GetEntry(entry["src"]);
+            ZipArchiveEntry modFile = archive.GetEntry(entry.src);
             if (modFile == null) {
                 return 3;
             }
-            if (!entry.ContainsKey("type") || String.IsNullOrEmpty(entry["type"]) || entry["type"] == "replace") {  // assume replace type entry
+            if (String.IsNullOrEmpty(entry.type) || entry.type == "replace") {  // assume replace type entry
                 if (File.Exists(destination)) {
                     if (Backups.createBackup(destination, false) == 0) {
                         baksMade = true;
@@ -330,11 +343,11 @@ namespace MCC_Mod_Manager
                 } else {
                     return 0;
                 }
-            } else if (entry["type"] == "patch") {
+            } else if (entry.type == "patch") {
                 //modFile.ExtractToFile(Config.modpack_dir + "tmp.asmp");
                 //AssemblyPatching.applyPatch(Config.modpack_dir + "tmp.asmp", destination);
                 return 0;   // TODO: Add patching functionality
-            } else if (entry["type"] == "create") {
+            } else if (entry.type == "create") {
                 if (File.Exists(destination)) {
                     if (!IO.DeleteFile(destination)) {
                         return 2;
@@ -363,7 +376,7 @@ namespace MCC_Mod_Manager
             bool baksMade = false;
             try {
                 using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpackname + ".zip")) {
-                    List<Dictionary<string, string>> modpackConfig = getModpackConfig(archive);
+                    modpackCfg modpackConfig = getModpackConfig(archive);
                     if (modpackConfig == null) {
                         form1.showMsg("The file '" + modpackname + ".zip' is either not a compatible modpack or the config is corrupted." +
                             "\r\nTry using the 'Create Modpack' Tab to convert this mod into a compatible modpack.", "Error");
@@ -371,8 +384,8 @@ namespace MCC_Mod_Manager
                     }
 
                     List<string> patched = new List<string>();   // track patched files in case of failure mid patch
-                    foreach (Dictionary<string, string> dict in modpackConfig) {
-                        int r = patchFile(archive, dict);
+                    foreach (modpackEntry entry in modpackConfig.entries) {
+                        int r = patchFile(archive, entry);
                         if (r != 0 && r != 1) {
                             string errMsg;
                             if (r == 2) {
@@ -392,7 +405,7 @@ namespace MCC_Mod_Manager
                             baksMade = true;
                         }
 
-                        patched.Add(expandPath(dict["dest"]));
+                        patched.Add(expandPath(entry.dest));
                     }
                 }
             } catch (FileNotFoundException) {
@@ -443,19 +456,19 @@ namespace MCC_Mod_Manager
         {
             try {
                 using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpackname + ".zip")) {
-                    List<Dictionary<string, string>> modpackConfig = getModpackConfig(archive);
+                    modpackCfg modpackConfig = getModpackConfig(archive);
                     if (modpackConfig == null) {
                         form1.showMsg("Could not unpatch '" + modpackname + "' because the modpack's configuration is corrupted or missing." +
                             "\r\nPlease restore from backups using the Backups tab or verify integrity of game files on Steam.", "Error");
                         return 2;
                     }
-                    List<Dictionary<string, string>> restored = new List<Dictionary<string, string>>(); // track restored files in case of failure mid unpatch
-                    foreach (Dictionary<string, string> dict in modpackConfig) {
-                        if (!dict.ContainsKey("type") || String.IsNullOrEmpty(dict["type"]) || dict["type"] == "replace") { // assume replace type entry
-                            if (!Backups.restoreBak(expandPath(dict["dest"]))) {
+                    List<modpackEntry> restored = new List<modpackEntry>(); // track restored files in case of failure mid unpatch
+                    foreach (modpackEntry entry in modpackConfig.entries) {
+                        if (String.IsNullOrEmpty(entry.type) || entry.type == "replace") { // assume replace type entry
+                            if (!Backups.restoreBak(expandPath(entry.dest))) {
                                 // repatch restored mod files
-                                foreach (Dictionary<string, string> entry in restored) {
-                                    int r = patchFile(archive, entry);
+                                foreach (modpackEntry e in restored) {
+                                    int r = patchFile(archive, e);
                                     if (r == 2 || r == 3) {
                                         form1.showMsg("Critical error encountered while unpatching '" + modpackname + "'." +
                                             "\r\nYou may need to verify your game files on steam or reinstall.", "Error");
@@ -463,17 +476,17 @@ namespace MCC_Mod_Manager
                                 }
                                 return 2;
                             }
-                        } else if (dict["type"] == "patch") {
+                        } else if (entry.type == "patch") {
                             //TODO: Add patch funtionality
-                        } else if (dict["type"] == "create") {
-                            if (!IO.DeleteFile(expandPath(dict["dest"]))) {
-                                form1.showMsg("Could not delete the file '" + expandPath(dict["dest"]) + "'. This may affect your game. " +
+                        } else if (entry.type == "create") {
+                            if (!IO.DeleteFile(expandPath(entry.dest))) {
+                                form1.showMsg("Could not delete the file '" + expandPath(entry.dest) + "'. This may affect your game. " +
                                     "if you encounter issue please delete this file manually.", "Warning");
                             }
                         } else {
                             form1.showMsg("Unknown modfile type in modpack config.\r\nCould not install the '" + modpackname + "' modpack.", "Error");
                         }
-                        restored.Add(dict);
+                        restored.Add(entry);
                     }
                 }
             } catch (FileNotFoundException) {
