@@ -28,12 +28,14 @@ namespace MCC_Mod_Manager
 
         // UI elements
         public static string dirtyPadding = "        ";
-        public static readonly Point delBtnPoint = new Point(0, 3);
+        public static readonly Point delBtnPoint = new Point(0, 15);
         public static readonly Point sourceTextBoxPoint = new Point(20, 1);
         public static readonly Point sourceBtnPoint = new Point(203, 0);
-        public static readonly Point arrowPoint = new Point(245, -5);
-        public static readonly Point destTextBoxPoint = new Point(278, 1);
-        public static readonly Point destBtnPoint = new Point(461, 0);
+        public static readonly Point origTextBoxPoint = new Point(20, 26);
+        public static readonly Point origBtnPoint = new Point(203, 25);
+        public static readonly Point arrowPoint = new Point(245, 7);
+        public static readonly Point destTextBoxPoint = new Point(278, 14);
+        public static readonly Point destBtnPoint = new Point(461, 13);
         public static readonly Font btnFont = new Font("Lucida Console", 10, FontStyle.Regular);
         public static readonly Font arrowFont = new Font("Reem Kufi", 12, FontStyle.Bold);
 

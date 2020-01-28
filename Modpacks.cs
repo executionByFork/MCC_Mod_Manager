@@ -54,6 +54,16 @@ namespace MCC_Mod_Manager
             }
         }
 
+        public static void create_fileBrowse_orig(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog {
+                InitialDirectory = Config.MCC_home  // using the GUID to access 'This PC' folder
+            };
+            if (ofd.ShowDialog() == DialogResult.OK) {
+                ((Button)sender).Parent.GetChildAtPoint(Config.origTextBoxPoint).Text = ofd.FileName;
+            }
+        }
+
         public static void create_fileBrowse2(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog {

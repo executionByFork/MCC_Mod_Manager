@@ -227,6 +227,23 @@ namespace MCC_Mod_Manager
             btn1.Click += Modpacks.create_fileBrowse1;
             btn1.Location = Config.sourceBtnPoint;
 
+            TextBox txt_orig = new TextBox {
+                Width = 180,
+                Location = Config.origTextBoxPoint,
+                Text = "Not neccessary",
+                Enabled = false
+            };
+
+            Button btn_orig = new Button {
+                BackColor = SystemColors.ButtonFace,
+                Width = 39,
+                Font = Config.btnFont,
+                Text = "...",
+                Enabled = false
+            };
+            btn_orig.Click += Modpacks.create_fileBrowse_orig;
+            btn_orig.Location = Config.origBtnPoint;
+
             Label lbl = new Label {
                 Width = 33,
                 Font = Config.arrowFont,
@@ -250,12 +267,14 @@ namespace MCC_Mod_Manager
 
             Panel p = new Panel {
                 Width = 500,
-                Height = 25,
-                Location = new Point(10, (createFilesPanel.Controls.Count * 25) + 5)
+                Height = 50,
+                Location = new Point(10, (createFilesPanel.Controls.Count * 55) + 5)
             };
             p.Controls.Add(del);
             p.Controls.Add(txt1);
             p.Controls.Add(btn1);
+            p.Controls.Add(txt_orig);
+            p.Controls.Add(btn_orig);
             p.Controls.Add(lbl);
             p.Controls.Add(txt2);
             p.Controls.Add(btn2);
@@ -269,7 +288,7 @@ namespace MCC_Mod_Manager
             createPageList.Remove((Panel)((PictureBox)sender).Parent);
             createFilesPanel.Controls.Clear();
             for (int i = 0; i < createPageList.Count; i++) {
-                createPageList[i].Location = new Point(10, (createFilesPanel.Controls.Count * 25) + 5);
+                createPageList[i].Location = new Point(10, (createFilesPanel.Controls.Count * 55) + 5);
                 createFilesPanel.Controls.Add(createPageList[i]);
             }
         }
