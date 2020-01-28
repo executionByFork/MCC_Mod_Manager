@@ -437,6 +437,9 @@ namespace MCC_Mod_Manager
                     packErr = true;
                     chb.Checked = false;
                 } else {    // modpack was patched
+                    if (ret == 1) {
+                        baksMade = true;
+                    }
                     Config.addPatched(modpackname);
                     ((PictureBox)chb.Parent.GetChildAtPoint(new Point(chb.Location.X - 45, chb.Location.Y))).Image = Properties.Resources.greenDot_15px;
                 }
