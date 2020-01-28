@@ -51,16 +51,33 @@ namespace MCC_Mod_Manager
             };
             if (ofd.ShowDialog() == DialogResult.OK) {
                 ((Button)sender).Parent.GetChildAtPoint(Config.sourceTextBoxPoint).Text = ofd.FileName;
+
+                TextBox orig_txt = (TextBox)((Button)sender).Parent.GetChildAtPoint(Config.origTextBoxPoint);
+                Button orig_btn = (Button)((Button)sender).Parent.GetChildAtPoint(Config.origBtnPoint);
+                if (Path.GetExtension(ofd.FileName) == ".asmp") {
+                    orig_txt.Enabled = true;
+                    orig_txt.Text = "";
+                    orig_btn.Enabled = true;
+                } else {
+                    orig_txt.Enabled = false;
+                    orig_txt.Text = "Not necessary";
+                    orig_btn.Enabled = false;
+                }
             }
         }
 
         public static void create_fileBrowse_orig(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog {
+                Filter = "Map files (*.map)|*.map",
                 InitialDirectory = Config.MCC_home  // using the GUID to access 'This PC' folder
             };
             if (ofd.ShowDialog() == DialogResult.OK) {
-                ((Button)sender).Parent.GetChildAtPoint(Config.origTextBoxPoint).Text = ofd.FileName;
+                if (Path.GetExtension(ofd.FileName) == ".map") {
+                    ((Button)sender).Parent.GetChildAtPoint(Config.origTextBoxPoint).Text = ofd.FileName;
+                } else {
+                    form1.showMsg("The file must have a .map extension", "Error");
+                }
             }
         }
 

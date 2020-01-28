@@ -235,7 +235,7 @@ namespace MCC_Mod_Manager
             TextBox txt_orig = new TextBox {
                 Width = 180,
                 Location = Config.origTextBoxPoint,
-                Text = "Not neccessary",
+                Text = "Not necessary",
                 Enabled = false
             };
 
