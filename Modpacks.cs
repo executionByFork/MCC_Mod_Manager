@@ -87,7 +87,7 @@ namespace MCC_Mod_Manager
                     AutoSize = true,
                     Text = Config.dirtyPadding + modpackName,
                     Location = new Point(60, (form1.modListPanel_getCount() * 20) + 1),
-                    Checked = Config.isPatched(modpackName)
+                    Checked = Config.isPatched(modpackName) && form1.selectEnabled_checked()
                 };
                 PictureBox p = new PictureBox {
                     Width = 15,

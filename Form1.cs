@@ -135,6 +135,11 @@ namespace MCC_Mod_Manager
             }
         }
 
+        public bool selectEnabled_checked()
+        {
+            return selectEnabled_chb.Checked;
+        }
+
         private void patchButton_Click(object sender, EventArgs e)
         {
             Modpacks.runPatchUnpatch(modListPanel.Controls.OfType<CheckBox>());
