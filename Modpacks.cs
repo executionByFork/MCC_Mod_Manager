@@ -70,7 +70,7 @@ namespace MCC_Mod_Manager
         {
             OpenFileDialog ofd = new OpenFileDialog {
                 Filter = "Map files (*.map)|*.map",
-                InitialDirectory = Config.MCC_home  // using the GUID to access 'This PC' folder
+                InitialDirectory = Config.MCC_home
             };
             if (ofd.ShowDialog() == DialogResult.OK) {
                 if (Path.GetExtension(ofd.FileName) == ".map") {
@@ -164,6 +164,7 @@ namespace MCC_Mod_Manager
             mCfg.MCC_version = IO.readFirstLine(Config.MCC_home + @"\build_tag.txt");
             foreach (Panel row in modFilesList) {
                 string srcText = row.GetChildAtPoint(Config.sourceTextBoxPoint).Text;
+                string origText = row.GetChildAtPoint(Config.origTextBoxPoint).Text;
                 string destText = row.GetChildAtPoint(Config.destTextBoxPoint).Text;
                 if (string.IsNullOrEmpty(srcText) || string.IsNullOrEmpty(destText)) {
                     form1.showMsg("Filepaths cannot be empty.", "Error");
@@ -175,6 +176,12 @@ namespace MCC_Mod_Manager
                 }
                 if (!destText.StartsWith(Config.MCC_home)) {
                     form1.showMsg("Destination files must be located within the MCC install directory. " +
+                        "You may need to configure this directory if you haven't done so already.", "Error");
+                    return;
+                }
+                if (!origText.StartsWith(Config.MCC_home)) {
+                    form1.showMsg("Unmodified map files must be selected at their default install location within the MCC install directory to allow the patch " +
+                        "to be correctly applied when this modpack is installed. The file you selected does not appear to lie inside the MCC install directory." +
                         "You may need to configure this directory if you haven't done so already.", "Error");
                     return;
                 }
