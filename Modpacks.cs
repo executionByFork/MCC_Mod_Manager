@@ -164,9 +164,9 @@ namespace MCC_Mod_Manager
             mCfg.MCC_version = IO.readFirstLine(Config.MCC_home + @"\build_tag.txt");
             foreach (Panel row in modFilesList) {
                 string srcText = row.GetChildAtPoint(Config.sourceTextBoxPoint).Text;
-                string origText = row.GetChildAtPoint(Config.origTextBoxPoint).Text;
+                TextBox origTextbox = (TextBox)row.GetChildAtPoint(Config.origTextBoxPoint);
                 string destText = row.GetChildAtPoint(Config.destTextBoxPoint).Text;
-                if (string.IsNullOrEmpty(srcText) || string.IsNullOrEmpty(destText)) {
+                if (string.IsNullOrEmpty(srcText) || string.IsNullOrEmpty(destText) || string.IsNullOrEmpty(origTextbox.Text)) {
                     form1.showMsg("Filepaths cannot be empty.", "Error");
                     return;
                 }
@@ -179,10 +179,10 @@ namespace MCC_Mod_Manager
                         "You may need to configure this directory if you haven't done so already.", "Error");
                     return;
                 }
-                if (!origText.StartsWith(Config.MCC_home)) {
+                if (origTextbox.Enabled && !origTextbox.Text.StartsWith(Config.MCC_home)) {
                     form1.showMsg("Unmodified map files must be selected at their default install location within the MCC install directory to allow the patch " +
                         "to be correctly applied when this modpack is installed. The file you selected does not appear to lie inside the MCC install directory." +
-                        "You may need to configure this directory if you haven't done so already.", "Error");
+                        "\r\nYou may need to configure this directory if you haven't done so already.", "Error");
                     return;
                 }
                 string patchType;
@@ -196,6 +196,7 @@ namespace MCC_Mod_Manager
 
                 mCfg.entries.Add(new modpackEntry {
                     src = srcText,
+                    orig = origTextbox.Enabled ? compressPath(origTextbox.Text) : null,
                     dest = compressPath(destText),  // make modpack compatable with any MCC_home directory
                     type = patchType
                 });
