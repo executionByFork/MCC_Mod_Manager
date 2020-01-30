@@ -21,18 +21,18 @@ namespace MCC_Mod_Manager
 		// https://github.com/XboxChaos/Assembly
 
 		public static Form1 form1;  // this is set on form load
-		private static Patch currentPatch;
 
-		private static void LoadPatch(string patchFilePath)
+		private static Patch LoadPatch(string patchFilePath)
 		{
 			using (var reader = new EndianReader(File.OpenRead(patchFilePath), Endian.LittleEndian)) {
 				string magic = reader.ReadAscii(4);
 				reader.SeekTo(0);
 
-				if (magic == "asmp") {
-					reader.Endianness = Endian.BigEndian;
-					currentPatch = AssemblyPatchLoader.LoadPatch(reader);
+				if (magic != "asmp") {
+					return null;
 				}
+				reader.Endianness = Endian.BigEndian;
+				return AssemblyPatchLoader.LoadPatch(reader);
 			}
 		}
 
@@ -46,7 +46,7 @@ namespace MCC_Mod_Manager
 				createTmpDir();
 				zippedPatchFile.ExtractToFile(Config.modpack_dir + @"\tmp\" + patchFileName);
 			}
-			LoadPatch(Config.modpack_dir + @"\tmp\" + patchFileName);
+			Patch currentPatch = LoadPatch(Config.modpack_dir + @"\tmp\" + patchFileName);
 
 			// Copy the original map to the destination path
 			IO.CopyFile(unmoddedMapPath, outputPath, true);	//if modpack has written to unmoddedmap, take from backups
