@@ -6,15 +6,18 @@ using Blamite.Serialization.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MCC_Mod_Manager
 {
     static class AssemblyPatching
     {
-		// Majority of the code in this class was pulled from the Assembly project on GitHub and ported to work with my GUI
+		// Majority of the code in this class was pulled from the Assembly project on GitHub and ported to work with my mod manager
+		// All of the code in Blamite comes from the Assembly project as well
 		// https://github.com/XboxChaos/Assembly
 
 		public static Form1 form1;  // this is set on form load
@@ -33,40 +36,68 @@ namespace MCC_Mod_Manager
 			}
 		}
 
-		public static void applyPatch(string patchFilePath, string outputPath)
+		public static bool applyPatch(ZipArchiveEntry zippedPatchFile, string patchFileName, string unmoddedMapPath, string outputPath)
         {
-			LoadPatch(patchFilePath);
+			createTmpDir();
+			try {
+				zippedPatchFile.ExtractToFile(Config.modpack_dir + @"\tmp\" + patchFileName);
+			} catch (IOException) {
+				rmTmpDir();
+				createTmpDir();
+				zippedPatchFile.ExtractToFile(Config.modpack_dir + @"\tmp\" + patchFileName);
+			}
+			LoadPatch(Config.modpack_dir + @"\tmp\" + patchFileName);
 
 			// Copy the original map to the destination path
-			//File.Copy(unmoddedMapPath, outputPath, true);
+			IO.CopyFile(unmoddedMapPath, outputPath, true);	//if modpack has written to unmoddedmap, take from backups
 
 			// Open the destination map
 			using (var stream = new EndianStream(File.Open(outputPath, FileMode.Open, FileAccess.ReadWrite), Endian.BigEndian)) {
 				EngineDatabase engineDb = XMLEngineDatabaseLoader.LoadDatabase("Formats/Engines.xml");
-				ICacheFile cacheFile = CacheFileLoader.LoadCacheFile(stream, engineDb);
-				//if (currentPatch.MapInternalName != null && cacheFile.InternalName != currentPatch.MapInternalName) {
-				//	MetroMessageBox.Show("Unable to apply patch",
-				//		"Hold on there! That patch is for " + currentPatch.MapInternalName +
-				//		".map, and the unmodified map file you selected doesn't seem to match that. Find the correct file and try again.");
-				//	return;
-				//}
-				//if (!string.IsNullOrEmpty(currentPatch.BuildString) && cacheFile.BuildString != currentPatch.BuildString) {
-				//	MetroMessageBox.Show("Unable to apply patch",
-				//		"Hold on there! That patch is for a map with a build version of" + currentPatch.BuildString +
-				//		", and the unmodified map file you selected doesn't seem to match that. Find the correct file and try again.");
-				//	return;
-				//}
+				ICacheFile cacheFile;
+				try {
+					cacheFile = CacheFileLoader.LoadCacheFile(stream, engineDb);
+				} catch (NotSupportedException nse) {
+					form1.showMsg("Error patching '" + patchFileName + "':" + nse.Message, "Error");
+					return false;
+				}
+				if (!string.IsNullOrEmpty(currentPatch.BuildString) && cacheFile.BuildString != currentPatch.BuildString) {
+					form1.showMsg("Unable to patch. That patch is for a map with a build version of " + currentPatch.BuildString +
+						", and the unmodified map file doesn't match that.", "Error");
+					return false;
+				}
+
+				if (currentPatch.MapInternalName == null) {
+					// Because Ascension doesn't include this, and ApplyPatch() will complain otherwise
+					currentPatch.MapInternalName = cacheFile.InternalName;
+				}
 
 				// Apply the patch!
-				if (currentPatch.MapInternalName == null)
-					currentPatch.MapInternalName = cacheFile.InternalName;
-				// Because Ascension doesn't include this, and ApplyPatch() will complain otherwise
-
-				PatchApplier.ApplyPatch(currentPatch, cacheFile, stream);
+				try {
+					PatchApplier.ApplyPatch(currentPatch, cacheFile, stream);
+				} catch (ArgumentException ae) {
+					form1.showMsg("There was an issue applying the patch file '" + patchFileName + "': " + ae.Message, "Info");
+					return false;
+				}
 			}
 
-			form1.showMsg("Your patch has been applied successfully.", "Info");
+			rmTmpDir();
+			return true;
 		}
 
-    }
+		private static bool createTmpDir()
+		{
+			if (!Directory.Exists(Config.modpack_dir + @"\tmp")) {
+				Directory.CreateDirectory(Config.modpack_dir + @"\tmp");
+			}
+
+			return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
+		}
+		private static bool rmTmpDir()
+		{
+			Directory.Delete(Config.modpack_dir + @"\tmp", true);
+
+			return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
+		}
+	}
 }

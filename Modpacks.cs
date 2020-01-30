@@ -379,9 +379,21 @@ namespace MCC_Mod_Manager
                     return 0;
                 }
             } else if (entry.type == "patch") {
-                //modFile.ExtractToFile(Config.modpack_dir + "tmp.asmp");
-                //AssemblyPatching.applyPatch(Config.modpack_dir + "tmp.asmp", destination);
-                return 0;   // TODO: Add patching functionality
+                if (File.Exists(destination)) {
+                    if (Backups.createBackup(destination, false) == 0) {
+                        baksMade = true;
+                    }
+                    if (!IO.DeleteFile(destination)) {
+                        return 2;
+                    }
+                }
+                AssemblyPatching.applyPatch(modFile, Path.GetFileName(entry.src), expandPath(entry.orig), destination);
+
+                if (baksMade) {
+                    return 1;
+                } else {
+                    return 0;
+                }
             } else if (entry.type == "create") {
                 if (File.Exists(destination)) {
                     if (!IO.DeleteFile(destination)) {
@@ -502,7 +514,7 @@ namespace MCC_Mod_Manager
                     }
                     List<modpackEntry> restored = new List<modpackEntry>(); // track restored files in case of failure mid unpatch
                     foreach (modpackEntry entry in modpackConfig.entries) {
-                        if (String.IsNullOrEmpty(entry.type) || entry.type == "replace") { // assume replace type entry
+                        if (String.IsNullOrEmpty(entry.type) || entry.type == "replace" || entry.type == "patch") { // assume replace type entry if null
                             if (!Backups.restoreBak(expandPath(entry.dest))) {
                                 // repatch restored mod files
                                 foreach (modpackEntry e in restored) {
@@ -514,8 +526,6 @@ namespace MCC_Mod_Manager
                                 }
                                 return 2;
                             }
-                        } else if (entry.type == "patch") {
-                            //TODO: Add patch funtionality
                         } else if (entry.type == "create") {
                             if (!IO.DeleteFile(expandPath(entry.dest))) {
                                 form1.showMsg("Could not delete the file '" + expandPath(entry.dest) + "'. This may affect your game. " +
