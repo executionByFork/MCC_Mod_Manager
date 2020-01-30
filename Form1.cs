@@ -47,6 +47,19 @@ namespace MCC_Mod_Manager
             this.Refresh();
         }
 
+        private ToolTip newToolTip()
+        {
+            ToolTip tt = new ToolTip();
+            // Set up the delays for the ToolTip.
+            tt.AutoPopDelay = 20000;
+            tt.InitialDelay = 100;
+            tt.ReshowDelay = 500;
+            // Force the ToolTip text to be displayed whether or not the form is active.
+            tt.ShowAlways = true;
+
+            return tt;
+        }
+
         public DialogResult showMsg(string msg, string type)
         {
             if (type == "Info") {
@@ -184,7 +197,7 @@ namespace MCC_Mod_Manager
         }
 
         public void modListPanel_add(string modpackName, bool versionMatches)
-        {   //"This modpack was made for a different version of MCC and may cause issues if installed."
+        {
             CheckBox chb = new CheckBox {
                 AutoSize = true,
                 Text = Config.dirtyPadding + modpackName,
@@ -212,6 +225,7 @@ namespace MCC_Mod_Manager
 
             modListPanel.Controls.Add(p);
             modListPanel.Controls.Add(c);
+            newToolTip().SetToolTip(c, "This modpack was made for a different version of MCC and may cause issues if installed.");
             modListPanel.Controls.Add(chb);
         }
 
