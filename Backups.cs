@@ -288,10 +288,8 @@ namespace MCC_Mod_Manager
         {
             List<string> requiredBaks = new List<string>();
             foreach (string enabledModpack in Config.patched) {
-                modpackCfg modpackConfig;
-                using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + enabledModpack + ".zip")) {
-                    modpackConfig = Modpacks.getModpackConfig(archive);
-                }
+                modpackCfg modpackConfig = Modpacks.getModpackConfig(enabledModpack);
+
                 foreach (modpackEntry entry in modpackConfig.entries) {
                     foreach (string path in paths) {
                         if (path == Modpacks.expandPath(entry.dest)) {

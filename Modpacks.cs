@@ -285,39 +285,36 @@ namespace MCC_Mod_Manager
             form1.pBar_hide();
         }
 
-        public static modpackCfg getModpackConfig(ZipArchive archive)
+        public static modpackCfg getModpackConfig(string modpackName)
         {
-            ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpack_config.cfg");
-            if (modpackConfigEntry == null) {
-                return null;
-            }
-            modpackCfg modpackConfig;
-            using (Stream jsonStream = modpackConfigEntry.Open()) {
-                StreamReader reader = new StreamReader(jsonStream);
-                try {
-                    modpackConfig = JsonConvert.DeserializeObject<modpackCfg>(reader.ReadToEnd());
-                } catch (JsonSerializationException) {
-                    return null;
-                } catch (JsonReaderException) {
+            using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpackName + ".zip")) {
+                ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpack_config.cfg");
+                if (modpackConfigEntry == null) {
                     return null;
                 }
-            }
+                modpackCfg modpackConfig;
+                using (Stream jsonStream = modpackConfigEntry.Open()) {
+                    StreamReader reader = new StreamReader(jsonStream);
+                    try {
+                        modpackConfig = JsonConvert.DeserializeObject<modpackCfg>(reader.ReadToEnd());
+                    } catch (JsonSerializationException) {
+                        return null;
+                    } catch (JsonReaderException) {
+                        return null;
+                    }
+                }
 
-            return modpackConfig;
+                return modpackConfig;
+            }
         }
 
         private static string willOverwriteOtherMod(string modpack)
         {
-            modpackCfg primaryConfig;
-            using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpack + ".zip")) {
-                primaryConfig = getModpackConfig(archive);
-            }
+            modpackCfg primaryConfig = getModpackConfig(modpack);
 
             foreach (string enabledModpack in Config.patched) {
-                modpackCfg modpackConfig;
-                using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + enabledModpack + ".zip")) {
-                    modpackConfig = getModpackConfig(archive);
-                }
+                modpackCfg modpackConfig = getModpackConfig(enabledModpack);
+
                 // Deliberately not checking for null so program throws a stack trace
                 // This should never happen, but if it does I want the user to let me know about it
                 foreach (modpackEntry entry in modpackConfig.entries) {
@@ -404,8 +401,8 @@ namespace MCC_Mod_Manager
 
             bool baksMade = false;
             try {
+                modpackCfg modpackConfig = getModpackConfig(modpackname);
                 using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpackname + ".zip")) {
-                    modpackCfg modpackConfig = getModpackConfig(archive);
                     if (modpackConfig == null) {
                         form1.showMsg("The file '" + modpackname + ".zip' is either not a compatible modpack or the config is corrupted." +
                             "\r\nTry using the 'Create Modpack' Tab to convert this mod into a compatible modpack.", "Error");
@@ -487,8 +484,8 @@ namespace MCC_Mod_Manager
         private static int unpatchModpack(string modpackname)
         {
             try {
+                modpackCfg modpackConfig = getModpackConfig(modpackname);
                 using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpackname + ".zip")) {
-                    modpackCfg modpackConfig = getModpackConfig(archive);
                     if (modpackConfig == null) {
                         form1.showMsg("Could not unpatch '" + modpackname + "' because the modpack's configuration is corrupted or missing." +
                             "\r\nPlease restore from backups using the Backups tab or verify integrity of game files on Steam.", "Error");
