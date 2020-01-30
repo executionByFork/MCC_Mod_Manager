@@ -183,8 +183,8 @@ namespace MCC_Mod_Manager
             modListPanel.Controls.Clear();
         }
 
-        public void modListPanel_add(string modpackName)
-        {
+        public void modListPanel_add(string modpackName, bool versionMatches)
+        {   //"This modpack was made for a different version of MCC and may cause issues if installed."
             CheckBox chb = new CheckBox {
                 AutoSize = true,
                 Text = Config.dirtyPadding + modpackName,
@@ -197,6 +197,13 @@ namespace MCC_Mod_Manager
                 Location = new Point(15, (modListPanel_getCount() * 20) + 1),
                 Image = Config.isPatched(modpackName) ? Properties.Resources.greenDot_15px : Properties.Resources.redDot_15px
             };
+            PictureBox c = new PictureBox {
+                Width = 15,
+                Height = 15,
+                Location = new Point(37, (modListPanel_getCount() * 20) + 1),
+                Image = Properties.Resources.caution_15px,
+                Visible = !versionMatches
+            };
             if (manualOverrideEnabled()) {
                 p.Click += Modpacks.forceModpackState;
                 p.MouseEnter += btnHoverOn;
@@ -204,6 +211,7 @@ namespace MCC_Mod_Manager
             }
 
             modListPanel.Controls.Add(p);
+            modListPanel.Controls.Add(c);
             modListPanel.Controls.Add(chb);
         }
 

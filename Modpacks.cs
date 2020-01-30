@@ -100,7 +100,10 @@ namespace MCC_Mod_Manager
             string[] fileEntries = Directory.GetFiles(Config.modpack_dir);
             foreach (string file in fileEntries) {
                 string modpackName = Path.GetFileName(file).Replace(".zip", "");
-                form1.modListPanel_add(modpackName);
+                modpackCfg modpackConfig = getModpackConfig(modpackName);
+                if (modpackConfig != null) {
+                    form1.modListPanel_add(modpackName, modpackConfig.MCC_version == Config.getCurrentBuild());
+                }
             }
 
             return true;
@@ -287,24 +290,28 @@ namespace MCC_Mod_Manager
 
         public static modpackCfg getModpackConfig(string modpackName)
         {
-            using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpackName + ".zip")) {
-                ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpack_config.cfg");
-                if (modpackConfigEntry == null) {
-                    return null;
-                }
-                modpackCfg modpackConfig;
-                using (Stream jsonStream = modpackConfigEntry.Open()) {
-                    StreamReader reader = new StreamReader(jsonStream);
-                    try {
-                        modpackConfig = JsonConvert.DeserializeObject<modpackCfg>(reader.ReadToEnd());
-                    } catch (JsonSerializationException) {
-                        return null;
-                    } catch (JsonReaderException) {
+            try {
+                using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpackName + ".zip")) {
+                    ZipArchiveEntry modpackConfigEntry = archive.GetEntry("modpack_config.cfg");
+                    if (modpackConfigEntry == null) {
                         return null;
                     }
-                }
+                    modpackCfg modpackConfig;
+                    using (Stream jsonStream = modpackConfigEntry.Open()) {
+                        StreamReader reader = new StreamReader(jsonStream);
+                        try {
+                            modpackConfig = JsonConvert.DeserializeObject<modpackCfg>(reader.ReadToEnd());
+                        } catch (JsonSerializationException) {
+                            return null;
+                        } catch (JsonReaderException) {
+                            return null;
+                        }
+                    }
 
-                return modpackConfig;
+                    return modpackConfig;
+                }
+            } catch (InvalidDataException) {
+                return null;
             }
         }
 

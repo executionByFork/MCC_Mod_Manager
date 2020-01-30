@@ -114,10 +114,15 @@ namespace MCC_Mod_Manager
             patched.Remove(modpackName);
         }
 
+        public static string getCurrentBuild()
+        {
+            return IO.readFirstLine(MCC_home + @"\build_tag.txt");
+        }
+
         public static void doResetApp()
         {
             patched = new List<string>();
-            MCC_version = IO.readFirstLine(MCC_home + @"\build_tag.txt");
+            MCC_version = getCurrentBuild();
             saveCfg();
             Modpacks.loadModpacks();
             if (!Backups.deleteAll(true)) {
@@ -132,7 +137,7 @@ namespace MCC_Mod_Manager
             _cfg = new mainCfg();
             // default values declared here so that mainCfg class does not implicitly set defaults and bypass warning triggers
             MCC_home = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
-            MCC_version = IO.readFirstLine(MCC_home + @"\build_tag.txt");   // sets MCC_version to null if not found
+            MCC_version = getCurrentBuild();   // sets MCC_version to null if not found
             backup_dir = @".\backups";
             modpack_dir = @".\modpacks";
             deleteOldBaks = false;
