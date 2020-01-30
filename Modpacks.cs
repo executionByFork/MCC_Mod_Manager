@@ -100,31 +100,13 @@ namespace MCC_Mod_Manager
             string[] fileEntries = Directory.GetFiles(Config.modpack_dir);
             foreach (string file in fileEntries) {
                 string modpackName = Path.GetFileName(file).Replace(".zip", "");
-                CheckBox chb = new CheckBox {
-                    AutoSize = true,
-                    Text = Config.dirtyPadding + modpackName,
-                    Location = new Point(60, (form1.modListPanel_getCount() * 20) + 1),
-                    Checked = Config.isPatched(modpackName) && form1.selectEnabled_checked()
-                };
-                PictureBox p = new PictureBox {
-                    Width = 15,
-                    Height = 15,
-                    Location = new Point(15, (form1.modListPanel_getCount() * 20) + 1),
-                    Image = Config.isPatched(modpackName) ? Properties.Resources.greenDot_15px : Properties.Resources.redDot_15px
-                };
-                if (form1.manualOverrideEnabled()) {
-                    p.Click += forceModpackState;
-                    p.MouseEnter += form1.btnHoverOn;
-                    p.MouseLeave += form1.btnHoverOff;
-                }
-
-                form1.modListPanel_add(p, chb);
+                form1.modListPanel_add(modpackName);
             }
 
             return true;
         }
 
-        private static void forceModpackState(object sender, EventArgs e)
+        public static void forceModpackState(object sender, EventArgs e)
         {
             PictureBox p = (PictureBox)sender;
             string modpackname = ((CheckBox)p.Parent.GetChildAtPoint(new Point(p.Location.X + 45, p.Location.Y))).Text.Replace(Config.dirtyPadding, "");

@@ -183,8 +183,26 @@ namespace MCC_Mod_Manager
             modListPanel.Controls.Clear();
         }
 
-        public void modListPanel_add(PictureBox p, CheckBox chb)
+        public void modListPanel_add(string modpackName)
         {
+            CheckBox chb = new CheckBox {
+                AutoSize = true,
+                Text = Config.dirtyPadding + modpackName,
+                Location = new Point(60, (modListPanel_getCount() * 20) + 1),
+                Checked = Config.isPatched(modpackName) && selectEnabled_checked()
+            };
+            PictureBox p = new PictureBox {
+                Width = 15,
+                Height = 15,
+                Location = new Point(15, (modListPanel_getCount() * 20) + 1),
+                Image = Config.isPatched(modpackName) ? Properties.Resources.greenDot_15px : Properties.Resources.redDot_15px
+            };
+            if (manualOverrideEnabled()) {
+                p.Click += Modpacks.forceModpackState;
+                p.MouseEnter += btnHoverOn;
+                p.MouseLeave += btnHoverOff;
+            }
+
             modListPanel.Controls.Add(p);
             modListPanel.Controls.Add(chb);
         }
