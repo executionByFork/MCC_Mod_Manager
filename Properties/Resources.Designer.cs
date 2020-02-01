@@ -73,6 +73,16 @@ namespace MCC_Mod_Manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap caution_35px {
+            get {
+                object obj = ResourceManager.GetObject("caution_35px", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap greenDot_15px {
             get {
                 object obj = ResourceManager.GetObject("greenDot_15px", resourceCulture);

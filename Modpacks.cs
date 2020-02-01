@@ -127,6 +127,20 @@ namespace MCC_Mod_Manager
             return restoreMapping;
         }
 
+        public static bool stabilizeGame()  // used after update is detected to uninstall half clobbered mods
+        {
+            Dictionary<string, List<string>> restoreMap = getFilesToRestore();
+
+            foreach (KeyValuePair<string, List<string>> modpack in restoreMap) {
+                Backups.restoreBaks(modpack.Value);
+                Config.rmPatched(modpack.Key);
+            }
+            Config.MCC_version = Config.getCurrentBuild();
+            Config.saveCfg();
+
+            return true;
+        }
+
         public static bool loadModpacks()
         {
             ensureModpackFolderExists();

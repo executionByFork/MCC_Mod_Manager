@@ -121,6 +121,9 @@
   <data name="caution_15px" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\caution_15px.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="caution_35px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\caution_35px.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="greenDot_15px" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\greenDot_15px.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

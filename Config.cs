@@ -189,7 +189,7 @@ namespace MCC_Mod_Manager
             string json = File.ReadAllText(_cfgLocation);
             try {
                 mainCfg values = JsonConvert.DeserializeObject<mainCfg>(json);
-                // Future config version handling: float.Parse(values.version.Substring(1)) < 0.5
+                // TODO: implement old config version handling
                 if (String.IsNullOrEmpty(values.version)) {
                     return 2;
                 }
@@ -214,8 +214,9 @@ namespace MCC_Mod_Manager
             return 0;
         }
 
-        public static bool loadCfg()
+        public static int loadCfg()
         {
+            bool needsStabilize = false;
             if (!File.Exists(_cfgLocation)) {
                 createDefaultCfg();
             } else {
@@ -223,20 +224,25 @@ namespace MCC_Mod_Manager
                 if (r == 1) {
                     DialogResult ans = form1.showMsg("Your configuration has formatting errors, would you like to overwrite it with a default config?", "Question");
                     if (ans == DialogResult.No) {
-                        return false;
+                        return 2;
                     }
                     createDefaultCfg();
                 } else if (r == 2) {
                     DialogResult ans = form1.showMsg("Your config file is using an old format, would you like to overwrite it with a default config?", "Question");
                     if (ans == DialogResult.No) {
-                        return false;
+                        return 2;
                     }
                     createDefaultCfg();
                 } else {
                     // check if game was updated
                     if (MCC_version != getCurrentBuild()) {
-                        form1.showMsg("It appears that MCC has been updated. It is strongly suggested you use the 'Reset App' button in the Config tab " +
-                            "before attempting to patch or unpatch any modpacks to/from the game. If you do not do this, you will likely encounter issues.", "Error");
+                        DialogResult ans = form1.showMsg("It appears that MCC has been updated. MCC Mod Manager needs to stabilize the game by uninstalling certain modpacks." +
+                            "\r\nWould you like to do this now? Selecting 'No' will disable features.", "Question");
+                        if (ans == DialogResult.No) {
+                            needsStabilize = true;
+                        } else {
+                            Modpacks.stabilizeGame();
+                        }
                     }
                 }
             }
@@ -265,7 +271,11 @@ namespace MCC_Mod_Manager
             form1.cfgTextBox3Text = modpack_dir;
             form1.delOldBaks = deleteOldBaks;
 
-            return true;
+            if (needsStabilize) {
+                return 1;
+            } else {
+                return 0;
+            }
         }
 
         public static bool chkHomeDir(String dir)

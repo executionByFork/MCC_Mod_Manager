@@ -19,7 +19,8 @@ namespace MCC_Mod_Manager
         {
             version_lbl.Text = Config.version;
             Config.form1 = this;
-            if (!Config.loadCfg()) {
+            int r = Config.loadCfg();
+            if (r == 2) {
                 showMsg("MCC Mod Manager cannot load because there are problems with the configuration file.", "Error");
                 Environment.Exit(1);
             }
@@ -29,6 +30,14 @@ namespace MCC_Mod_Manager
             Modpacks.loadModpacks();
             AssemblyPatching.form1 = this;
             pBar_init();
+
+            if (r == 1) {
+                patchButton.Enabled = false;
+                delModpack.Enabled = false;
+
+                megaCaution.Visible = true;
+                tt.SetToolTip(megaCaution, "MCC Mod Manager has detected an update and needs to stabilize the game. Please restart the app.");
+            }
         }
 
         ///////////////////////////////////
@@ -47,18 +56,13 @@ namespace MCC_Mod_Manager
             this.Refresh();
         }
 
-        private ToolTip newToolTip()
-        {
-            ToolTip tt = new ToolTip();
-            // Set up the delays for the ToolTip.
-            tt.AutoPopDelay = 20000;
-            tt.InitialDelay = 100;
-            tt.ReshowDelay = 500;
+        ToolTip tt = new ToolTip {
+            AutoPopDelay = 999999999,
+            InitialDelay = 100,
+            ReshowDelay = 300,
             // Force the ToolTip text to be displayed whether or not the form is active.
-            tt.ShowAlways = true;
-
-            return tt;
-        }
+            ShowAlways = true
+        };
 
         public DialogResult showMsg(string msg, string type)
         {
@@ -226,7 +230,7 @@ namespace MCC_Mod_Manager
 
             modListPanel.Controls.Add(p);
             modListPanel.Controls.Add(c);
-            newToolTip().SetToolTip(c, "This modpack was made for a different version of MCC and may cause issues if installed.");
+            tt.SetToolTip(c, "This modpack was made for a different version of MCC and may cause issues if installed.");
             modListPanel.Controls.Add(chb);
         }
 
