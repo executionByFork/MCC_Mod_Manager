@@ -287,7 +287,7 @@ namespace MCC_Mod_Manager
         private static List<string> filterNeededBackups(List<string> paths)
         {
             List<string> requiredBaks = new List<string>();
-            foreach (string enabledModpack in Config.patched) {
+            foreach (string enabledModpack in Config.getEnabledModpacks()) {
                 modpackCfg modpackConfig = Modpacks.getModpackConfig(enabledModpack);
 
                 foreach (modpackEntry entry in modpackConfig.entries) {

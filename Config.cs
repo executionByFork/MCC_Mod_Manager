@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using Newtonsoft.Json;
 using System.Linq;
+using System.IO.Compression;
 
 namespace MCC_Mod_Manager
 {
@@ -17,7 +18,7 @@ namespace MCC_Mod_Manager
         public string backup_dir;
         public string modpack_dir;
         public bool deleteOldBaks;
-        public List<string> patched;
+        public Dictionary<string, Dictionary<string,string>> patched = new Dictionary<string, Dictionary<string, string>>();
     }
 
     static class Config
@@ -88,7 +89,7 @@ namespace MCC_Mod_Manager
                 _cfg.deleteOldBaks = value;
             }
         }
-        public static List<string> patched {
+        public static Dictionary<string, Dictionary<string, string>> patched {
             get {
                 return _cfg.patched;
             }
@@ -97,17 +98,42 @@ namespace MCC_Mod_Manager
             }
         }
 
+        public static List<string> getEnabledModpacks()
+        {
+            List<string> list = new List<string>();
+
+            foreach (KeyValuePair<string, Dictionary<string, string>> modpack in patched) {
+                list.Add(modpack.Key);
+            }
+            return list;
+        }
+
         public static bool isPatched(string modpackName)
         {
             try {
-                return patched.Contains(modpackName);
+                return patched.ContainsKey(modpackName);
             } catch (NullReferenceException) {
                 return false;
             }
         }
-        public static void addPatched(string modpackName)
+        public static bool addPatched(string modpackName)
         {
-            patched.Add(modpackName);
+            Dictionary<string, string> modfiles = new Dictionary<string, string>();
+            modpackCfg mCfg = Modpacks.getModpackConfig(modpackName);
+            using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpackName + ".zip")) {
+                if (mCfg == null) {
+                    form1.showMsg("Cannot set state to enabled. The file '" + modpackName + ".zip' is either not a compatible modpack or the config is corrupted.", "Error");
+                    return false;
+                }
+
+                List<string> patched = new List<string>();   // track patched files in case of failure mid patch
+                foreach (modpackEntry entry in mCfg.entries) {
+                    modfiles[entry.dest] = Modpacks.getMD5(Modpacks.expandPath(entry.dest));
+                }
+            }
+
+            patched[modpackName] = modfiles;
+            return true;
         }
         public static void rmPatched(string modpackName)
         {
@@ -121,7 +147,7 @@ namespace MCC_Mod_Manager
 
         public static void doResetApp()
         {
-            patched = new List<string>();
+            patched = new Dictionary<string, Dictionary<string, string>>();
             MCC_version = getCurrentBuild();
             saveCfg();
             Modpacks.loadModpacks();
@@ -141,7 +167,7 @@ namespace MCC_Mod_Manager
             backup_dir = @".\backups";
             modpack_dir = @".\modpacks";
             deleteOldBaks = false;
-            patched = new List<string>();
+            patched = new Dictionary<string, Dictionary<string, string>>();
 
             saveCfg();
             form1.showMsg("A default configuration file has been created. Please review and update it as needed.", "Info");
@@ -223,15 +249,15 @@ namespace MCC_Mod_Manager
 
             bool msg = false;
             List<string> tmp = new List<string>();
-            foreach (string modpack in patched) {
-                if (!Modpacks.verifyExists(modpack)) {
+            foreach (KeyValuePair<string, Dictionary<string,string>> modpack in patched) {
+                if (!Modpacks.verifyExists(modpack.Key)) {
                     if (!msg) {
                         msg = true;
-                        form1.showMsg("One or more of your enabled modpacks is missing from the modpacks folder. This likely means your game " +
-                            "is in an unstable state. You should restore from backups or verify the game files through Steam." +
+                        form1.showMsg("The '" + modpack.Key + "' modpack is missing from the modpacks folder. If this modpack is actually installed, " +
+                            "MCC Mod Manager won't be able to uninstall it. You should restore from backups or verify the game files through Steam." +
                             "\r\nThis warning will only show once.", "Warning");
                     }
-                    tmp.Add(modpack);
+                    tmp.Add(modpack.Key);
                 }
             }
             foreach (string modpack in tmp) {

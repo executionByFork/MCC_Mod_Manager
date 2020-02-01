@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Security.Cryptography;
 using Newtonsoft.Json;
 
 namespace MCC_Mod_Manager
@@ -42,6 +43,16 @@ namespace MCC_Mod_Manager
         private static string compressPath(string p)
         {
             return p.Replace(Config.MCC_home, "$MCC_home");
+        }
+
+        public static string getMD5(string filePath)
+        {
+            using (FileStream stream = File.OpenRead(filePath)) {
+                using (MD5 md5 = MD5.Create()) {
+                    byte[] hash = md5.ComputeHash(stream);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+            }
         }
 
         public static void create_fileBrowse1(object sender, EventArgs e)
@@ -319,7 +330,7 @@ namespace MCC_Mod_Manager
         {
             modpackCfg primaryConfig = getModpackConfig(modpack);
 
-            foreach (string enabledModpack in Config.patched) {
+            foreach (string enabledModpack in Config.getEnabledModpacks()) {
                 modpackCfg modpackConfig = getModpackConfig(enabledModpack);
 
                 // Deliberately not checking for null so program throws a stack trace
@@ -445,7 +456,7 @@ namespace MCC_Mod_Manager
                 form1.showMsg("Could not find the '" + modpackname + "' modpack.", "Error");
                 return 2;
             } catch (InvalidDataException) {
-                form1.showMsg("The modpack '" + modpackname + ".zip' appears corrupted." +
+                form1.showMsg("The modpack '" + modpackname + "' appears corrupted." +
                 "\r\nThis modpack cannot be installed.", "Error");
                 return 2;
             }
