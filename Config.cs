@@ -216,6 +216,7 @@ namespace MCC_Mod_Manager
 
         public static int loadCfg()
         {
+            bool stabilize = false;
             bool needsStabilize = false;
             if (!File.Exists(_cfgLocation)) {
                 createDefaultCfg();
@@ -224,13 +225,13 @@ namespace MCC_Mod_Manager
                 if (r == 1) {
                     DialogResult ans = form1.showMsg("Your configuration has formatting errors, would you like to overwrite it with a default config?", "Question");
                     if (ans == DialogResult.No) {
-                        return 2;
+                        return 3;
                     }
                     createDefaultCfg();
                 } else if (r == 2) {
                     DialogResult ans = form1.showMsg("Your config file is using an old format, would you like to overwrite it with a default config?", "Question");
                     if (ans == DialogResult.No) {
-                        return 2;
+                        return 3;
                     }
                     createDefaultCfg();
                 } else {
@@ -238,10 +239,10 @@ namespace MCC_Mod_Manager
                     if (MCC_version != getCurrentBuild()) {
                         DialogResult ans = form1.showMsg("It appears that MCC has been updated. MCC Mod Manager needs to stabilize the game by uninstalling certain modpacks." +
                             "\r\nWould you like to do this now? Selecting 'No' will disable features.", "Question");
-                        if (ans == DialogResult.No) {
-                            needsStabilize = true;
+                        if (ans == DialogResult.Yes) {
+                            stabilize = true;
                         } else {
-                            Modpacks.stabilizeGame();
+                            needsStabilize = true;
                         }
                     }
                 }
@@ -271,8 +272,10 @@ namespace MCC_Mod_Manager
             form1.cfgTextBox3Text = modpack_dir;
             form1.delOldBaks = deleteOldBaks;
 
-            if (needsStabilize) {
+            if (stabilize) {
                 return 1;
+            } else if (needsStabilize) {
+                return 2;
             } else {
                 return 0;
             }

@@ -302,6 +302,15 @@ namespace MCC_Mod_Manager
             return requiredBaks;
         }
 
+        public static bool deleteBak(string path)
+        {
+            if (IO.DeleteFile(Config.backup_dir + @"\" + _baks[path])) {
+                _baks.Remove(path);
+                return true;
+            }
+            return false;
+        }
+
         public static void deleteSelected(IEnumerable<CheckBox> bakList)
         {
             ensureBackupFolderExists();

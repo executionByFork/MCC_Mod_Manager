@@ -111,7 +111,7 @@ namespace MCC_Mod_Manager
                 List<string> potentialRestores = new List<string>();
                 foreach (KeyValuePair<string, string> fileEntry in modpack.Value) {
                     if (getMD5(expandPath(fileEntry.Key)) == fileEntry.Value) { // if file is still modded after the update
-                        potentialRestores.Add(expandPath(fileEntry.Key));
+                        potentialRestores.Add(fileEntry.Key);
                     } else {    // if file was changed by the update
                         if (!packClobbered) {   // if part of this pack has not yet been clobbered
                             packClobbered = true;
@@ -132,11 +132,19 @@ namespace MCC_Mod_Manager
             Dictionary<string, List<string>> restoreMap = getFilesToRestore();
 
             foreach (KeyValuePair<string, List<string>> modpack in restoreMap) {
-                Backups.restoreBaks(modpack.Value);
+                foreach (KeyValuePair<string,string> entry in Config.patched[modpack.Key]) {
+                    if (modpack.Value.Contains(entry.Key)) {
+                        Backups.restoreBak(expandPath(entry.Key));
+                    } else {
+                        Backups.deleteBak(expandPath(entry.Key));
+                    }
+                }
+                
                 Config.rmPatched(modpack.Key);
             }
             Config.MCC_version = Config.getCurrentBuild();
             Config.saveCfg();
+            Backups.saveBackups();
 
             return true;
         }

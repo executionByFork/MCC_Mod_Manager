@@ -20,24 +20,27 @@ namespace MCC_Mod_Manager
             version_lbl.Text = Config.version;
             Config.form1 = this;
             int r = Config.loadCfg();
-            if (r == 2) {
+            if (r == 3) {
                 showMsg("MCC Mod Manager cannot load because there are problems with the configuration file.", "Error");
                 Environment.Exit(1);
             }
             Backups.form1 = this;
             Backups.loadBackups();
+
+            if (r == 2) {
+                patchButton.Enabled = false;
+                delModpack.Enabled = false;
+                megaCaution.Visible = true;
+                tt.SetToolTip(megaCaution, "MCC Mod Manager has detected an update and needs to stabilize the game. Please restart the app.");
+            } else if (r == 1) {
+                Modpacks.stabilizeGame();
+                Backups.loadBackups();
+            }
+
             Modpacks.form1 = this;
             Modpacks.loadModpacks();
             AssemblyPatching.form1 = this;
             pBar_init();
-
-            if (r == 1) {
-                patchButton.Enabled = false;
-                delModpack.Enabled = false;
-
-                megaCaution.Visible = true;
-                tt.SetToolTip(megaCaution, "MCC Mod Manager has detected an update and needs to stabilize the game. Please restart the app.");
-            }
         }
 
         ///////////////////////////////////
