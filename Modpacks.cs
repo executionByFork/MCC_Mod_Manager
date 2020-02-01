@@ -103,6 +103,30 @@ namespace MCC_Mod_Manager
             }
         }
 
+        public static Dictionary<string, List<string>> getFilesToRestore() // used after update is detected to find file changes
+        {
+            Dictionary<string, List<string>> restoreMapping = new Dictionary<string, List<string>>();
+            bool packClobbered = false;
+            foreach (KeyValuePair<string, Dictionary<string, string>> modpack in Config.patched) {
+                List<string> potentialRestores = new List<string>();
+                foreach (KeyValuePair<string, string> fileEntry in modpack.Value) {
+                    if (getMD5(expandPath(fileEntry.Key)) == fileEntry.Value) { // if file is still modded after the update
+                        potentialRestores.Add(expandPath(fileEntry.Key));
+                    } else {    // if file was changed by the update
+                        if (!packClobbered) {   // if part of this pack has not yet been clobbered
+                            packClobbered = true;
+                        }
+                    }
+                }
+                if (packClobbered) {
+                    restoreMapping[modpack.Key] = potentialRestores;
+                }
+                packClobbered = false;
+            }
+
+            return restoreMapping;
+        }
+
         public static bool loadModpacks()
         {
             ensureModpackFolderExists();

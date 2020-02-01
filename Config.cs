@@ -195,7 +195,7 @@ namespace MCC_Mod_Manager
                 }
 
                 MCC_home = values.MCC_home;
-                MCC_version = String.IsNullOrEmpty(values.MCC_version) ? IO.readFirstLine(MCC_home + @"\build_tag.txt") : values.MCC_version;
+                MCC_version = String.IsNullOrEmpty(values.MCC_version) ? getCurrentBuild() : values.MCC_version;
                 backup_dir = values.backup_dir;
                 modpack_dir = values.modpack_dir;
                 deleteOldBaks = values.deleteOldBaks;
@@ -234,13 +234,7 @@ namespace MCC_Mod_Manager
                     createDefaultCfg();
                 } else {
                     // check if game was updated
-                    if (MCC_version != IO.readFirstLine(MCC_home + @"\build_tag.txt")) {
-                        //DialogResult ans = form1.showMsg("It appears that MCC has been updated. Would you like to reset the state of the mod manager?" +
-                        //    "\r\n\r\nDoing so will set all modpacks to unpatched and delete all current backups (since there was an update, these backups are old " +
-                        //    "and musn't be repatched to the game). Your configuration and all modpacks will be preserved.", "Question");
-                        //if (ans == DialogResult.Yes) {
-                        //    doResetApp();
-                        //}
+                    if (MCC_version != getCurrentBuild()) {
                         form1.showMsg("It appears that MCC has been updated. It is strongly suggested you use the 'Reset App' button in the Config tab " +
                             "before attempting to patch or unpatch any modpacks to/from the game. If you do not do this, you will likely encounter issues.", "Error");
                     }
