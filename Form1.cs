@@ -161,19 +161,20 @@ namespace MCC_Mod_Manager
         private void manualOverride_CheckedChanged(object sender, EventArgs e)
         {
             if (manualOverride.Checked == false) {   // make warning only show if checkbox is getting enabled
+                Modpacks.loadModpacks();
                 return;
-            }
+            } else {
+                DialogResult ans = showMsg("Please do not mess with this unless you know what you are doing or are trying to fix a syncing issue.\r\n\r\n" +
+                    "This option allows you to click the red/green icons beside modpack entries to force the mod manager to flag a modpack as enabled/disabled. " +
+                    "This does not make changes to files, but it does make the mod manager 'think' that modpacks are/aren't installed. If the game was just patched, " +
+                    "you should use the 'Reset App' button in the Config tab instead.\r\n\r\nEnable this feature?", "Question");
+                if (ans == DialogResult.No) {
+                    manualOverride.Checked = false;
+                    return;
+                }
 
-            DialogResult ans = showMsg("Please do not mess with this unless you know what you are doing or are trying to fix a syncing issue.\r\n\r\n" +
-                "This option allows you to click the red/green icons beside modpack entries to force the mod manager to flag a modpack as enabled/disabled. " +
-                "This does not make changes to files, but it does make the mod manager 'think' that modpacks are/aren't installed. If the game was just patched, " +
-                "you should use the 'Reset App' button in the Config tab instead.\r\n\r\nEnable this feature?", "Question");
-            if (ans == DialogResult.No) {
-                manualOverride.Checked = false;
-                return;
+                Modpacks.loadModpacks();
             }
-
-            Modpacks.loadModpacks();
         }
 
         public bool manualOverrideEnabled()
