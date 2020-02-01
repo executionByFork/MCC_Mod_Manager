@@ -30,6 +30,12 @@ namespace MCC_Mod_Manager
             if (r == 2) {
                 patchButton.Enabled = false;
                 delModpack.Enabled = false;
+                restoreSelectedBtn.Enabled = false;
+                restoreAllBaksBtn.Enabled = false;
+                delSelectedBak.Enabled = false;
+                delAllBaksBtn.Enabled = false;
+                manualOverride.Enabled = false;
+
                 megaCaution.Visible = true;
                 tt.SetToolTip(megaCaution, "MCC Mod Manager has detected an update and needs to stabilize the game. Please restart the app.");
             } else if (r == 1) {
