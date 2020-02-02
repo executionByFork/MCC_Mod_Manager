@@ -194,20 +194,29 @@ namespace MCC_Mod_Manager
             ensureBackupFolderExists();
 
             OpenFileDialog ofd = new OpenFileDialog {
-                InitialDirectory = Config.MCC_home
+                InitialDirectory = Config.MCC_home,
+                Multiselect = true
             };
+
+            bool newbaks = false;
             if (ofd.ShowDialog() == DialogResult.OK) {
-                if (_baks.ContainsKey(ofd.FileName)) {
-                    DialogResult ans = form1.showMsg("A backup of that file already exists. Would you like to overwrite?", "Question");
-                    if (ans == DialogResult.No) {
-                        return;
+                foreach (string file in ofd.FileNames) {
+                    if (_baks.ContainsKey(file)) {
+                        DialogResult ans = form1.showMsg("A backup of ' " + file + "' already exists. Would you like to overwrite?", "Question");
+                        if (ans == DialogResult.No) {
+                            continue;
+                        }
+                    }
+
+                    if (createBackup(file, true) != 0) {
+                        form1.showMsg("Could not create a backup of '" + file + "'. Is the file open somewhere?", "Error");
+                    } else {
+                        newbaks = true;
                     }
                 }
 
-                if (createBackup(ofd.FileName, true) != 0) {
-                    form1.showMsg("Could not create a backup of the chosen file. Is the file open somewhere?", "Error");
-                } else {
-                    form1.showMsg("New Backup Created", "Info");
+                if (newbaks) {
+                    form1.showMsg("New Backup(s) Created", "Info");
                     saveBackups();
                     loadBackups();
                 }
