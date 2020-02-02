@@ -230,7 +230,7 @@ namespace MCC_Mod_Manager
                 string patchType;
                 if (Path.GetExtension(srcText) == ".asmp") {
                     patchType = "patch";
-                } else if (File.Exists(destText)) {
+                } else if (IO.isHaloFile(compressPath(destText))) {
                     patchType = "replace";
                 } else {
                     patchType = "create";

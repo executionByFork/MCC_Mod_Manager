@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -47,6 +50,35 @@ namespace MCC_Mod_Manager
             } catch (UnauthorizedAccessException) {
                 return null;
             }
+        }
+
+        private static bool verifyPath(string[] dirArray, int i, Dictionary<string,object> fileTree)
+        {
+            if (fileTree.ContainsKey(dirArray[i])) {
+                if (fileTree[dirArray[i]] == null) {
+                    return true;
+                }
+                return verifyPath(dirArray, i+1, JObject.FromObject(fileTree[dirArray[i]]).ToObject<Dictionary<string, object>>());
+            }
+            
+            return false;
+        }
+
+        public static bool isHaloFile(string filePath)
+        {
+            string[] dirArray = filePath.Split(Path.DirectorySeparatorChar);
+
+            string json = File.ReadAllText("Formats/filetree.json");
+            Dictionary<string, object> fileTree;
+            try {
+                fileTree = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            } catch (JsonSerializationException) {
+                return false;
+            } catch (JsonReaderException) {
+                return false;
+            }
+
+            return verifyPath(dirArray, 1, fileTree);
         }
     }
 }
