@@ -444,7 +444,9 @@ namespace MCC_Mod_Manager
                         return 2;
                     }
                 }
-                AssemblyPatching.applyPatch(modFile, Path.GetFileName(entry.src), expandPath(entry.orig), destination);
+                if (!AssemblyPatching.applyPatch(modFile, Path.GetFileName(entry.src), expandPath(entry.orig), destination)) {
+                    return 5;   // no extra error message
+                }
 
                 if (baksMade) {
                     return 1;
