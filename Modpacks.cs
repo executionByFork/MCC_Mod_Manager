@@ -55,51 +55,58 @@ namespace MCC_Mod_Manager
             }
         }
 
-        public static void create_fileBrowse1(object sender, EventArgs e)
+        public static void create_fileBrowse(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog {
-                InitialDirectory = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"  // using the GUID to access 'This PC' folder
-            };
-            if (ofd.ShowDialog() == DialogResult.OK) {
-                ((Button)sender).Parent.GetChildAtPoint(Config.sourceTextBoxPoint).Text = ofd.FileName;
+            Button btn = (Button)sender;
+            Panel panel = (Panel)((Button)sender).Parent;
 
-                TextBox orig_txt = (TextBox)((Button)sender).Parent.GetChildAtPoint(Config.origTextBoxPoint);
-                Button orig_btn = (Button)((Button)sender).Parent.GetChildAtPoint(Config.origBtnPoint);
-                if (Path.GetExtension(ofd.FileName) == ".asmp") {
-                    orig_txt.Enabled = true;
-                    orig_txt.Text = "";
-                    orig_btn.Enabled = true;
-                } else {
-                    orig_txt.Enabled = false;
-                    orig_txt.Text = "Not necessary";
-                    orig_btn.Enabled = false;
+            if ((string)btn.Tag == "btn1") {
+                OpenFileDialog ofd = new OpenFileDialog {
+                    InitialDirectory = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"  // using the GUID to access 'This PC' folder
+                };
+                if (ofd.ShowDialog() == DialogResult.OK) {
+                    panel.GetChildAtPoint(Config.sourceTextBoxPoint).Text = ofd.FileName;
+
+                    if (Path.GetExtension(ofd.FileName) == ".asmp") {
+                        if ((string)panel.Tag != "alt") {
+                            form1.swapRowType(panel);
+                        } else {
+                            TextBox orig_txt = (TextBox)panel.GetChildAtPoint(Config.origTextBoxPoint);
+                            Button orig_btn = (Button)panel.GetChildAtPoint(Config.origBtnPoint);
+                            orig_txt.Enabled = true;
+                            orig_txt.Text = "";
+                            orig_btn.Enabled = true;
+                        }
+                    } else {    // if not an .asmp file
+                        if ((string)panel.Tag != "normal") {
+                            form1.swapRowType(panel);
+                        }
+                    }
                 }
-            }
-        }
-
-        public static void create_fileBrowse_orig(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog {
-                Filter = "Map files (*.map)|*.map",
-                InitialDirectory = Config.MCC_home
-            };
-            if (ofd.ShowDialog() == DialogResult.OK) {
-                if (Path.GetExtension(ofd.FileName) == ".map") {
-                    ((Button)sender).Parent.GetChildAtPoint(Config.origTextBoxPoint).Text = ofd.FileName;
-                } else {
-                    form1.showMsg("The file must have a .map extension", "Error");
+            } else if ((string)btn.Tag == "btn2") {
+                OpenFileDialog ofd = new OpenFileDialog {
+                    CheckFileExists = false,    // allow modpack creators to type in a filename for creating new files
+                    InitialDirectory = Config.MCC_home
+                };
+                if (ofd.ShowDialog() == DialogResult.OK) {
+                    if ((string)panel.Tag == "normal") {
+                        panel.GetChildAtPoint(Config.destTextBoxPoint).Text = ofd.FileName;
+                    } else {
+                        panel.GetChildAtPoint(Config.destTextBoxPointAlt).Text = ofd.FileName;
+                    }
                 }
-            }
-        }
-
-        public static void create_fileBrowse2(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog {
-                CheckFileExists = false,    // allow modpack creators to type in a filename for creating new files
-                InitialDirectory = Config.MCC_home
-            };
-            if (ofd.ShowDialog() == DialogResult.OK) {
-                ((Button)sender).Parent.GetChildAtPoint(Config.destTextBoxPoint).Text = ofd.FileName;
+            } else {    // btn3
+                OpenFileDialog ofd = new OpenFileDialog {
+                    Filter = "Map files (*.map)|*.map",
+                    InitialDirectory = Config.MCC_home
+                };
+                if (ofd.ShowDialog() == DialogResult.OK) {
+                    if (Path.GetExtension(ofd.FileName) == ".map") {
+                        panel.GetChildAtPoint(Config.origTextBoxPoint).Text = ofd.FileName;
+                    } else {
+                        form1.showMsg("The file must have a .map extension", "Error");
+                    }
+                }
             }
         }
 
@@ -206,9 +213,16 @@ namespace MCC_Mod_Manager
             mCfg.MCC_version = IO.readFirstLine(Config.MCC_home + @"\build_tag.txt");
             foreach (Panel row in modFilesList) {
                 string srcText = row.GetChildAtPoint(Config.sourceTextBoxPoint).Text;
-                TextBox origTextbox = (TextBox)row.GetChildAtPoint(Config.origTextBoxPoint);
-                string destText = row.GetChildAtPoint(Config.destTextBoxPoint).Text;
-                if (string.IsNullOrEmpty(srcText) || string.IsNullOrEmpty(destText) || string.IsNullOrEmpty(origTextbox.Text)) {
+                TextBox origTextbox = new TextBox();    // setting this to an empty value to avoid compile error on an impossible CS0165
+                string destText;
+                if ((string)row.Tag == "normal") {
+                    destText = row.GetChildAtPoint(Config.destTextBoxPoint).Text;
+                } else {
+                    origTextbox = (TextBox)row.GetChildAtPoint(Config.origTextBoxPoint);
+                    destText = row.GetChildAtPoint(Config.destTextBoxPointAlt).Text;
+                }
+
+                if (string.IsNullOrEmpty(srcText) || string.IsNullOrEmpty(destText) || ((string)row.Tag == "alt" && string.IsNullOrEmpty(origTextbox.Text))) {
                     form1.showMsg("Filepaths cannot be empty.", "Error");
                     return;
                 }
@@ -221,7 +235,7 @@ namespace MCC_Mod_Manager
                         "You may need to configure this directory if you haven't done so already.", "Error");
                     return;
                 }
-                if (origTextbox.Enabled && !origTextbox.Text.StartsWith(Config.MCC_home)) {
+                if ((string)row.Tag == "alt" && origTextbox.Enabled && !origTextbox.Text.StartsWith(Config.MCC_home)) {
                     form1.showMsg("Unmodified map files must be selected at their default install location within the MCC install directory to allow the patch " +
                         "to be correctly applied when this modpack is installed. The file you selected does not appear to lie inside the MCC install directory." +
                         "\r\nYou may need to configure this directory if you haven't done so already.", "Error");
@@ -238,7 +252,7 @@ namespace MCC_Mod_Manager
 
                 mCfg.entries.Add(new modpackEntry {
                     src = srcText,
-                    orig = origTextbox.Enabled ? compressPath(origTextbox.Text) : null,
+                    orig = (patchType == "patch") ? compressPath(origTextbox.Text) : null,
                     dest = compressPath(destText),  // make modpack compatable with any MCC_home directory
                     type = patchType
                 });

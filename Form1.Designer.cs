@@ -782,10 +782,10 @@
             this.Controls.Add(this.createTab);
             this.Controls.Add(this.homeTab);
             this.Controls.Add(this.topBar);
-            this.Controls.Add(this.homePanel);
-            this.Controls.Add(this.backupPanel);
             this.Controls.Add(this.createPanel);
             this.Controls.Add(this.configPanel);
+            this.Controls.Add(this.homePanel);
+            this.Controls.Add(this.backupPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";

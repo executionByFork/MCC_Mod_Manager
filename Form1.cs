@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -47,6 +48,7 @@ namespace MCC_Mod_Manager
             Modpacks.loadModpacks();
             AssemblyPatching.form1 = this;
             pBar_init();
+            tt.SetToolTip(addRowButton, "Select mod file(s) to add");
         }
 
         ///////////////////////////////////
@@ -260,8 +262,7 @@ namespace MCC_Mod_Manager
             backupPanel.Visible = false;
         }
 
-        private List<Panel> createPageList = new List<Panel>(); // used to redraw UI list when deleting one row at a time
-        private void addRowButton_Click(object sender, EventArgs e)
+        private Panel makeRow(string filepath, string type)
         {
             PictureBox del = new PictureBox();
             del.Image = del.ErrorImage;    // bit of a hack to get the error image to appear
@@ -270,10 +271,15 @@ namespace MCC_Mod_Manager
             del.MouseEnter += btnHoverOn;
             del.MouseLeave += btnHoverOff;
             del.Click += deleteRow;
-            del.Location = Config.delBtnPoint;
+            if (type == "normal") {
+                del.Location = Config.delBtnPoint;
+            } else {
+                del.Location = Config.delBtnPointAlt;
+            }
 
             TextBox txt1 = new TextBox {
                 Width = 180,
+                Text = filepath,
                 Location = Config.sourceTextBoxPoint
             };
 
@@ -281,75 +287,157 @@ namespace MCC_Mod_Manager
                 BackColor = SystemColors.ButtonFace,
                 Width = 39,
                 Font = Config.btnFont,
-                Text = "..."
-            };
-            btn1.Click += Modpacks.create_fileBrowse1;
-            btn1.Location = Config.sourceBtnPoint;
-
-            TextBox txt_orig = new TextBox {
-                Width = 180,
-                Location = Config.origTextBoxPoint,
-                Text = "Not necessary",
-                Enabled = false
-            };
-
-            Button btn_orig = new Button {
-                BackColor = SystemColors.ButtonFace,
-                Width = 39,
-                Font = Config.btnFont,
                 Text = "...",
-                Enabled = false
+                Location = Config.sourceBtnPoint,
+                Tag = "btn1"
             };
-            btn_orig.Click += Modpacks.create_fileBrowse_orig;
-            btn_orig.Location = Config.origBtnPoint;
+            btn1.Click += Modpacks.create_fileBrowse;
 
             Label lbl = new Label {
                 Width = 33,
                 Font = Config.arrowFont,
                 Text = ">>",
-                Location = Config.arrowPoint
+                Location = (type == "normal") ? Config.arrowPoint : Config.arrowPointAlt
             };
 
             TextBox txt2 = new TextBox {
                 Width = 180,
-                Location = Config.destTextBoxPoint
+                Location = (type == "normal") ? Config.destTextBoxPoint : Config.destTextBoxPointAlt
             };
 
             Button btn2 = new Button {
                 BackColor = SystemColors.ButtonFace,
                 Width = 39,
                 Font = Config.btnFont,
-                Text = "..."
+                Text = "...",
+                Location = (type == "normal") ? Config.destBtnPoint : Config.destBtnPointAlt,
+                Tag = "btn2"
             };
-            btn2.Click += Modpacks.create_fileBrowse2;
-            btn2.Location = Config.destBtnPoint;
+            btn2.Click += Modpacks.create_fileBrowse;
+
+            int offset = 5;
+            foreach (Panel row in createFilesPanel.Controls.OfType<Panel>()) {
+                if ((string)row.Tag == "normal") {
+                    offset += 27;
+                } else {    // Tagged as alt
+                    offset += 54;
+                }
+            }
 
             Panel p = new Panel {
                 Width = 500,
-                Height = 50,
-                Location = new Point(10, (createFilesPanel.Controls.Count * 55) + 5)
+                Height = (type == "normal") ? 25 : 50,
+                Location = new Point(10, offset),
+                Tag = type
             };
+
+            if (type == "alt") {
+                TextBox txt3 = new TextBox {
+                    Width = 180,
+                    Location = Config.origTextBoxPoint
+                };
+
+                Button btn3 = new Button {
+                    BackColor = SystemColors.ButtonFace,
+                    Width = 39,
+                    Font = Config.btnFont,
+                    Text = "...",
+                    Location = Config.origBtnPoint,
+                    Tag = "btn3"
+                };
+                btn3.Click += Modpacks.create_fileBrowse;
+
+                p.Controls.Add(txt3);
+                p.Controls.Add(btn3);
+            }
+
             p.Controls.Add(del);
             p.Controls.Add(txt1);
             p.Controls.Add(btn1);
-            p.Controls.Add(txt_orig);
-            p.Controls.Add(btn_orig);
             p.Controls.Add(lbl);
             p.Controls.Add(txt2);
             p.Controls.Add(btn2);
 
-            createPageList.Add(p);
-            createFilesPanel.Controls.Add(p);
+            return p;
+        }
+
+        public void swapRowType(Panel p)
+        {
+            if ((string)p.Tag == "normal") {
+                p.Height = 50;
+                p.GetChildAtPoint(Config.delBtnPoint).Location = Config.delBtnPointAlt;
+                // Retrieving label by coords doesn't work for some reason
+                p.Controls.OfType<Label>().First().Location = Config.arrowPointAlt;
+                p.GetChildAtPoint(Config.destTextBoxPoint).Location = Config.destTextBoxPointAlt;
+                p.GetChildAtPoint(Config.destBtnPoint).Location = Config.destBtnPointAlt;
+                p.Tag = "alt";
+
+                TextBox txt3 = new TextBox {
+                    Width = 180,
+                    Location = Config.origTextBoxPoint
+                };
+
+                Button btn3 = new Button {
+                    BackColor = SystemColors.ButtonFace,
+                    Width = 39,
+                    Font = Config.btnFont,
+                    Text = "...",
+                    Location = Config.origBtnPoint,
+                    Tag = "btn3"
+                };
+                btn3.Click += Modpacks.create_fileBrowse;
+
+                p.Controls.Add(txt3);
+                p.Controls.Add(btn3);
+            } else {    // Tagged as alt
+                p.Height = 25;
+                p.GetChildAtPoint(Config.delBtnPointAlt).Location = Config.delBtnPoint;
+                // Retrieving label by coords doesn't work for some reason
+                p.Controls.OfType<Label>().First().Location = Config.arrowPoint;
+                p.GetChildAtPoint(Config.destTextBoxPointAlt).Location = Config.destTextBoxPoint;
+                p.GetChildAtPoint(Config.destBtnPointAlt).Location = Config.destBtnPoint;
+                p.Tag = "normal";
+            }
+            redrawCreatePanel();
+        }
+
+        public void redrawCreatePanel()
+        {
+            int offset = 5;
+            foreach (Panel panel in createFilesPanel.Controls.OfType<Panel>()) {
+                panel.Location = new Point(10, offset);
+                if ((string)panel.Tag == "normal") {
+                    offset += 27;
+                } else {    // Tagged as alt
+                    offset += 54;
+                }
+            }
+        }
+
+        private void addRowButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog {
+                InitialDirectory = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}",  // using the GUID to access 'This PC' folder
+                Multiselect = true
+            };
+
+            if (ofd.ShowDialog() == DialogResult.OK) {
+                foreach (string file in ofd.FileNames) {
+                    string type;
+                    if (Path.GetExtension(file) == ".asmp") {
+                        type = "alt";
+                    } else {
+                        type = "normal";
+                    }
+                    createFilesPanel.Controls.Add(makeRow(file, type));
+                }
+            }
         }
 
         private void deleteRow(object sender, EventArgs e)
         {
-            createPageList.Remove((Panel)((PictureBox)sender).Parent);
-            createFilesPanel.Controls.Clear();
-            for (int i = 0; i < createPageList.Count; i++) {
-                createPageList[i].Location = new Point(10, (createFilesPanel.Controls.Count * 55) + 5);
-                createFilesPanel.Controls.Add(createPageList[i]);
-            }
+            createFilesPanel.Controls.Remove((Panel)((PictureBox)sender).Parent);
+            redrawCreatePanel();
         }
 
         private void createModpackBtn_Click(object sender, EventArgs e)
@@ -365,7 +453,6 @@ namespace MCC_Mod_Manager
         public void resetCreateModpacksTab()
         {
             createFilesPanel.Controls.Clear();
-            createPageList = new List<Panel>(); // garbage collector magic
             modpackName_txt.Text = "";
         }
 
