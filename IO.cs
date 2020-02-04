@@ -78,7 +78,6 @@ namespace MCC_Mod_Manager
             } catch (JsonSerializationException) {
                 throw new JsonReaderException();
             } catch (JsonReaderException) {
-                
                 return null;
             }
 

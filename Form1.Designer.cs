@@ -30,8 +30,12 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.topBar = new System.Windows.Forms.Panel();
+            this.megaCaution = new System.Windows.Forms.PictureBox();
             this.version_lbl = new System.Windows.Forms.Label();
+            this.refreshButton = new System.Windows.Forms.PictureBox();
+            this.minButton = new System.Windows.Forms.PictureBox();
             this.titleLabel = new System.Windows.Forms.Label();
+            this.exitButton = new System.Windows.Forms.PictureBox();
             this.homeTab = new System.Windows.Forms.Button();
             this.createTab = new System.Windows.Forms.Button();
             this.homePanel = new System.Windows.Forms.Panel();
@@ -48,6 +52,7 @@
             this.modpackName_label = new System.Windows.Forms.Label();
             this.modpackName_txt = new System.Windows.Forms.TextBox();
             this.clearBtn = new System.Windows.Forms.Button();
+            this.addRowButton = new System.Windows.Forms.PictureBox();
             this.createModpackBtn = new System.Windows.Forms.Button();
             this.createLabel2 = new System.Windows.Forms.Label();
             this.createLabel1 = new System.Windows.Forms.Label();
@@ -80,24 +85,19 @@
             this.bakLabel1 = new System.Windows.Forms.Label();
             this.bakListPanel = new System.Windows.Forms.Panel();
             this.betterPBar = new System.Windows.Forms.Panel();
-            this.megaCaution = new System.Windows.Forms.PictureBox();
-            this.refreshButton = new System.Windows.Forms.PictureBox();
-            this.minButton = new System.Windows.Forms.PictureBox();
-            this.exitButton = new System.Windows.Forms.PictureBox();
-            this.addRowButton = new System.Windows.Forms.PictureBox();
             this.topBar.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.megaCaution)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.minButton)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.exitButton)).BeginInit();
             this.homePanel.SuspendLayout();
             this.createPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.addRowButton)).BeginInit();
             this.configPanel.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.backupPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.megaCaution)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.minButton)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.exitButton)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.addRowButton)).BeginInit();
             this.SuspendLayout();
             // 
             // topBar
@@ -117,6 +117,19 @@
             this.topBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
             this.topBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
             // 
+            // megaCaution
+            // 
+            this.megaCaution.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.megaCaution.Image = ((System.Drawing.Image)(resources.GetObject("megaCaution.Image")));
+            this.megaCaution.Location = new System.Drawing.Point(256, 3);
+            this.megaCaution.Name = "megaCaution";
+            this.megaCaution.Size = new System.Drawing.Size(30, 30);
+            this.megaCaution.TabIndex = 7;
+            this.megaCaution.TabStop = false;
+            this.megaCaution.Visible = false;
+            this.megaCaution.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
+            this.megaCaution.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
+            // 
             // version_lbl
             // 
             this.version_lbl.AutoSize = true;
@@ -131,6 +144,32 @@
             this.version_lbl.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
             this.version_lbl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
             // 
+            // refreshButton
+            // 
+            this.refreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.refreshButton.Image = ((System.Drawing.Image)(resources.GetObject("refreshButton.Image")));
+            this.refreshButton.Location = new System.Drawing.Point(478, 3);
+            this.refreshButton.Name = "refreshButton";
+            this.refreshButton.Size = new System.Drawing.Size(30, 30);
+            this.refreshButton.TabIndex = 5;
+            this.refreshButton.TabStop = false;
+            this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
+            this.refreshButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.refreshButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
+            // 
+            // minButton
+            // 
+            this.minButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.minButton.Image = ((System.Drawing.Image)(resources.GetObject("minButton.Image")));
+            this.minButton.Location = new System.Drawing.Point(514, 3);
+            this.minButton.Name = "minButton";
+            this.minButton.Size = new System.Drawing.Size(30, 30);
+            this.minButton.TabIndex = 4;
+            this.minButton.TabStop = false;
+            this.minButton.Click += new System.EventHandler(this.minButton_Click);
+            this.minButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.minButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
+            // 
             // titleLabel
             // 
             this.titleLabel.AutoSize = true;
@@ -143,6 +182,19 @@
             this.titleLabel.Text = "MCC Mod Manager by MrFRZ0";
             this.titleLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
             this.titleLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
+            // 
+            // exitButton
+            // 
+            this.exitButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.exitButton.Image = ((System.Drawing.Image)(resources.GetObject("exitButton.Image")));
+            this.exitButton.Location = new System.Drawing.Point(548, 3);
+            this.exitButton.Name = "exitButton";
+            this.exitButton.Size = new System.Drawing.Size(30, 30);
+            this.exitButton.TabIndex = 2;
+            this.exitButton.TabStop = false;
+            this.exitButton.Click += new System.EventHandler(this.exitButton_Click);
+            this.exitButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.exitButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // homeTab
             // 
@@ -346,6 +398,19 @@
             this.clearBtn.Click += new System.EventHandler(this.clearBtn_Click);
             this.clearBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
             this.clearBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
+            // 
+            // addRowButton
+            // 
+            this.addRowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.addRowButton.Image = ((System.Drawing.Image)(resources.GetObject("addRowButton.Image")));
+            this.addRowButton.Location = new System.Drawing.Point(19, 7);
+            this.addRowButton.Name = "addRowButton";
+            this.addRowButton.Size = new System.Drawing.Size(25, 25);
+            this.addRowButton.TabIndex = 6;
+            this.addRowButton.TabStop = false;
+            this.addRowButton.Click += new System.EventHandler(this.addRowButton_Click);
+            this.addRowButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
+            this.addRowButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // createModpackBtn
             // 
@@ -636,7 +701,7 @@
             this.makeBakBtn.Name = "makeBakBtn";
             this.makeBakBtn.Size = new System.Drawing.Size(135, 35);
             this.makeBakBtn.TabIndex = 5;
-            this.makeBakBtn.Text = "New Backup";
+            this.makeBakBtn.Text = "New Backup(s)";
             this.makeBakBtn.UseVisualStyleBackColor = true;
             this.makeBakBtn.Click += new System.EventHandler(this.makeBakBtn_Click);
             this.makeBakBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
@@ -705,71 +770,6 @@
             this.betterPBar.Size = new System.Drawing.Size(570, 44);
             this.betterPBar.TabIndex = 10;
             // 
-            // megaCaution
-            // 
-            this.megaCaution.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.megaCaution.Image = ((System.Drawing.Image)(resources.GetObject("megaCaution.Image")));
-            this.megaCaution.Location = new System.Drawing.Point(256, 3);
-            this.megaCaution.Name = "megaCaution";
-            this.megaCaution.Size = new System.Drawing.Size(30, 30);
-            this.megaCaution.TabIndex = 7;
-            this.megaCaution.TabStop = false;
-            this.megaCaution.Visible = false;
-            this.megaCaution.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
-            this.megaCaution.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
-            // 
-            // refreshButton
-            // 
-            this.refreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.refreshButton.Image = ((System.Drawing.Image)(resources.GetObject("refreshButton.Image")));
-            this.refreshButton.Location = new System.Drawing.Point(478, 3);
-            this.refreshButton.Name = "refreshButton";
-            this.refreshButton.Size = new System.Drawing.Size(30, 30);
-            this.refreshButton.TabIndex = 5;
-            this.refreshButton.TabStop = false;
-            this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
-            this.refreshButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.refreshButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
-            // 
-            // minButton
-            // 
-            this.minButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.minButton.Image = ((System.Drawing.Image)(resources.GetObject("minButton.Image")));
-            this.minButton.Location = new System.Drawing.Point(514, 3);
-            this.minButton.Name = "minButton";
-            this.minButton.Size = new System.Drawing.Size(30, 30);
-            this.minButton.TabIndex = 4;
-            this.minButton.TabStop = false;
-            this.minButton.Click += new System.EventHandler(this.minButton_Click);
-            this.minButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.minButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
-            // 
-            // exitButton
-            // 
-            this.exitButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.exitButton.Image = ((System.Drawing.Image)(resources.GetObject("exitButton.Image")));
-            this.exitButton.Location = new System.Drawing.Point(548, 3);
-            this.exitButton.Name = "exitButton";
-            this.exitButton.Size = new System.Drawing.Size(30, 30);
-            this.exitButton.TabIndex = 2;
-            this.exitButton.TabStop = false;
-            this.exitButton.Click += new System.EventHandler(this.exitButton_Click);
-            this.exitButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.exitButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
-            // 
-            // addRowButton
-            // 
-            this.addRowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.addRowButton.Image = ((System.Drawing.Image)(resources.GetObject("addRowButton.Image")));
-            this.addRowButton.Location = new System.Drawing.Point(19, 7);
-            this.addRowButton.Name = "addRowButton";
-            this.addRowButton.Size = new System.Drawing.Size(25, 25);
-            this.addRowButton.TabIndex = 6;
-            this.addRowButton.TabStop = false;
-            this.addRowButton.Click += new System.EventHandler(this.addRowButton_Click);
-            this.addRowButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.addRowButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -782,10 +782,10 @@
             this.Controls.Add(this.createTab);
             this.Controls.Add(this.homeTab);
             this.Controls.Add(this.topBar);
+            this.Controls.Add(this.backupPanel);
             this.Controls.Add(this.createPanel);
             this.Controls.Add(this.configPanel);
             this.Controls.Add(this.homePanel);
-            this.Controls.Add(this.backupPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
@@ -794,10 +794,15 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.topBar.ResumeLayout(false);
             this.topBar.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.megaCaution)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.minButton)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.exitButton)).EndInit();
             this.homePanel.ResumeLayout(false);
             this.homePanel.PerformLayout();
             this.createPanel.ResumeLayout(false);
             this.createPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.addRowButton)).EndInit();
             this.configPanel.ResumeLayout(false);
             this.configPanel.PerformLayout();
             this.panel3.ResumeLayout(false);
@@ -808,11 +813,6 @@
             this.panel1.PerformLayout();
             this.backupPanel.ResumeLayout(false);
             this.backupPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.megaCaution)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.minButton)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.exitButton)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.addRowButton)).EndInit();
             this.ResumeLayout(false);
 
         }

@@ -454,7 +454,13 @@ namespace MCC_Mod_Manager
                         return 2;
                     }
                 }
-                if (!AssemblyPatching.applyPatch(modFile, Path.GetFileName(entry.src), expandPath(entry.orig), destination)) {
+
+                string unmoddedPath = expandPath(entry.orig);
+                if (!IO.getUnmodifiedHash(entry.orig).Equals(getMD5(unmoddedPath), StringComparison.OrdinalIgnoreCase)) {
+                    unmoddedPath = Config.backup_dir + @"\" + Backups._baks[unmoddedPath];  // use backup version
+                }
+
+                if (!AssemblyPatching.applyPatch(modFile, Path.GetFileName(entry.src), unmoddedPath, destination)) {
                     return 5;   // no extra error message
                 }
 
