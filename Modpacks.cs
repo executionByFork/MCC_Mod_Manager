@@ -310,7 +310,7 @@ namespace MCC_Mod_Manager
             bool partial = false;
             form1.pBar_show(modpacksList.Count());
             foreach (CheckBox chb in modpacksList) {
-                form1.pBar_update();
+                form1.pBar_update();    //TODO: This updates on EVERY modpack which isn't quite accurate
                 if (chb.Checked) {
                     if (!chk) { // only prompt user once
                         DialogResult ans = form1.showMsg("Are you sure you want to delete the selected modpacks(s)?\r\nNo crying afterwards?", "Question");

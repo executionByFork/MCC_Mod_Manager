@@ -181,8 +181,8 @@ namespace MCC_Mod_Manager
             } else {
                 DialogResult ans = showMsg("Please do not mess with this unless you know what you are doing or are trying to fix a syncing issue.\r\n\r\n" +
                     "This option allows you to click the red/green icons beside modpack entries to force the mod manager to flag a modpack as enabled/disabled. " +
-                    "This does not make changes to files, but it does make the mod manager 'think' that modpacks are/aren't installed. If the game was just patched, " +
-                    "you should use the 'Reset App' button in the Config tab instead.\r\n\r\nEnable this feature?", "Question");
+                    "This does not make changes to files, but it does make the mod manager 'think' that modpacks are/aren't installed." +
+                    "\r\n\r\nEnable this feature?", "Question");
                 if (ans == DialogResult.No) {
                     manualOverride.Checked = false;
                     return;
@@ -530,9 +530,9 @@ namespace MCC_Mod_Manager
 
         private void resetApp_Click(object sender, EventArgs e)
         {
-            DialogResult ans = showMsg("WARNING: This should only be used after an offical MCC update has been applied." +
+            DialogResult ans = showMsg("WARNING: This dangerous, and odds are you don't need to do it." +
                 "\r\n\r\nThis button will reset the application state, so that the mod manager believes your Halo install is COMPLETELY unmodded. It will " +
-                "delete ALL of your backups, and WILL NOT restore them beforehand. This is because after an offical update, the backup files will be old." +
+                "delete ALL of your backups, and WILL NOT restore them beforehand. This is to reset the app to a default state and flush out any broken files." +
                 "\r\n\r\nAre you sure you want to continue?", "Question");
             if (ans == DialogResult.No) {
                 return;
