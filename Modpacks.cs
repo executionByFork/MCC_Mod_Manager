@@ -244,10 +244,20 @@ namespace MCC_Mod_Manager
                 string patchType;
                 if (Path.GetExtension(srcText) == ".asmp") {
                     patchType = "patch";
-                } else if (IO.isHaloFile(compressPath(destText))) {
-                    patchType = "replace";
                 } else {
-                    patchType = "create";
+                    bool isOriginalFile;
+                    try {
+                        isOriginalFile = IO.isHaloFile(compressPath(destText));
+                    } catch (JsonReaderException) {
+                        form1.showMsg(@"MCC Mod Manager could not parse Formats\filetree.json", "Error");
+                        return;
+                    }
+
+                    if (isOriginalFile) {
+                        patchType = "replace";
+                    } else {
+                        patchType = "create";
+                    }
                 }
 
                 mCfg.entries.Add(new modpackEntry {

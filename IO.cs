@@ -9,6 +9,8 @@ namespace MCC_Mod_Manager
 {
     static class IO
     {
+        public static Form1 form1;  // this is set on form load
+
         public static bool DeleteFile(string path)
         {
             try {
@@ -52,19 +54,20 @@ namespace MCC_Mod_Manager
             }
         }
 
-        private static bool verifyPath(string[] dirArray, int i, Dictionary<string,object> fileTree)
+        private static string retrieveHash(string[] dirArray, int i, Dictionary<string,object> fileTree)
         {
             if (fileTree.ContainsKey(dirArray[i])) {
-                if (fileTree[dirArray[i]] == null) {
-                    return true;
+                string hash = fileTree[dirArray[i]] as string;
+                if (hash == null) { // If object is not a string
+                    return retrieveHash(dirArray, i + 1, JObject.FromObject(fileTree[dirArray[i]]).ToObject<Dictionary<string, object>>());
                 }
-                return verifyPath(dirArray, i+1, JObject.FromObject(fileTree[dirArray[i]]).ToObject<Dictionary<string, object>>());
+                return hash;
             }
             
-            return false;
+            return null;
         }
 
-        public static bool isHaloFile(string filePath)
+        public static string getUnmodifiedHash(string filePath)
         {
             string[] dirArray = filePath.Split(Path.DirectorySeparatorChar);
 
@@ -73,12 +76,18 @@ namespace MCC_Mod_Manager
             try {
                 fileTree = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
             } catch (JsonSerializationException) {
-                return false;
+                throw new JsonReaderException();
             } catch (JsonReaderException) {
-                return false;
+                
+                return null;
             }
 
-            return verifyPath(dirArray, 1, fileTree);
+            return retrieveHash(dirArray, 1, fileTree);
+        }
+
+        public static bool isHaloFile(string filePath)
+        {
+            return (getUnmodifiedHash(filePath) != null);
         }
     }
 }

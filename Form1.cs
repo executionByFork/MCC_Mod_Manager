@@ -47,6 +47,7 @@ namespace MCC_Mod_Manager
             Modpacks.form1 = this;
             Modpacks.loadModpacks();
             AssemblyPatching.form1 = this;
+            IO.form1 = this;
             pBar_init();
             tt.SetToolTip(addRowButton, "Select mod file(s) to add");
         }
