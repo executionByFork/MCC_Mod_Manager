@@ -1,6 +1,12 @@
 # A Mod Manager for Halo MCC on PC
 \*\*_**NOTE:** This application was developed for Windows PCs with Halo MCC installed via Steam. As such, operating systems other than Windows, and Halo MCC installations not utilizing Steam, are not officially supported. If you [dump the Windows Store version of MCC](https://www.reddit.com/r/halomods/comments/e5tsmu/dumping_the_ms_store_version_of_halo_mcc/) then this tool **should** work as intended, though I am not testing for this and so I can not guarantee it will work flawlessly._
 
+## Table of Contents
+- [Purpose of the application](https://github.com/executionByFork/MCC_Mod_Manager#purpose)
+- [Usage guide](https://github.com/executionByFork/MCC_Mod_Manager#usage)
+- [Installation instructions](https://github.com/executionByFork/MCC_Mod_Manager#installation)
+- [Known Issues](https://github.com/executionByFork/MCC_Mod_Manager#known-issues)
+
 ## PURPOSE
 This application is intended to both make mod installations easy, and to create a standard format for Halo MCC mods. The tool utilizes 'modpacks', or zip archives containing mod files and a config, to package and deploy Halo MCC mods in a consistent format. It automatically creates a backup of any files getting overwritten if one doesn't yet exist, and it allows painless creation of modpacks from already existing mods. Technically all this application does is copy files back and forth, but it removes the manual process of keeping track of where mod files need to be placed and it maintains a backup archive of Halo files should you need to restore the base game. The main benefit of using this tool is that it establishes a
 **standardized format** for any and all Halo mods.
