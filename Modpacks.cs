@@ -640,6 +640,11 @@ namespace MCC_Mod_Manager
                 }
             }
 
+            if (Config.deleteOldBaks) { // update backup pane because backups will have been deleted
+                Backups.saveBackups();
+                Backups.updateBackupList();
+            }
+
             form1.pBar_hide();
             if (packErr) { // fail / partial success - At least one modpack was not patched
                 return 2;
