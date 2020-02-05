@@ -84,8 +84,8 @@ Clone this repository.
 `git clone https://github.com/executionByFork/MCC_Mod_Manager.git`  
 Clone [Assembly](https://github.com/XboxChaos/Assembly) source.  
 `git clone https://github.com/XboxChaos/Assembly.git`  
-Switch to the latest public release (As of 2/4/2020, this commit: [249d4ac3](https://github.com/XboxChaos/Assembly/tree/249d4ac3b4a4e85ee2cd934bdb7122a590007d30)) using a temporary branch to avoid a detached HEAD state.    
-`git checkout -b tmp 249d4ac3b4a4e85ee2cd934bdb7122a590007d30`  
+Switch to the latest public release (As of 2/5/2020, this commit: [715a6d4e7](https://github.com/XboxChaos/Assembly/tree/715a6d4e777fcc44ee0f19c2a6dd64fd6879a426)) using a temporary branch to avoid a detached HEAD state.    
+`git checkout -b tmp 715a6d4e777fcc44ee0f19c2a6dd64fd6879a426`  
 Open the Assembly project in [Visual Studio 2019](https://visualstudio.microsoft.com/vs/) (If it asks if you want to retarget the project, you may select yes). Then right click the "Blamite" project in Solution Explorer and select "Build".  
 Once built, go to `Assembly\src\Blamite\bin\x64\Debug` and copy the `Blamite.dll` and `Formats/` folder into `MCC_Mod_Manager\bin\Debug`.  
 In the `Formats/` folder in the new location, you may optionally delete every folder except for `ReachMCC/`. If you do this, you must also edit `Engines.xml`. Open `Engines.xml` and delete every `<engine/>` tag (plus their contents) except for the engine tag labeled "Halo: Reach MCC". Save the file.  
