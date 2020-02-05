@@ -293,6 +293,7 @@ namespace MCC_Mod_Manager
                 Tag = "btn1"
             };
             btn1.Click += Modpacks.create_fileBrowse;
+            tt.SetToolTip(btn1, "Select modded file or .asmp file");
 
             Label lbl = new Label {
                 Width = 33,
@@ -315,6 +316,7 @@ namespace MCC_Mod_Manager
                 Tag = "btn2"
             };
             btn2.Click += Modpacks.create_fileBrowse;
+            tt.SetToolTip(btn2, "Select output location");
 
             int offset = 5;
             foreach (Panel row in createFilesPanel.Controls.OfType<Panel>()) {
@@ -347,6 +349,7 @@ namespace MCC_Mod_Manager
                     Tag = "btn3"
                 };
                 btn3.Click += Modpacks.create_fileBrowse;
+                tt.SetToolTip(btn3, "Select unmodified map file");
 
                 p.Controls.Add(txt3);
                 p.Controls.Add(btn3);
