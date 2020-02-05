@@ -4,3 +4,4 @@ obj/
 
 # Dependencies should be pulled down separately from source
 packages/
+packages.config
