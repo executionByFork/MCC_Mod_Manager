@@ -2,6 +2,5 @@
 bin/
 obj/
 
-# Blamite should be pulled from the current latest Assembly build version
-# It should not be tied to an MCC Mod Manager version
-packages/Blamite.dll
+# Dependencies should be pulled down separately from source
+packages/
