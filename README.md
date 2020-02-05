@@ -1,32 +1,33 @@
 # A Mod Manager for Halo MCC on PC
 \*\*_**NOTE:** This application was developed for Windows PCs with Halo MCC installed via Steam. As such, operating systems other than Windows, and Halo MCC installations not utilizing Steam, are not officially supported. If you [dump the Windows Store version of MCC](https://www.reddit.com/r/halomods/comments/e5tsmu/dumping_the_ms_store_version_of_halo_mcc/) then this tool **should** work as intended, though I am not testing for this and so I can not guarantee it will work flawlessly._
 
+## Table of Contents
+- [Purpose of the application](https://github.com/executionByFork/MCC_Mod_Manager#purpose)
+- [Usage guide](https://github.com/executionByFork/MCC_Mod_Manager#usage)
+- [Installation instructions](https://github.com/executionByFork/MCC_Mod_Manager#installation)
+- [Known Issues](https://github.com/executionByFork/MCC_Mod_Manager#known-issues)
+
 ## PURPOSE
 This application is intended to both make mod installations easy, and to create a standard format for Halo MCC mods. The tool utilizes 'modpacks', or zip archives containing mod files and a config, to package and deploy Halo MCC mods in a consistent format. It automatically creates a backup of any files getting overwritten if one doesn't yet exist, and it allows painless creation of modpacks from already existing mods. Technically all this application does is copy files back and forth, but it removes the manual process of keeping track of where mod files need to be placed and it maintains a backup archive of Halo files should you need to restore the base game. The main benefit of using this tool is that it establishes a
 **standardized format** for any and all Halo mods.
 
 ### The benefits of using this tool
 - **Modpack creation is simple.**
-  - Mod creators can easily bundle their mod(s) into a modpack. All that is required selecting each mod file and where it needs to be placed in order to function properly. Mod creators already add this in their Readme files.
+  - Mod creators can easily bundle their mod(s) into a modpack. All that is required is selecting each mod file and where it needs to be placed in order to function properly. Mod creators already add this in their readme files.
   - All mods can be bundled into a modpack, making all mods compatable with this tool. End users can even bundle mods not using this format into a modpack for their own use, granted that they know where to put the mod files.
-  - When a modpack is bundled and zipped, a `readme.txt` file is also created inside the zip folder. Mod makers who want to include manual instructions for installing their mods can add them to this file.
+  - Assembly `.asmp` files are supported in modpacks, meaning that modpacks can be small and easy to download without the hassle of teaching users how to patch a file correctly with Assembly.
+  - When a modpack is bundled and zipped, a `readme.txt` file is also created inside of the zip folder. Mod makers who want to include manual instructions for installing their mods can add them to this file.
 - **All mod files are contained in a `zip` archive. Not `rar`, and not `7zip`.**
   - This is because default Windows only support zip formats. This removes the overhead of users having to find and install 3rd party tools to open zipped archives
   - The mod files are compressed, saving hard drive space
 - **No unzipping OR file manipulation is neccessary.**
-  - This application extracts the zip file contents in memory. It does not write temporary files to the hard drive, avoiding clutter and saving space.
+  - This application extracts the zip file contents in memory. It avoids writing files to the hard drive, avoiding clutter and saving space.
   - Users do not have to bother with extracting zip files and handling multiple mod files. Everything is contained in a single, easy to handle package.
 - **This tool manages backups for you.**
   - You no longer have to worry about creating a backup schema and remembering where you put your backup files and where they need to go. This tool manages all of that for you, reducing the complexity and overhead of using mods safely.
-  - Only the files that need to get backed up, are backed up. This tool doesn't simply copy the entire Halo install directory to a separate folder, doubling the install size. Instead, it only creates a backup of files when it needs to, saving space.
+  - Only the files that *need* to get backed up are backed up. This tool doesn't simply copy the entire Halo install directory to a separate folder, doubling the install size. Instead, it only creates a backup of files when it needs to, and it keeps track of where they need to go for you.
 - **NO administrator privileges needed**
-  - Applications which manage mods by using symbolic links need to run with Administrator privileges, and this poses a security threat to the user. This application does **NOT** need Administrator privileges to run, because it avoids using links.
-
-## INSTALLATION
-This application can be downloaded from the [Github Release](https://github.com/executionByFork/MCC_Mod_Manager/releases) page or from [Nexus Mods](https://www.nexusmods.com/halothemasterchiefcollection/mods/185).  
-Make sure `MCC Mod Manager.exe` and `Newtonsoft.Json.dll` are in a folder together. The executable will create folders and config files in the same directory, so it's best if these two files are in a folder alone.
-
-If you would like to install from source, you can pull down this repository and open the project in [Visual Studio 2019](https://visualstudio.microsoft.com/vs/). You can create an executable application from that IDE. [Read more here](https://docs.microsoft.com/en-us/visualstudio/ide/building-and-cleaning-projects-and-solutions-in-visual-studio?view=vs-2019).
+  - Applications which manage mods by using symbolic links need to run with Administrator privileges, and this poses a security threat to the user. This application does **NOT** need Administrator privileges to run, because it avoids using symlinks.
 
 ## USAGE
 I have recorded a video on how to use this tool in its entirety [here](https://www.youtube.com/watch?v=wvRcdXpgIos). However, although most of it still applies, it is somewhat out of date now. I will be making a new video soon. The details listed below are a fully up to date.
@@ -71,6 +72,30 @@ I have recorded a video on how to use this tool in its entirety [here](https://w
 - 'New Backup' can be used to create a new backup of a file. If you select a file that is already backed up, it will ask if you want to overwrite it.  
 - The 'Restore Selected' and 'Restore All Files' buttons restore from backups the selected files/all files, respectively.  
 - The 'Delete Selected' and 'Delete All Backups' buttons remove the selected/all backup files, respectively, after confirming that you actually want to delete them.  
+
+## INSTALLATION
+This application can be downloaded from the [Github Release](https://github.com/executionByFork/MCC_Mod_Manager/releases) page or from [Nexus Mods](https://www.nexusmods.com/halothemasterchiefcollection/mods/185).  
+Make sure `MCC Mod Manager.exe`, `Blamite.dll`, `Newtonsoft.Json.dll`, and the `Formats/` folder are in the same folder together. The executable will create folders and config files in the same directory, so it's best if these files are in a folder alone.
+
+### Installation From Source
+Clone this repository.  
+`git clone https://github.com/executionByFork/MCC_Mod_Manager.git`  
+Clone [Assembly](https://github.com/XboxChaos/Assembly) source.  
+`git clone https://github.com/XboxChaos/Assembly.git`  
+Switch to the latest public release (As of 2/4/2020, this commit: [249d4ac3](https://github.com/XboxChaos/Assembly/tree/249d4ac3b4a4e85ee2cd934bdb7122a590007d30)) using a temporary branch to avoid a detached HEAD state.    
+`git checkout -b tmp 249d4ac3b4a4e85ee2cd934bdb7122a590007d30`  
+Open the Assembly project in [Visual Studio 2019](https://visualstudio.microsoft.com/vs/) (If it asks if you want to retarget the project, you may select yes). Then right click the "Blamite" project in Solution Explorer and select "Build".  
+Once built, go to `Assembly\src\Blamite\bin\x64\Debug` and copy the `Blamite.dll` and `Formats/` folder into `MCC_Mod_Manager\bin\Debug`.  
+In the `Formats/` folder in the new location, you may optionally delete every folder except for `ReachMCC/`. If you do this, you must also edit `Engines.xml`. Open `Engines.xml` and delete every `<engine/>` tag (plus their contents) except for the engine tag labeled "Halo: Reach MCC". Save the file.  
+Clone or download my [jsonifyFileTree](https://github.com/executionByFork/jsonifyFileTree) project.  
+`git clone https://github.com/executionByFork/jsonifyFileTree.git`  
+`cd` into the folder and run the perl script as follows:  
+`./jsonifyFileTree.pl --hash [MCC_INSTALL_DIRECTORY] > filetree.json`, replacing `[MCC_INSTALL_DIRECTORY]` with the path to the root of your Halo MCC install directory (`Halo The Master Chief Collection/`).  
+Once `filetree.json` is created, move it to `MCC_Mod_Manager\bin\Debug\Formats`.  
+Open the MCC Mod Manager project in [Visual Studio 2019](https://visualstudio.microsoft.com/vs/). Go to `Project` > `Manage NuGet Packages` > `Browse`, then search for and install the following dependencies:
+- Newtonsoft.Json (v12.0.3+)
+- System.IO.Compression (v4.3.0+)  
+You may now click the "Start" button at the top to build `MCC Mod Manager.exe`. Copy `MCC Mod Manager.exe`, `Blamite.dll`, `Newtonsoft.Json.dll`, and the `Formats/` folder into a new folder of your choosing. All other files will be generated by the app and can be ignored.
 
 ## Known Issues
 - Patching a modpack which includes at least one `.asmp` file will cause a memory leak. This is an issue in the underlying Blamite library that MCC Mod Manager uses ([more info here](https://github.com/XboxChaos/Assembly/issues/268)). As a workaround, close and reopen the mod manager to free up the memory.
