@@ -290,7 +290,7 @@
             this.delModpack.TabIndex = 5;
             this.delModpack.Text = "Delete Selected";
             this.delModpack.UseVisualStyleBackColor = true;
-            this.delModpack.Click += new System.EventHandler(this.delModpack_Click);
+            this.delModpack.Click += new System.EventHandler(this.DelModpack_Click);
             this.delModpack.MouseEnter += new System.EventHandler(this.btnHoverOn);
             this.delModpack.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
@@ -608,7 +608,7 @@
             this.cfgUpdateBtn.TabIndex = 5;
             this.cfgUpdateBtn.Text = "Update";
             this.cfgUpdateBtn.UseVisualStyleBackColor = true;
-            this.cfgUpdateBtn.Click += new System.EventHandler(this.cfgUpdateBtn_Click);
+            this.cfgUpdateBtn.Click += new System.EventHandler(this.CfgUpdateBtn_Click);
             this.cfgUpdateBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
             this.cfgUpdateBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
