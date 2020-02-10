@@ -8,24 +8,20 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.IO.Compression;
 
-namespace MCC_Mod_Manager
-{
-    static class Backups
-    {
+namespace MCC_Mod_Manager {
+    static class Backups {
         public static Form1 form1;  // this is set on form load
         public static Dictionary<string, string> _baks = new Dictionary<string, string>();
 
-        private static bool ensureBackupFolderExists()
-        {
-            if (!Directory.Exists(Config.backup_dir)) {
-                Directory.CreateDirectory(Config.backup_dir);
+        private static bool EnsureBackupFolderExists() {
+            if (!Directory.Exists(Config.Backup_dir)) {
+                Directory.CreateDirectory(Config.Backup_dir);
             }
 
             return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
         }
 
-        public static string getBakKey(string bakFileName)
-        {
+        public static string GetBakKey(string bakFileName) {
             foreach (KeyValuePair<string, string> entry in _baks) {
                 if (entry.Value == bakFileName) {
                     return entry.Key;
@@ -34,21 +30,19 @@ namespace MCC_Mod_Manager
             return null;
         }
 
-        public static bool saveBackups()
-        {
-            ensureBackupFolderExists();
+        public static bool SaveBackups() {
+            EnsureBackupFolderExists();
 
             string json = JsonConvert.SerializeObject(_baks, Formatting.Indented);
-            using (FileStream fs = File.Create(Config.backupCfg)) {
+            using (FileStream fs = File.Create(Config.BackupCfg)) {
                 byte[] info = new UTF8Encoding(true).GetBytes(json);
                 fs.Write(info, 0, info.Length);
             }
             return true;
         }
 
-        public static bool updateBackupList()
-        {
-            ensureBackupFolderExists();
+        public static bool UpdateBackupList() {
+            EnsureBackupFolderExists();
 
             form1.bakListPanel_clear();
             foreach (KeyValuePair<string, string> entry in _baks) {
@@ -69,18 +63,17 @@ namespace MCC_Mod_Manager
             return true;
         }
 
-        public static bool loadBackups()
-        {
-            ensureBackupFolderExists();
-            if (!File.Exists(Config.backupCfg)) {   //TODO: create blank config
+        public static bool LoadBackups() {
+            EnsureBackupFolderExists();
+            if (!File.Exists(Config.BackupCfg)) {   //TODO: create blank config
                 return false;
             }
 
             bool err = false;
-            string json = File.ReadAllText(Config.backupCfg);
+            string json = File.ReadAllText(Config.BackupCfg);
             try {
                 _baks = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                updateBackupList();
+                UpdateBackupList();
             } catch (JsonSerializationException) {
                 err = true;
             } catch (JsonReaderException) {
@@ -93,7 +86,7 @@ namespace MCC_Mod_Manager
                     "Question"
                 );
                 if (ans == DialogResult.Yes) {
-                    if (!IO.DeleteFile(Config.backupCfg)) {
+                    if (!IO.DeleteFile(Config.BackupCfg)) {
                         form1.showMsg("The backup file could not be deleted. Is it open somewhere?", "Error");
                     }
                 }
@@ -102,19 +95,18 @@ namespace MCC_Mod_Manager
             return true;
         }
 
-        public static int createBackup(string path, bool overwrite)
-        {
-            ensureBackupFolderExists();
+        public static int CreateBackup(string path, bool overwrite) {
+            EnsureBackupFolderExists();
             string fileName = Path.GetFileNameWithoutExtension(path);
             string fileExt = Path.GetExtension(path);
-            string bakPath = Config.backup_dir + @"\" + fileName + fileExt;
-            
+            string bakPath = Config.Backup_dir + @"\" + fileName + fileExt;
+
             if (File.Exists(bakPath)) {
                 if (!_baks.ContainsKey(path)) { // if file exists in backups folder but the original filepaths differ, rename
                     int num = 0;
                     do {
                         num++;
-                        bakPath = Config.backup_dir + @"\" + fileName + "(" + num + ")" + fileExt;
+                        bakPath = Config.Backup_dir + @"\" + fileName + "(" + num + ")" + fileExt;
                     } while (File.Exists(bakPath));
                 }
             }
@@ -122,27 +114,26 @@ namespace MCC_Mod_Manager
             int res = IO.CopyFile(path, bakPath, overwrite);
             if (res == 0 || res == 1) {
                 _baks[path] = Path.GetFileName(bakPath);
-                saveBackups();
-                updateBackupList();
+                SaveBackups();
+                UpdateBackupList();
             }
             return res;
         }
 
-        public static bool restoreBak(string filePath)
-        {
+        public static bool RestoreBak(string filePath) {
             if (String.IsNullOrEmpty(filePath)) {
                 return false;
             }
 
             int ret;
             try {
-                ret = IO.CopyFile(Config.backup_dir + @"\" + _baks[filePath], filePath, true);
+                ret = IO.CopyFile(Config.Backup_dir + @"\" + _baks[filePath], filePath, true);
             } catch (KeyNotFoundException) {
                 ret = 99;
             }
             if (ret == 0) {
-                if (Config.deleteOldBaks) {
-                    if (IO.DeleteFile(Config.backup_dir + @"\" + _baks[filePath])) {
+                if (Config.DeleteOldBaks) {
+                    if (IO.DeleteFile(Config.Backup_dir + @"\" + _baks[filePath])) {
                         _baks.Remove(filePath);
                     } else {
                         form1.showMsg("Could not remove old backup '" + _baks[filePath] + "'. Is the file open somewhere?", "Error");
@@ -158,28 +149,27 @@ namespace MCC_Mod_Manager
             }
         }
 
-        public static int restoreBaks(List<string> backupPathList)
-        {
-            ensureBackupFolderExists();
+        public static int RestoreBaks(List<string> backupPathList) {
+            EnsureBackupFolderExists();
 
-            if (backupPathList.Count() == 0) {
+            if (backupPathList.Count == 0) {
                 return 0;
             }
 
-            form1.pBar_show(backupPathList.Count());
+            form1.PBar_show(backupPathList.Count);
             bool chk = false;
             bool err = false;
             foreach (string path in backupPathList) {
-                form1.pBar_update();
-                if (restoreBak(path)) {
+                form1.PBar_update();
+                if (RestoreBak(path)) {
                     chk = true;
                 } else {
                     err = true;
                 }
             }
-            saveBackups();
-            updateBackupList();
-            form1.pBar_hide();
+            SaveBackups();
+            UpdateBackupList();
+            form1.PBar_hide();
             if (chk) {
                 if (err) {
                     return 1;   // Partial success - Some files were restored
@@ -189,9 +179,8 @@ namespace MCC_Mod_Manager
             return 2;   // Failure - No files were restored
         }
 
-        public static void newBackup()
-        {
-            ensureBackupFolderExists();
+        public static void NewBackup() {
+            EnsureBackupFolderExists();
 
             OpenFileDialog ofd = new OpenFileDialog {
                 InitialDirectory = Config.MCC_home,
@@ -208,7 +197,7 @@ namespace MCC_Mod_Manager
                         }
                     }
 
-                    if (createBackup(file, true) != 0) {
+                    if (CreateBackup(file, true) != 0) {
                         form1.showMsg("Could not create a backup of '" + file + "'. Is the file open somewhere?", "Error");
                     } else {
                         newbaks = true;
@@ -217,31 +206,30 @@ namespace MCC_Mod_Manager
 
                 if (newbaks) {
                     form1.showMsg("New Backup(s) Created", "Info");
-                    saveBackups();
-                    loadBackups();
+                    SaveBackups();
+                    LoadBackups();
                 }
             }
         }
 
-        public static void restoreSelected(IEnumerable<CheckBox> bakList)
-        {
+        public static void RestoreSelected(IEnumerable<CheckBox> bakList) {
             List<string> backupPaths = new List<string>();
             foreach (CheckBox chb in bakList) {
                 if (chb.Checked) {
                     if (form1.fullBakPath_Checked()) {
                         backupPaths.Add(chb.Text.Replace(Config.dirtyPadding, ""));
                     } else {
-                        backupPaths.Add(getBakKey(chb.Text.Replace(Config.dirtyPadding, "")));
+                        backupPaths.Add(GetBakKey(chb.Text.Replace(Config.dirtyPadding, "")));
                     }
                     chb.Checked = false;
                 }
             }
 
-            if (backupPaths.Count() == 0) {
+            if (backupPaths.Count == 0) {
                 form1.showMsg("No items selected from the list.", "Error");
                 return;
             }
-            int r = restoreBaks(backupPaths);
+            int r = RestoreBaks(backupPaths);
             if (r == 0) {
                 form1.showMsg("Selected files have been restored.", "Info");
             } else if (r == 1) {
@@ -249,18 +237,17 @@ namespace MCC_Mod_Manager
             }
         }
 
-        public static void restoreAll()
-        {
-            ensureBackupFolderExists();
+        public static void RestoreAll() {
+            EnsureBackupFolderExists();
 
-            form1.pBar_show(_baks.Count());
+            form1.PBar_show(_baks.Count);
             List<string> remainingBaks = new List<string>();
             bool chk = false;
             foreach (KeyValuePair<string, string> entry in _baks) {
-                form1.pBar_update();
-                string bakPath = Config.backup_dir + @"\" + entry.Value;
+                form1.PBar_update();
+                string bakPath = Config.Backup_dir + @"\" + entry.Value;
                 if (IO.CopyFile(bakPath, entry.Key, true) == 0) {
-                    if (Config.deleteOldBaks) {
+                    if (Config.DeleteOldBaks) {
                         if (!IO.DeleteFile(bakPath)) {
                             remainingBaks.Add(entry.Key);
                             form1.showMsg("Could not remove old backup '" + entry.Value + "'. Is the file open somewhere?", "Error");
@@ -273,8 +260,8 @@ namespace MCC_Mod_Manager
                 }
             }
 
-            if (Config.deleteOldBaks) {
-                if (remainingBaks.Count() == 0) {
+            if (Config.DeleteOldBaks) {
+                if (remainingBaks.Count == 0) {
                     _baks = new Dictionary<string, string>();
                 } else {
                     Dictionary<string, string> tmp = new Dictionary<string, string>();
@@ -288,20 +275,19 @@ namespace MCC_Mod_Manager
             if (chk) {
                 form1.showMsg("Files have been restored.", "Info");
             }
-            saveBackups();
-            updateBackupList();
-            form1.pBar_hide();
+            SaveBackups();
+            UpdateBackupList();
+            form1.PBar_hide();
         }
 
-        private static List<string> filterNeededBackups(List<string> paths)
-        {
+        private static List<string> FilterNeededBackups(List<string> paths) {
             List<string> requiredBaks = new List<string>();
-            foreach (string enabledModpack in Config.getEnabledModpacks()) {
-                modpackCfg modpackConfig = Modpacks.getModpackConfig(enabledModpack);
+            foreach (string enabledModpack in Config.GetEnabledModpacks()) {
+                modpackCfg modpackConfig = Modpacks.GetModpackConfig(enabledModpack);
 
                 foreach (modpackEntry entry in modpackConfig.entries) {
                     foreach (string path in paths) {
-                        if (path == Modpacks.expandPath(entry.dest)) {
+                        if (path == Modpacks.ExpandPath(entry.dest)) {
                             requiredBaks.Add(path);
                         }
                     }
@@ -311,18 +297,16 @@ namespace MCC_Mod_Manager
             return requiredBaks;
         }
 
-        public static bool deleteBak(string path)
-        {
-            if (IO.DeleteFile(Config.backup_dir + @"\" + _baks[path])) {
+        public static bool DeleteBak(string path) {
+            if (IO.DeleteFile(Config.Backup_dir + @"\" + _baks[path])) {
                 _baks.Remove(path);
                 return true;
             }
             return false;
         }
 
-        public static void deleteSelected(IEnumerable<CheckBox> bakList)
-        {
-            ensureBackupFolderExists();
+        public static void DeleteSelected(List<CheckBox> bakList) {
+            EnsureBackupFolderExists();
 
             DialogResult ans = form1.showMsg("Are you sure you want to delete the selected backup(s)?\r\nNo crying afterwards?", "Question");
             if (ans == DialogResult.No) {
@@ -330,54 +314,53 @@ namespace MCC_Mod_Manager
             }
 
             bool chk = false;
-            form1.pBar_show(bakList.Count());
+            form1.PBar_show(bakList.Count);
             List<string> toDelete = new List<string>();
             foreach (CheckBox chb in bakList) {
-                form1.pBar_update();
+                form1.PBar_update();
                 if (chb.Checked) {
                     chk = true;
                     string path;
                     if (form1.fullBakPath_Checked()) {
                         path = chb.Text.Replace(Config.dirtyPadding, "");
                     } else {
-                        path = getBakKey(chb.Text.Replace(Config.dirtyPadding, ""));
+                        path = GetBakKey(chb.Text.Replace(Config.dirtyPadding, ""));
                     }
                     toDelete.Add(path);
                     chb.Checked = false;
                 }
             }
             if (chk) {
-                List<string> requiredBaks = filterNeededBackups(toDelete);
+                List<string> requiredBaks = FilterNeededBackups(toDelete);
                 foreach (string path in toDelete) {
                     if (requiredBaks.Contains(path)) {
                         continue;
                     }
-                    if (IO.DeleteFile(Config.backup_dir + @"\" + _baks[path])) {
+                    if (IO.DeleteFile(Config.Backup_dir + @"\" + _baks[path])) {
                         _baks.Remove(path);
                     } else {
                         form1.showMsg("Could not delete '" + _baks[path] + "'. Is the file open somewhere?", "Error");
                     }
                 }
 
-                if (requiredBaks.Count() == 0) {
+                if (requiredBaks.Count == 0) {
                     form1.showMsg("Selected files have been deleted.", "Info");
                 } else {
-                    form1.showMsg(requiredBaks.Count() + " backups were not deleted because the original file(s) are currently patched with a mod. " +
+                    form1.showMsg(requiredBaks.Count + " backups were not deleted because the original file(s) are currently patched with a mod. " +
                         "Deleting these backups would make it impossible to unpatch the mod(s).", "Info");
                 }
-                saveBackups();
-                updateBackupList();
-                form1.pBar_hide();
+                SaveBackups();
+                UpdateBackupList();
+                form1.PBar_hide();
             } else {
                 form1.showMsg("No items selected from the list.", "Error");
-                form1.pBar_hide();
+                form1.PBar_hide();
                 return;
             }
         }
 
-        public static bool deleteAll(bool y)
-        {
-            ensureBackupFolderExists();
+        public static bool DeleteAll(bool y) {
+            EnsureBackupFolderExists();
 
             if (!y) {
                 DialogResult ans = form1.showMsg("Are you sure you want to delete ALL of your backup(s)?\r\nNo crying afterwards?", "Question");
@@ -387,31 +370,31 @@ namespace MCC_Mod_Manager
             }
 
             bool err = false;
-            form1.pBar_show(_baks.Count());
+            form1.PBar_show(_baks.Count);
             List<string> toDelete = new List<string>();
             foreach (KeyValuePair<string, string> entry in _baks) {
                 toDelete.Add(entry.Key);
             }
-            if (toDelete.Count() == 0) {
+            if (toDelete.Count == 0) {
                 form1.showMsg("Nothing to delete.", "Info");
                 return true;
             }
 
             List<string> remainingBaks = new List<string>();
-            List<string> requiredBaks = filterNeededBackups(toDelete);
+            List<string> requiredBaks = FilterNeededBackups(toDelete);
             foreach (string path in toDelete) {
                 if (requiredBaks.Contains(path)) {
                     remainingBaks.Add(path);
                     continue;
                 }
-                if (!IO.DeleteFile(Config.backup_dir + @"\" + _baks[path])) {
+                if (!IO.DeleteFile(Config.Backup_dir + @"\" + _baks[path])) {
                     remainingBaks.Add(path);
                     form1.showMsg("Could not delete '" + path + "'. Is the file open somewhere?", "Error");
                     err = true;
                 }
             }
 
-            if (remainingBaks.Count() == 0) {
+            if (remainingBaks.Count == 0) {
                 _baks = new Dictionary<string, string>();
                 form1.showMsg("All backups deleted.", "Info");
             } else {
@@ -421,12 +404,12 @@ namespace MCC_Mod_Manager
                 }
                 _baks = tmp;
             }
-            saveBackups();
-            updateBackupList();
-            form1.pBar_hide();
+            SaveBackups();
+            UpdateBackupList();
+            form1.PBar_hide();
 
-            if (requiredBaks.Count() != 0) {
-                form1.showMsg(requiredBaks.Count() + " backups were not deleted because the original file(s) are currently patched with a mod. " +
+            if (requiredBaks.Count != 0) {
+                form1.showMsg(requiredBaks.Count + " backups were not deleted because the original file(s) are currently patched with a mod. " +
                         "Deleting these backups would make it impossible to unpatch the mod(s).", "Info");
             }
             return !err;

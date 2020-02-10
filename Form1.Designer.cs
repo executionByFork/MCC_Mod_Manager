@@ -1,7 +1,5 @@
-﻿namespace MCC_Mod_Manager
-{
-    partial class Form1
-    {
+﻿namespace MCC_Mod_Manager {
+    partial class Form1 {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -11,10 +9,8 @@
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
+        protected override void Dispose(bool disposing) {
+            if (disposing && (components != null)) {
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -26,8 +22,7 @@
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
-        {
+        private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.topBar = new System.Windows.Forms.Panel();
             this.megaCaution = new System.Windows.Forms.PictureBox();
@@ -290,7 +285,7 @@
             this.delModpack.TabIndex = 5;
             this.delModpack.Text = "Delete Selected";
             this.delModpack.UseVisualStyleBackColor = true;
-            this.delModpack.Click += new System.EventHandler(this.delModpack_Click);
+            this.delModpack.Click += new System.EventHandler(this.DelModpack_Click);
             this.delModpack.MouseEnter += new System.EventHandler(this.btnHoverOn);
             this.delModpack.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
@@ -608,7 +603,7 @@
             this.cfgUpdateBtn.TabIndex = 5;
             this.cfgUpdateBtn.Text = "Update";
             this.cfgUpdateBtn.UseVisualStyleBackColor = true;
-            this.cfgUpdateBtn.Click += new System.EventHandler(this.cfgUpdateBtn_Click);
+            this.cfgUpdateBtn.Click += new System.EventHandler(this.CfgUpdateBtn_Click);
             this.cfgUpdateBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
             this.cfgUpdateBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 

@@ -5,14 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace MCC_Mod_Manager
-{
-    static class IO
-    {
+namespace MCC_Mod_Manager {
+    static class IO {
         public static Form1 form1;  // this is set on form load
 
-        public static bool DeleteFile(string path)
-        {
+        public static bool DeleteFile(string path) {
             try {
                 File.Delete(path);
             } catch (IOException) {
@@ -23,8 +20,7 @@ namespace MCC_Mod_Manager
             return true;
         }
 
-        public static int CopyFile(string src, string dest, bool overwrite)
-        {
+        public static int CopyFile(string src, string dest, bool overwrite) {
             //TODO: check source file exists before deleting the destination file
             if (File.Exists(dest)) {
                 if (overwrite) {
@@ -43,8 +39,7 @@ namespace MCC_Mod_Manager
             return 0;   // success
         }
 
-        public static string readFirstLine(string filePath)
-        {
+        public static string ReadFirstLine(string filePath) {
             try {
                 return File.ReadLines(filePath).First();
             } catch (IOException) {
@@ -54,21 +49,19 @@ namespace MCC_Mod_Manager
             }
         }
 
-        private static string retrieveHash(string[] dirArray, int i, Dictionary<string,object> fileTree)
-        {
+        private static string RetrieveHash(string[] dirArray, int i, Dictionary<string, object> fileTree) {
             if (fileTree.ContainsKey(dirArray[i])) {
                 string hash = fileTree[dirArray[i]] as string;
                 if (hash == null) { // If object is not a string
-                    return retrieveHash(dirArray, i + 1, JObject.FromObject(fileTree[dirArray[i]]).ToObject<Dictionary<string, object>>());
+                    return RetrieveHash(dirArray, i + 1, JObject.FromObject(fileTree[dirArray[i]]).ToObject<Dictionary<string, object>>());
                 }
                 return hash;
             }
-            
+
             return null;
         }
 
-        public static string getUnmodifiedHash(string filePath)
-        {
+        public static string GetUnmodifiedHash(string filePath) {
             string[] dirArray = filePath.Split(Path.DirectorySeparatorChar);
 
             string json = File.ReadAllText("Formats/filetree.json");
@@ -81,12 +74,11 @@ namespace MCC_Mod_Manager
                 return null;
             }
 
-            return retrieveHash(dirArray, 1, fileTree);
+            return RetrieveHash(dirArray, 1, fileTree);
         }
 
-        public static bool isHaloFile(string filePath)
-        {
-            return (getUnmodifiedHash(filePath) != null);
+        public static bool IsHaloFile(string filePath) {
+            return (GetUnmodifiedHash(filePath) != null);
         }
     }
 }

@@ -8,24 +8,21 @@ using Newtonsoft.Json;
 using System.Linq;
 using System.IO.Compression;
 
-namespace MCC_Mod_Manager
-{
-    public class mainCfg
-    {
+namespace MCC_Mod_Manager {
+    public class mainCfg {
         public string version = Config.version;
         public string MCC_version;
         public string MCC_home;
         public string backup_dir;
         public string modpack_dir;
         public bool deleteOldBaks;
-        public Dictionary<string, Dictionary<string,string>> patched = new Dictionary<string, Dictionary<string, string>>();
+        public Dictionary<string, Dictionary<string, string>> patched = new Dictionary<string, Dictionary<string, string>>();
     }
 
-    static class Config
-    {
-        public static readonly string version = "v0.7";
-        private static readonly string _cfgLocation = @".\MCC_Mod_Manager.cfg";
-        private static readonly string _bakcfgName = @"\backups.cfg";
+    static class Config {
+        public const string version = "v0.7";
+        private const string _cfgLocation = @".\MCC_Mod_Manager.cfg";
+        private const string _bakcfgName = @"\backups.cfg";
 
         // UI elements
         public static string dirtyPadding = "        ";
@@ -64,7 +61,7 @@ namespace MCC_Mod_Manager
                 _cfg.MCC_home = value;
             }
         }
-        public static string backup_dir {
+        public static string Backup_dir {
             get {
                 return _cfg.backup_dir;
             }
@@ -72,12 +69,12 @@ namespace MCC_Mod_Manager
                 _cfg.backup_dir = value;
             }
         }
-        public static string backupCfg {
+        public static string BackupCfg {
             get {
                 return _cfg.backup_dir + _bakcfgName;
             }
         }
-        public static string modpack_dir {
+        public static string Modpack_dir {
             get {
                 return _cfg.modpack_dir;
             }
@@ -85,7 +82,7 @@ namespace MCC_Mod_Manager
                 _cfg.modpack_dir = value;
             }
         }
-        public static bool deleteOldBaks {
+        public static bool DeleteOldBaks {
             get {
                 return _cfg.deleteOldBaks;
             }
@@ -102,8 +99,7 @@ namespace MCC_Mod_Manager
             }
         }
 
-        public static List<string> getEnabledModpacks()
-        {
+        public static List<string> GetEnabledModpacks() {
             List<string> list = new List<string>();
 
             foreach (KeyValuePair<string, Dictionary<string, string>> modpack in patched) {
@@ -112,19 +108,17 @@ namespace MCC_Mod_Manager
             return list;
         }
 
-        public static bool isPatched(string modpackName)
-        {
+        public static bool IsPatched(string modpackName) {
             try {
                 return patched.ContainsKey(modpackName);
             } catch (NullReferenceException) {
                 return false;
             }
         }
-        public static bool addPatched(string modpackName)
-        {
+        public static bool AddPatched(string modpackName) {
             Dictionary<string, string> modfiles = new Dictionary<string, string>();
-            modpackCfg mCfg = Modpacks.getModpackConfig(modpackName);
-            using (ZipArchive archive = ZipFile.OpenRead(Config.modpack_dir + @"\" + modpackName + ".zip")) {
+            modpackCfg mCfg = Modpacks.GetModpackConfig(modpackName);
+            using (ZipArchive archive = ZipFile.OpenRead(Config.Modpack_dir + @"\" + modpackName + ".zip")) {
                 if (mCfg == null) {
                     form1.showMsg("Cannot set state to enabled. The file '" + modpackName + ".zip' is either not a compatible modpack or the config is corrupted.", "Error");
                     return false;
@@ -132,55 +126,50 @@ namespace MCC_Mod_Manager
 
                 List<string> patched = new List<string>();   // track patched files in case of failure mid patch
                 foreach (modpackEntry entry in mCfg.entries) {
-                    modfiles[entry.dest] = Modpacks.getMD5(Modpacks.expandPath(entry.dest));
+                    modfiles[entry.dest] = Modpacks.getMD5(Modpacks.ExpandPath(entry.dest));
                 }
             }
 
             patched[modpackName] = modfiles;
             return true;
         }
-        public static void rmPatched(string modpackName)
-        {
+        public static void RmPatched(string modpackName) {
             patched.Remove(modpackName);
         }
 
-        public static string getCurrentBuild()
-        {
-            return IO.readFirstLine(MCC_home + @"\build_tag.txt");
+        public static string GetCurrentBuild() {
+            return IO.ReadFirstLine(MCC_home + @"\build_tag.txt");
         }
 
-        public static void doResetApp()
-        {
+        public static void DoResetApp() {
             patched = new Dictionary<string, Dictionary<string, string>>();
-            MCC_version = getCurrentBuild();
-            saveCfg();
-            Modpacks.loadModpacks();
-            if (!Backups.deleteAll(true)) {
+            MCC_version = GetCurrentBuild();
+            SaveCfg();
+            Modpacks.LoadModpacks();
+            if (!Backups.DeleteAll(true)) {
                 form1.showMsg("There was an issue deleting at least one backup. Please delete these in the Backups tab to avoid restoring an old " +
                     "version of the file in the future.", "Error");
             }
-            Backups.loadBackups();
+            Backups.LoadBackups();
         }
 
-        public static bool createDefaultCfg()
-        {
+        public static bool CreateDefaultCfg() {
             _cfg = new mainCfg();
             // default values declared here so that mainCfg class does not implicitly set defaults and bypass warning triggers
             MCC_home = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
-            MCC_version = getCurrentBuild();   // sets MCC_version to null if not found
-            backup_dir = @".\backups";
-            modpack_dir = @".\modpacks";
-            deleteOldBaks = false;
+            MCC_version = GetCurrentBuild();   // sets MCC_version to null if not found
+            Backup_dir = @".\backups";
+            Modpack_dir = @".\modpacks";
+            DeleteOldBaks = false;
             patched = new Dictionary<string, Dictionary<string, string>>();
 
-            saveCfg();
+            SaveCfg();
             form1.showMsg("A default configuration file has been created. Please review and update it as needed.", "Info");
 
             return true;
         }
 
-        public static void saveCfg()
-        {
+        public static void SaveCfg() {
             string json = JsonConvert.SerializeObject(_cfg, Formatting.Indented);
             using (FileStream fs = File.Create(_cfgLocation)) {
                 byte[] info = new UTF8Encoding(true).GetBytes(json);
@@ -188,8 +177,7 @@ namespace MCC_Mod_Manager
             }
         }
 
-        private static int readCfg()
-        {
+        private static int ReadCfg() {
             string json = File.ReadAllText(_cfgLocation);
             try {
                 mainCfg values = JsonConvert.DeserializeObject<mainCfg>(json);
@@ -199,10 +187,10 @@ namespace MCC_Mod_Manager
                 }
 
                 MCC_home = values.MCC_home;
-                MCC_version = String.IsNullOrEmpty(values.MCC_version) ? getCurrentBuild() : values.MCC_version;
-                backup_dir = values.backup_dir;
-                modpack_dir = values.modpack_dir;
-                deleteOldBaks = values.deleteOldBaks;
+                MCC_version = String.IsNullOrEmpty(values.MCC_version) ? GetCurrentBuild() : values.MCC_version;
+                Backup_dir = values.backup_dir;
+                Modpack_dir = values.modpack_dir;
+                DeleteOldBaks = values.deleteOldBaks;
                 patched = values.patched;
             } catch (JsonSerializationException) {
                 return 1;
@@ -218,29 +206,28 @@ namespace MCC_Mod_Manager
             return 0;
         }
 
-        public static int loadCfg()
-        {
+        public static int LoadCfg() {
             bool stabilize = false;
             bool needsStabilize = false;
             if (!File.Exists(_cfgLocation)) {
-                createDefaultCfg();
+                CreateDefaultCfg();
             } else {
-                int r = readCfg();
+                int r = ReadCfg();
                 if (r == 1) {
                     DialogResult ans = form1.showMsg("Your configuration has formatting errors, would you like to overwrite it with a default config?", "Question");
                     if (ans == DialogResult.No) {
                         return 3;
                     }
-                    createDefaultCfg();
+                    CreateDefaultCfg();
                 } else if (r == 2) {
                     DialogResult ans = form1.showMsg("Your config file is using an old format, would you like to overwrite it with a default config?", "Question");
                     if (ans == DialogResult.No) {
                         return 3;
                     }
-                    createDefaultCfg();
+                    CreateDefaultCfg();
                 } else {
                     // check if game was updated
-                    if (MCC_version != getCurrentBuild()) {
+                    if (MCC_version != GetCurrentBuild()) {
                         DialogResult ans = form1.showMsg("It appears that MCC has been updated. MCC Mod Manager needs to stabilize the game by uninstalling certain modpacks." +
                             "\r\nWould you like to do this now? Selecting 'No' will disable features.", "Question");
                         if (ans == DialogResult.Yes) {
@@ -254,8 +241,8 @@ namespace MCC_Mod_Manager
 
             bool msg = false;
             List<string> tmp = new List<string>();
-            foreach (KeyValuePair<string, Dictionary<string,string>> modpack in patched) {
-                if (!Modpacks.verifyExists(modpack.Key)) {
+            foreach (KeyValuePair<string, Dictionary<string, string>> modpack in patched) {
+                if (!Modpacks.VerifyExists(modpack.Key)) {
                     if (!msg) {
                         msg = true;
                         form1.showMsg("The '" + modpack.Key + "' modpack is missing from the modpacks folder. If this modpack is actually installed, " +
@@ -266,15 +253,15 @@ namespace MCC_Mod_Manager
                 }
             }
             foreach (string modpack in tmp) {
-                rmPatched(modpack);
+                RmPatched(modpack);
             }
-            saveCfg();
+            SaveCfg();
 
             // Update config tab
             form1.cfgTextBox1Text = MCC_home;
-            form1.cfgTextBox2Text = backup_dir;
-            form1.cfgTextBox3Text = modpack_dir;
-            form1.delOldBaks = deleteOldBaks;
+            form1.cfgTextBox2Text = Backup_dir;
+            form1.cfgTextBox3Text = Modpack_dir;
+            form1.delOldBaks = DeleteOldBaks;
 
             if (stabilize) {
                 return 1;
@@ -285,8 +272,7 @@ namespace MCC_Mod_Manager
             }
         }
 
-        public static bool chkHomeDir(String dir)
-        {
+        public static bool ChkHomeDir(String dir) {
             if (!File.Exists(dir + @"\haloreach\haloreach.dll")) {
                 return false;
             }

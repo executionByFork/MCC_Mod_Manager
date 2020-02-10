@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace MCC_Mod_Manager
-{
-    public class FolderSelectDialog
-    {
+namespace MCC_Mod_Manager {
+    public class FolderSelectDialog {
         // Credz to ErikE @ https://stackoverflow.com/a/33836106/6576622
         private string _initialDirectory;
         private string _title;
@@ -37,13 +35,11 @@ namespace MCC_Mod_Manager
             }
         }
 
-        public bool Show()
-        {
+        public bool Show() {
             return Show(IntPtr.Zero);
         }
 
-        public bool Show(IntPtr hWndOwner)
-        {
+        public bool Show(IntPtr hWndOwner) {
             var result = Environment.OSVersion.Version.Major >= 6
                 ? VistaDialog.Show(hWndOwner, InitialDirectory, Title)
                 : ShowXpDialog(hWndOwner, InitialDirectory, Title);
@@ -51,8 +47,7 @@ namespace MCC_Mod_Manager
             return result.Result;
         }
 
-        private struct ShowDialogResult
-        {
+        private struct ShowDialogResult {
             public bool Result {
                 get; set;
             }
@@ -61,8 +56,7 @@ namespace MCC_Mod_Manager
             }
         }
 
-        private static ShowDialogResult ShowXpDialog(IntPtr ownerHandle, string initialDirectory, string title)
-        {
+        private static ShowDialogResult ShowXpDialog(IntPtr ownerHandle, string initialDirectory, string title) {
             var folderBrowserDialog = new FolderBrowserDialog {
                 Description = title,
                 SelectedPath = initialDirectory,
@@ -76,8 +70,7 @@ namespace MCC_Mod_Manager
             return dialogResult;
         }
 
-        private static class VistaDialog
-        {
+        private static class VistaDialog {
             private const string c_foldersFilter = "Folders|\n";
 
             private const BindingFlags c_flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
@@ -98,8 +91,7 @@ namespace MCC_Mod_Manager
             private readonly static MethodInfo s_unAdviseMethodInfo = s_iFileDialogType.GetMethod("Unadvise");
             private readonly static MethodInfo s_showMethodInfo = s_iFileDialogType.GetMethod("Show");
 
-            public static ShowDialogResult Show(IntPtr ownerHandle, string initialDirectory, string title)
-            {
+            public static ShowDialogResult Show(IntPtr ownerHandle, string initialDirectory, string title) {
                 var openFileDialog = new OpenFileDialog {
                     AddExtension = false,
                     CheckFileExists = false,
@@ -129,11 +121,9 @@ namespace MCC_Mod_Manager
         }
 
         // Wrap an IWin32Window around an IntPtr
-        private class WindowWrapper : IWin32Window
-        {
+        private class WindowWrapper : IWin32Window {
             private readonly IntPtr _handle;
-            public WindowWrapper(IntPtr handle)
-            {
+            public WindowWrapper(IntPtr handle) {
                 _handle = handle;
             }
             public IntPtr Handle {

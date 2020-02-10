@@ -12,18 +12,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MCC_Mod_Manager
-{
-    static class AssemblyPatching
-    {
+namespace MCC_Mod_Manager {
+	static class AssemblyPatching {
 		// Majority of the code in this class was pulled from the Assembly project on GitHub and ported to work with my mod manager
 		// All of the code in Blamite comes from the Assembly project as well
 		// https://github.com/XboxChaos/Assembly
 
 		public static Form1 form1;  // this is set on form load
 
-		private static Patch LoadPatch(string patchFilePath)
-		{
+		private static Patch LoadPatch(string patchFilePath) {
 			using (var reader = new EndianReader(File.OpenRead(patchFilePath), Endian.LittleEndian)) {
 				string magic = reader.ReadAscii(4);
 				reader.SeekTo(0);
@@ -36,20 +33,19 @@ namespace MCC_Mod_Manager
 			}
 		}
 
-		public static bool applyPatch(ZipArchiveEntry zippedPatchFile, string patchFileName, string unmoddedMapPath, string outputPath)
-        {
-			createTmpDir();
+		public static bool ApplyPatch(ZipArchiveEntry zippedPatchFile, string patchFileName, string unmoddedMapPath, string outputPath) {
+			CreateTmpDir();
 			try {
-				zippedPatchFile.ExtractToFile(Config.modpack_dir + @"\tmp\" + patchFileName);
+				zippedPatchFile.ExtractToFile(Config.Modpack_dir + @"\tmp\" + patchFileName);
 			} catch (IOException) {
-				rmTmpDir();
-				createTmpDir();
-				zippedPatchFile.ExtractToFile(Config.modpack_dir + @"\tmp\" + patchFileName);
+				RmTmpDir();
+				CreateTmpDir();
+				zippedPatchFile.ExtractToFile(Config.Modpack_dir + @"\tmp\" + patchFileName);
 			}
-			Patch currentPatch = LoadPatch(Config.modpack_dir + @"\tmp\" + patchFileName);
+			Patch currentPatch = LoadPatch(Config.Modpack_dir + @"\tmp\" + patchFileName);
 
 			// Copy the original map to the destination path
-			IO.CopyFile(unmoddedMapPath, outputPath, true);	//if modpack has written to unmoddedmap, take from backups
+			IO.CopyFile(unmoddedMapPath, outputPath, true); //if modpack has written to unmoddedmap, take from backups
 
 			// Open the destination map
 			using (var stream = new EndianStream(File.Open(outputPath, FileMode.Open, FileAccess.ReadWrite), Endian.BigEndian)) {
@@ -81,21 +77,19 @@ namespace MCC_Mod_Manager
 				}
 			}
 
-			rmTmpDir();
+			RmTmpDir();
 			return true;
 		}
 
-		private static bool createTmpDir()
-		{
-			if (!Directory.Exists(Config.modpack_dir + @"\tmp")) {
-				Directory.CreateDirectory(Config.modpack_dir + @"\tmp");
+		private static bool CreateTmpDir() {
+			if (!Directory.Exists(Config.Modpack_dir + @"\tmp")) {
+				Directory.CreateDirectory(Config.Modpack_dir + @"\tmp");
 			}
 
 			return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
 		}
-		private static bool rmTmpDir()
-		{
-			Directory.Delete(Config.modpack_dir + @"\tmp", true);
+		private static bool RmTmpDir() {
+			Directory.Delete(Config.Modpack_dir + @"\tmp", true);
 
 			return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
 		}

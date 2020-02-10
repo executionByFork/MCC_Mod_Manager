@@ -7,26 +7,22 @@ using System.Threading;
 using System.Windows.Forms;
 
 
-namespace MCC_Mod_Manager
-{
-    public partial class Form1 : Form
-    {
-        public Form1()
-        {
+namespace MCC_Mod_Manager {
+    public partial class Form1 : Form {
+        public Form1() {
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
+        private void Form1_Load(object sender, EventArgs e) {
             version_lbl.Text = Config.version;
             Config.form1 = this;
-            int r = Config.loadCfg();
+            int r = Config.LoadCfg();
             if (r == 3) {
                 showMsg("MCC Mod Manager cannot load because there are problems with the configuration file.", "Error");
                 Environment.Exit(1);
             }
             Backups.form1 = this;
-            Backups.loadBackups();
+            Backups.LoadBackups();
 
             if (r == 2) {
                 patchButton.Enabled = false;
@@ -40,15 +36,15 @@ namespace MCC_Mod_Manager
                 megaCaution.Visible = true;
                 tt.SetToolTip(megaCaution, "MCC Mod Manager has detected an update and needs to stabilize the game. Please restart the app.");
             } else if (r == 1) {
-                Modpacks.stabilizeGame();
-                Backups.loadBackups();
+                Modpacks.StabilizeGame();
+                Backups.LoadBackups();
             }
 
             Modpacks.form1 = this;
-            Modpacks.loadModpacks();
+            Modpacks.LoadModpacks();
             AssemblyPatching.form1 = this;
             IO.form1 = this;
-            pBar_init();
+            PBar_init();
             tt.SetToolTip(addRowButton, "Select mod file(s) to add");
         }
 
@@ -56,14 +52,12 @@ namespace MCC_Mod_Manager
         /////    GENERAL FUNCTIONS    /////
         ///////////////////////////////////
 
-        public void btnHoverOn(object sender, EventArgs e)
-        {
+        public void btnHoverOn(object sender, EventArgs e) {
             this.Cursor = Cursors.Hand;
             this.Refresh();
         }
 
-        public void btnHoverOff(object sender, EventArgs e)
-        {
+        public void btnHoverOff(object sender, EventArgs e) {
             this.Cursor = Cursors.Default;
             this.Refresh();
         }
@@ -76,8 +70,7 @@ namespace MCC_Mod_Manager
             ShowAlways = true
         };
 
-        public DialogResult showMsg(string msg, string type)
-        {
+        public DialogResult showMsg(string msg, string type) {
             if (type == "Info") {
                 return MessageBox.Show(
                     msg, "Info", MessageBoxButtons.OK,
@@ -107,42 +100,36 @@ namespace MCC_Mod_Manager
         ///////////////////////////////////
 
         Point lastPoint;
-        private void topBar_MouseMove(object sender, MouseEventArgs e)
-        {
+        private void topBar_MouseMove(object sender, MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
                 this.Left += e.X - lastPoint.X;
                 this.Top += e.Y - lastPoint.Y;
             }
         }
 
-        private void topBar_MouseDown(object sender, MouseEventArgs e)
-        {
+        private void topBar_MouseDown(object sender, MouseEventArgs e) {
             lastPoint = new Point(e.X, e.Y);
         }
 
-        private void exitButton_Click(object sender, EventArgs e)
-        {
+        private void exitButton_Click(object sender, EventArgs e) {
             Close();
         }
 
-        private void minButton_Click(object sender, EventArgs e)
-        {
+        private void minButton_Click(object sender, EventArgs e) {
             WindowState = FormWindowState.Minimized;
         }
 
-        private void refreshButton_Click(object sender, EventArgs e)
-        {
-            Config.loadCfg();
-            Backups.loadBackups();
-            Modpacks.loadModpacks();
+        private void refreshButton_Click(object sender, EventArgs e) {
+            Config.LoadCfg();
+            Backups.LoadBackups();
+            Modpacks.LoadModpacks();
         }
 
         //////////////////////////////////
         /////        HOME TAB        /////
         //////////////////////////////////
 
-        private void homeTab_Click(object sender, EventArgs e)
-        {
+        private void homeTab_Click(object sender, EventArgs e) {
             homeTab.BackColor = Color.WhiteSmoke;
             createTab.BackColor = Color.DarkGray;
             configTab.BackColor = Color.DarkGray;
@@ -154,30 +141,26 @@ namespace MCC_Mod_Manager
             backupPanel.Visible = false;
         }
 
-        private void selectEnabled_chb_CheckedChanged(object sender, EventArgs e)
-        {
+        private void selectEnabled_chb_CheckedChanged(object sender, EventArgs e) {
             foreach (CheckBox chb in modListPanel.Controls.OfType<CheckBox>()) {
                 string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
-                if (Config.isPatched(modpackname)) {
+                if (Config.IsPatched(modpackname)) {
                     chb.Checked = ((CheckBox)sender).Checked;
                 }
             }
         }
 
-        public bool selectEnabled_checked()
-        {
+        public bool selectEnabled_checked() {
             return selectEnabled_chb.Checked;
         }
 
-        private void patchButton_Click(object sender, EventArgs e)
-        {
-            Modpacks.runPatchUnpatch(modListPanel.Controls.OfType<CheckBox>());
+        private void patchButton_Click(object sender, EventArgs e) {
+            Modpacks.RunPatchUnpatch(modListPanel.Controls.OfType<CheckBox>());
         }
 
-        private void manualOverride_CheckedChanged(object sender, EventArgs e)
-        {
+        private void manualOverride_CheckedChanged(object sender, EventArgs e) {
             if (manualOverride.Checked == false) {   // make warning only show if checkbox is getting enabled
-                Modpacks.loadModpacks();
+                Modpacks.LoadModpacks();
                 return;
             } else {
                 DialogResult ans = showMsg("Please do not mess with this unless you know what you are doing or are trying to fix a syncing issue.\r\n\r\n" +
@@ -189,53 +172,48 @@ namespace MCC_Mod_Manager
                     return;
                 }
 
-                Modpacks.loadModpacks();
+                Modpacks.LoadModpacks();
             }
         }
 
-        public bool manualOverrideEnabled()
-        {
+        public bool ManualOverrideEnabled() {
             return manualOverride.Checked;
         }
 
-        private void delModpack_Click(object sender, EventArgs e)
-        {
-            Modpacks.delModpack(modListPanel.Controls.OfType<CheckBox>());
+        private void DelModpack_Click(object sender, EventArgs e) {
+            Modpacks.DelModpack(modListPanel.Controls.OfType<CheckBox>());
         }
 
-        public int modListPanel_getCount()
-        {
+        public int ModListPanel_getCount() {
             return modListPanel.Controls.OfType<CheckBox>().Count();
         }
 
-        public void modListPanel_clear()
-        {
+        public void ModListPanel_clear() {
             modListPanel.Controls.Clear();
         }
 
-        public void modListPanel_add(string modpackName, bool versionMatches)
-        {
+        public void ModListPanel_add(string modpackName, bool versionMatches) {
             CheckBox chb = new CheckBox {
                 AutoSize = true,
                 Text = Config.dirtyPadding + modpackName,
-                Location = new Point(60, (modListPanel_getCount() * 20) + 1),
-                Checked = Config.isPatched(modpackName) && selectEnabled_checked()
+                Location = new Point(60, (ModListPanel_getCount() * 20) + 1),
+                Checked = Config.IsPatched(modpackName) && selectEnabled_checked()
             };
             PictureBox p = new PictureBox {
                 Width = 15,
                 Height = 15,
-                Location = new Point(15, (modListPanel_getCount() * 20) + 1),
-                Image = Config.isPatched(modpackName) ? Properties.Resources.greenDot_15px : Properties.Resources.redDot_15px
+                Location = new Point(15, (ModListPanel_getCount() * 20) + 1),
+                Image = Config.IsPatched(modpackName) ? Properties.Resources.greenDot_15px : Properties.Resources.redDot_15px
             };
             PictureBox c = new PictureBox {
                 Width = 15,
                 Height = 15,
-                Location = new Point(37, (modListPanel_getCount() * 20) + 1),
+                Location = new Point(37, (ModListPanel_getCount() * 20) + 1),
                 Image = Properties.Resources.caution_15px,
                 Visible = !versionMatches
             };
-            if (manualOverrideEnabled()) {
-                p.Click += Modpacks.forceModpackState;
+            if (ManualOverrideEnabled()) {
+                p.Click += Modpacks.ForceModpackState;
                 p.MouseEnter += btnHoverOn;
                 p.MouseLeave += btnHoverOff;
             }
@@ -250,8 +228,7 @@ namespace MCC_Mod_Manager
         /////       CREATE TAB       /////
         //////////////////////////////////
 
-        private void CreateTab_Click(object sender, EventArgs e)
-        {
+        private void CreateTab_Click(object sender, EventArgs e) {
             homeTab.BackColor = Color.DarkGray;
             createTab.BackColor = Color.WhiteSmoke;
             configTab.BackColor = Color.DarkGray;
@@ -263,8 +240,7 @@ namespace MCC_Mod_Manager
             backupPanel.Visible = false;
         }
 
-        private Panel makeRow(string filepath, string type)
-        {
+        private Panel MakeRow(string filepath, string type) {
             PictureBox del = new PictureBox();
             del.Image = del.ErrorImage;    // bit of a hack to get the error image to appear
             del.Width = 14;
@@ -292,7 +268,7 @@ namespace MCC_Mod_Manager
                 Location = Config.sourceBtnPoint,
                 Tag = "btn1"
             };
-            btn1.Click += Modpacks.create_fileBrowse;
+            btn1.Click += Modpacks.Create_fileBrowse;
             tt.SetToolTip(btn1, "Select modded file or .asmp file");
 
             Label lbl = new Label {
@@ -315,7 +291,7 @@ namespace MCC_Mod_Manager
                 Location = (type == "normal") ? Config.destBtnPoint : Config.destBtnPointAlt,
                 Tag = "btn2"
             };
-            btn2.Click += Modpacks.create_fileBrowse;
+            btn2.Click += Modpacks.Create_fileBrowse;
             tt.SetToolTip(btn2, "Select output location");
 
             int offset = 5;
@@ -348,7 +324,7 @@ namespace MCC_Mod_Manager
                     Location = Config.origBtnPoint,
                     Tag = "btn3"
                 };
-                btn3.Click += Modpacks.create_fileBrowse;
+                btn3.Click += Modpacks.Create_fileBrowse;
                 tt.SetToolTip(btn3, "Select unmodified map file");
 
                 p.Controls.Add(txt3);
@@ -365,8 +341,7 @@ namespace MCC_Mod_Manager
             return p;
         }
 
-        public void swapRowType(Panel p)
-        {
+        public void SwapRowType(Panel p) {
             if ((string)p.Tag == "normal") {
                 p.Height = 50;
                 p.GetChildAtPoint(Config.delBtnPoint).Location = Config.delBtnPointAlt;
@@ -389,7 +364,7 @@ namespace MCC_Mod_Manager
                     Location = Config.origBtnPoint,
                     Tag = "btn3"
                 };
-                btn3.Click += Modpacks.create_fileBrowse;
+                btn3.Click += Modpacks.Create_fileBrowse;
 
                 p.Controls.Add(txt3);
                 p.Controls.Add(btn3);
@@ -405,8 +380,7 @@ namespace MCC_Mod_Manager
             redrawCreatePanel();
         }
 
-        public void redrawCreatePanel()
-        {
+        public void redrawCreatePanel() {
             int offset = 5;
             foreach (Panel panel in createFilesPanel.Controls.OfType<Panel>()) {
                 panel.Location = new Point(10, offset);
@@ -418,8 +392,7 @@ namespace MCC_Mod_Manager
             }
         }
 
-        private void addRowButton_Click(object sender, EventArgs e)
-        {
+        private void addRowButton_Click(object sender, EventArgs e) {
             OpenFileDialog ofd = new OpenFileDialog {
                 InitialDirectory = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}",  // using the GUID to access 'This PC' folder
                 Multiselect = true
@@ -433,29 +406,25 @@ namespace MCC_Mod_Manager
                     } else {
                         type = "normal";
                     }
-                    createFilesPanel.Controls.Add(makeRow(file, type));
+                    createFilesPanel.Controls.Add(MakeRow(file, type));
                 }
             }
         }
 
-        private void deleteRow(object sender, EventArgs e)
-        {
+        private void deleteRow(object sender, EventArgs e) {
             createFilesPanel.Controls.Remove((Panel)((PictureBox)sender).Parent);
             redrawCreatePanel();
         }
 
-        private void createModpackBtn_Click(object sender, EventArgs e)
-        {
-            Modpacks.createModpack(modpackName_txt.Text, createFilesPanel.Controls.OfType<Panel>());
+        private void createModpackBtn_Click(object sender, EventArgs e) {
+            Modpacks.CreateModpack(modpackName_txt.Text, createFilesPanel.Controls.OfType<Panel>().ToList());
         }
 
-        private void clearBtn_Click(object sender, EventArgs e)
-        {
+        private void clearBtn_Click(object sender, EventArgs e) {
             resetCreateModpacksTab();
         }
 
-        public void resetCreateModpacksTab()
-        {
+        public void resetCreateModpacksTab() {
             createFilesPanel.Controls.Clear();
             modpackName_txt.Text = "";
         }
@@ -464,8 +433,7 @@ namespace MCC_Mod_Manager
         /////       CONFIG TAB       /////
         //////////////////////////////////
 
-        private void configTab_Click(object sender, EventArgs e)
-        {
+        private void configTab_Click(object sender, EventArgs e) {
             homeTab.BackColor = Color.DarkGray;
             createTab.BackColor = Color.DarkGray;
             configTab.BackColor = Color.WhiteSmoke;
@@ -477,8 +445,7 @@ namespace MCC_Mod_Manager
             backupPanel.Visible = false;
         }
 
-        private void cfgFolderBrowseBtn_Click(object sender, EventArgs e)
-        {
+        private void cfgFolderBrowseBtn_Click(object sender, EventArgs e) {
             var dialog = new FolderSelectDialog {
                 InitialDirectory = Config.MCC_home,
                 Title = "Select a folder"
@@ -509,31 +476,29 @@ namespace MCC_Mod_Manager
             }
         }
 
-        private void cfgUpdateBtn_Click(object sender, EventArgs e)
-        {
+        private void CfgUpdateBtn_Click(object sender, EventArgs e) {
             if (string.IsNullOrEmpty(cfgTextBox1.Text) || string.IsNullOrEmpty(cfgTextBox2.Text) || string.IsNullOrEmpty(cfgTextBox3.Text)) {
                 showMsg("Config entries must not be empty.", "Error");
                 return;
             }
 
-            if (!Config.chkHomeDir(cfgTextBox1.Text)) {
+            if (!Config.ChkHomeDir(cfgTextBox1.Text)) {
                 showMsg("It seems you have selected the wrong MCC install directory. " +
                     "Please make sure to select the folder named 'Halo The Master Chief Collection' in your Steam files.", "Error");
                 cfgTextBox1.Text = Config.MCC_home;
                 return;
             }
             Config.MCC_home = cfgTextBox1.Text;
-            Config.backup_dir = cfgTextBox2.Text;
-            Config.modpack_dir = cfgTextBox3.Text;
-            Config.deleteOldBaks = delOldBaks_chb.Checked;
+            Config.Backup_dir = cfgTextBox2.Text;
+            Config.Modpack_dir = cfgTextBox3.Text;
+            Config.DeleteOldBaks = delOldBaks_chb.Checked;
 
-            Config.saveCfg();
+            Config.SaveCfg();
 
             showMsg("Config Updated!", "Info");
         }
 
-        private void resetApp_Click(object sender, EventArgs e)
-        {
+        private void resetApp_Click(object sender, EventArgs e) {
             DialogResult ans = showMsg("WARNING: This dangerous, and odds are you don't need to do it." +
                 "\r\n\r\nThis button will reset the application state, so that the mod manager believes your Halo install is COMPLETELY unmodded. It will " +
                 "delete ALL of your backups, and WILL NOT restore them beforehand. This is to reset the app to a default state and flush out any broken files." +
@@ -542,15 +507,14 @@ namespace MCC_Mod_Manager
                 return;
             }
 
-            Config.doResetApp();
+            Config.DoResetApp();
         }
 
         //////////////////////////////////
         /////       BACKUP TAB       /////
         //////////////////////////////////
 
-        private void backupTab_Click(object sender, EventArgs e)
-        {
+        private void backupTab_Click(object sender, EventArgs e) {
             homeTab.BackColor = Color.DarkGray;
             createTab.BackColor = Color.DarkGray;
             configTab.BackColor = Color.DarkGray;
@@ -562,37 +526,31 @@ namespace MCC_Mod_Manager
             backupPanel.Visible = true;
         }
 
-        private void makeBakBtn_Click(object sender, EventArgs e)
-        {
-            Backups.newBackup();
+        private void makeBakBtn_Click(object sender, EventArgs e) {
+            Backups.NewBackup();
         }
 
-        private void restoreSelectedBtn_Click(object sender, EventArgs e)
-        {
-            Backups.restoreSelected(bakListPanel.Controls.OfType<CheckBox>());
+        private void restoreSelectedBtn_Click(object sender, EventArgs e) {
+            Backups.RestoreSelected(bakListPanel.Controls.OfType<CheckBox>());
         }
 
-        private void restoreAllBaksBtn_Click(object sender, EventArgs e)
-        {
-            Backups.restoreAll();
+        private void restoreAllBaksBtn_Click(object sender, EventArgs e) {
+            Backups.RestoreAll();
         }
 
-        private void delSelectedBak_Click(object sender, EventArgs e)
-        {
-            Backups.deleteSelected(bakListPanel.Controls.OfType<CheckBox>());
+        private void delSelectedBak_Click(object sender, EventArgs e) {
+            Backups.DeleteSelected(bakListPanel.Controls.OfType<CheckBox>().ToList());
         }
 
-        private void delAllBaksBtn_Click(object sender, EventArgs e)
-        {
-            Backups.deleteAll(false);
+        private void delAllBaksBtn_Click(object sender, EventArgs e) {
+            Backups.DeleteAll(false);
         }
 
-        private void fullBakPath_chb_CheckedChanged(object sender, EventArgs e)
-        {
+        private void fullBakPath_chb_CheckedChanged(object sender, EventArgs e) {
             Config.fullBakPath = fullBakPath_chb.Checked;
             if (Config.fullBakPath) {   // swapping from filename to full path
                 foreach (CheckBox chb in bakListPanel.Controls.OfType<CheckBox>()) {
-                    chb.Text = Config.dirtyPadding + Backups.getBakKey(chb.Text.Replace(Config.dirtyPadding, ""));
+                    chb.Text = Config.dirtyPadding + Backups.GetBakKey(chb.Text.Replace(Config.dirtyPadding, ""));
                 }
             } else {    // swapping from full path to filename
                 foreach (CheckBox chb in bakListPanel.Controls.OfType<CheckBox>()) {
@@ -601,23 +559,19 @@ namespace MCC_Mod_Manager
             }
         }
 
-        public bool fullBakPath_Checked()
-        {
+        public bool fullBakPath_Checked() {
             return fullBakPath_chb.Checked;
         }
 
-        public int bakListPanel_getCount()
-        {
+        public int bakListPanel_getCount() {
             return bakListPanel.Controls.Count;
         }
 
-        public void bakListPanel_clear()
-        {
+        public void bakListPanel_clear() {
             bakListPanel.Controls.Clear();
         }
 
-        public void bakListPanel_add(CheckBox chb)
-        {
+        public void bakListPanel_add(CheckBox chb) {
             bakListPanel.Controls.Add(chb);
         }
 
@@ -625,8 +579,7 @@ namespace MCC_Mod_Manager
         /////      PROGRESS BAR      /////
         //////////////////////////////////
 
-        private bool pBar_init()
-        {
+        private bool PBar_init() {
             for (int i = 0; i < 16; i++) {
                 PictureBox x = new PictureBox {
                     Image = Properties.Resources.HaloHelmetIcon_small,
@@ -643,15 +596,13 @@ namespace MCC_Mod_Manager
 
         private int pBarSections;
         private int pBarCounter = 0;
-        public bool pBar_show(int sections)
-        {
+        public bool PBar_show(int sections) {
             pBarSections = sections;
             pBarCounter = 0;
 
             return true;
         }
-        public bool pBar_update()
-        {
+        public bool PBar_update() {
             // casting to int drops decimal values, flooring the divide
             for (int i = 0; i < (int)(16 / pBarSections); i++) {
                 betterPBar.Controls[pBarCounter].Visible = true;
@@ -659,12 +610,11 @@ namespace MCC_Mod_Manager
                 Thread.Sleep(10);
                 Application.DoEvents();     // I know this isn't "correct" but...
             }
-            
+
             return true;
         }
 
-        public bool pBar_hide()
-        {
+        public bool PBar_hide() {
             foreach (PictureBox helm in betterPBar.Controls.OfType<PictureBox>()) {
                 helm.Visible = false;
             }
