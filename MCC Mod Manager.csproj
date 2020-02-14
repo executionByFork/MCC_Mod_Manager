@@ -34,7 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>HaloHelmetIcon.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Blamite">
@@ -67,18 +68,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyPatching.cs" />
-    <Compile Include="Backups.cs" />
-    <Compile Include="Config.cs" />
-    <Compile Include="FolderSelectDialog.cs" />
+    <Compile Include="Api\Utilities\AssemblyPatching.cs" />
+    <Compile Include="Api\Backups.cs" />
+    <Compile Include="Api\Config.cs" />
+    <Compile Include="Api\Utilities\FolderSelectDialog.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="IO.cs" />
-    <Compile Include="Modpacks.cs" />
+    <Compile Include="Api\Utilities\IO.cs" />
+    <Compile Include="Api\Modpacks.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -109,12 +110,15 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="HaloHelmetIcon.ico" />
     <None Include="Resources\caution_35px.png" />
     <None Include="Resources\caution_15px.png" />
     <None Include="Resources\redDot_15px.png" />
     <None Include="Resources\greenDot_15px.png" />
     <None Include="Resources\HaloHelmetIcon_small.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\HaloHelmetIcon.ico" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
