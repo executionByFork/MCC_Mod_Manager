@@ -4,11 +4,37 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace MCC_Mod_Manager {
     static class IO {
-        public static Form1 form1;  // this is set on form load
 
+        public static DialogResult ShowMsg(string msg, string type) {
+            if (type == "Info") {
+                return MessageBox.Show(
+                    msg, "Info", MessageBoxButtons.OK,
+                    MessageBoxIcon.None, MessageBoxDefaultButton.Button1
+                );
+            } else if (type == "Question") {
+                return MessageBox.Show(
+                    msg, "Question", MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question, MessageBoxDefaultButton.Button1
+                );
+            } else if (type == "Warning") {
+                return MessageBox.Show(
+                    msg, "Warning", MessageBoxButtons.OK,
+                    MessageBoxIcon.None, MessageBoxDefaultButton.Button1
+                );
+            } else if (type == "Error") {
+                return MessageBox.Show(
+                    msg, "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1
+                );
+            }
+            throw new FormatException("Please notify the developer: " + type + " is not a valid type for showMsg.");
+        }
+
+        #region IO
         public static bool DeleteFile(string path) {
             try {
                 File.Delete(path);
@@ -80,5 +106,6 @@ namespace MCC_Mod_Manager {
         public static bool IsHaloFile(string filePath) {
             return (GetUnmodifiedHash(filePath) != null);
         }
+        #endregion
     }
 }

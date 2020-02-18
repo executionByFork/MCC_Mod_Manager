@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MCC_Mod_Manager {
-    static class Program {
+    public static class Program {
+
+        public static Form1 MasterForm;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -13,7 +16,8 @@ namespace MCC_Mod_Manager {
         static void Main() {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            MasterForm = new Form1();
+            Application.Run(MasterForm);
         }
     }
 }

@@ -15,13 +15,11 @@ namespace MCC_Mod_Manager {
 
         private void Form1_Load(object sender, EventArgs e) {
             version_lbl.Text = Config.version;
-            Config.form1 = this;
             int r = Config.LoadCfg();
             if (r == 3) {
-                showMsg("MCC Mod Manager cannot load because there are problems with the configuration file.", "Error");
+                IO.ShowMsg("MCC Mod Manager cannot load because there are problems with the configuration file.", "Error");
                 Environment.Exit(1);
             }
-            Backups.form1 = this;
             Backups.LoadBackups();
 
             if (r == 2) {
@@ -39,11 +37,7 @@ namespace MCC_Mod_Manager {
                 Modpacks.StabilizeGame();
                 Backups.LoadBackups();
             }
-
-            Modpacks.form1 = this;
             Modpacks.LoadModpacks();
-            AssemblyPatching.form1 = this;
-            IO.form1 = this;
             PBar_init();
             tt.SetToolTip(addRowButton, "Select mod file(s) to add");
         }
@@ -69,31 +63,6 @@ namespace MCC_Mod_Manager {
             // Force the ToolTip text to be displayed whether or not the form is active.
             ShowAlways = true
         };
-
-        public DialogResult showMsg(string msg, string type) {
-            if (type == "Info") {
-                return MessageBox.Show(
-                    msg, "Info", MessageBoxButtons.OK,
-                    MessageBoxIcon.None, MessageBoxDefaultButton.Button1
-                );
-            } else if (type == "Question") {
-                return MessageBox.Show(
-                    msg, "Question", MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question, MessageBoxDefaultButton.Button1
-                );
-            } else if (type == "Warning") {
-                return MessageBox.Show(
-                    msg, "Warning", MessageBoxButtons.OK,
-                    MessageBoxIcon.None, MessageBoxDefaultButton.Button1
-                );
-            } else if (type == "Error") {
-                return MessageBox.Show(
-                    msg, "Error", MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1
-                );
-            }
-            throw new FormatException("Please notify the developer: " + type + " is not a valid type for showMsg.");
-        }
 
         ///////////////////////////////////
         /////         TOP BAR         /////
@@ -163,7 +132,7 @@ namespace MCC_Mod_Manager {
                 Modpacks.LoadModpacks();
                 return;
             } else {
-                DialogResult ans = showMsg("Please do not mess with this unless you know what you are doing or are trying to fix a syncing issue.\r\n\r\n" +
+                DialogResult ans = IO.ShowMsg("Please do not mess with this unless you know what you are doing or are trying to fix a syncing issue.\r\n\r\n" +
                     "This option allows you to click the red/green icons beside modpack entries to force the mod manager to flag a modpack as enabled/disabled. " +
                     "This does not make changes to files, but it does make the mod manager 'think' that modpacks are/aren't installed." +
                     "\r\n\r\nEnable this feature?", "Question");
@@ -478,12 +447,12 @@ namespace MCC_Mod_Manager {
 
         private void CfgUpdateBtn_Click(object sender, EventArgs e) {
             if (string.IsNullOrEmpty(cfgTextBox1.Text) || string.IsNullOrEmpty(cfgTextBox2.Text) || string.IsNullOrEmpty(cfgTextBox3.Text)) {
-                showMsg("Config entries must not be empty.", "Error");
+                IO.ShowMsg("Config entries must not be empty.", "Error");
                 return;
             }
 
             if (!Config.ChkHomeDir(cfgTextBox1.Text)) {
-                showMsg("It seems you have selected the wrong MCC install directory. " +
+                IO.ShowMsg("It seems you have selected the wrong MCC install directory. " +
                     "Please make sure to select the folder named 'Halo The Master Chief Collection' in your Steam files.", "Error");
                 cfgTextBox1.Text = Config.MCC_home;
                 return;
@@ -495,11 +464,11 @@ namespace MCC_Mod_Manager {
 
             Config.SaveCfg();
 
-            showMsg("Config Updated!", "Info");
+            IO.ShowMsg("Config Updated!", "Info");
         }
 
         private void resetApp_Click(object sender, EventArgs e) {
-            DialogResult ans = showMsg("WARNING: This dangerous, and odds are you don't need to do it." +
+            DialogResult ans = IO.ShowMsg("WARNING: This dangerous, and odds are you don't need to do it." +
                 "\r\n\r\nThis button will reset the application state, so that the mod manager believes your Halo install is COMPLETELY unmodded. It will " +
                 "delete ALL of your backups, and WILL NOT restore them beforehand. This is to reset the app to a default state and flush out any broken files." +
                 "\r\n\r\nAre you sure you want to continue?", "Question");

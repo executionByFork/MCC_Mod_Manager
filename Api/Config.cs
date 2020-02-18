@@ -5,11 +5,10 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
 using Newtonsoft.Json;
-using System.Linq;
 using System.IO.Compression;
 
 namespace MCC_Mod_Manager {
-    public class mainCfg {
+    public class MainCfg {
         public string version = Config.version;
         public string MCC_version;
         public string MCC_home;
@@ -20,6 +19,7 @@ namespace MCC_Mod_Manager {
     }
 
     static class Config {
+        #region Config Fields
         public const string version = "v0.7";
         private const string _cfgLocation = @".\MCC_Mod_Manager.cfg";
         private const string _bakcfgName = @"\backups.cfg";
@@ -41,10 +41,12 @@ namespace MCC_Mod_Manager {
         public static readonly Font btnFont = new Font("Lucida Console", 10, FontStyle.Regular);
         public static readonly Font arrowFont = new Font("Reem Kufi", 12, FontStyle.Bold);
 
-        public static Form1 form1;  // this is set on form load
-        private static mainCfg _cfg = new mainCfg(); // this is set on form load
+        private static MainCfg _cfg = new MainCfg(); // this is set on form load
         public static bool fullBakPath = false;
 
+        #endregion
+
+        #region Primary Config Mutators
         public static string MCC_version {
             get {
                 return _cfg.MCC_version;
@@ -90,7 +92,8 @@ namespace MCC_Mod_Manager {
                 _cfg.deleteOldBaks = value;
             }
         }
-        public static Dictionary<string, Dictionary<string, string>> patched {
+
+        public static Dictionary<string, Dictionary<string, string>> Patched {
             get {
                 return _cfg.patched;
             }
@@ -99,177 +102,19 @@ namespace MCC_Mod_Manager {
             }
         }
 
-        public static List<string> GetEnabledModpacks() {
-            List<string> list = new List<string>();
+        #endregion
 
-            foreach (KeyValuePair<string, Dictionary<string, string>> modpack in patched) {
-                list.Add(modpack.Key);
-            }
-            return list;
-        }
-
-        public static bool IsPatched(string modpackName) {
-            try {
-                return patched.ContainsKey(modpackName);
-            } catch (NullReferenceException) {
-                return false;
-            }
-        }
-        public static bool AddPatched(string modpackName) {
-            Dictionary<string, string> modfiles = new Dictionary<string, string>();
-            modpackCfg mCfg = Modpacks.GetModpackConfig(modpackName);
-            using (ZipArchive archive = ZipFile.OpenRead(Config.Modpack_dir + @"\" + modpackName + ".zip")) {
-                if (mCfg == null) {
-                    form1.showMsg("Cannot set state to enabled. The file '" + modpackName + ".zip' is either not a compatible modpack or the config is corrupted.", "Error");
-                    return false;
-                }
-
-                List<string> patched = new List<string>();   // track patched files in case of failure mid patch
-                foreach (modpackEntry entry in mCfg.entries) {
-                    modfiles[entry.dest] = Modpacks.getMD5(Modpacks.ExpandPath(entry.dest));
-                }
-            }
-
-            patched[modpackName] = modfiles;
-            return true;
-        }
-        public static void RmPatched(string modpackName) {
-            patched.Remove(modpackName);
-        }
-
-        public static string GetCurrentBuild() {
-            return IO.ReadFirstLine(MCC_home + @"\build_tag.txt");
-        }
-
+        #region Event Handlers
         public static void DoResetApp() {
-            patched = new Dictionary<string, Dictionary<string, string>>();
+            Patched = new Dictionary<string, Dictionary<string, string>>();
             MCC_version = GetCurrentBuild();
             SaveCfg();
             Modpacks.LoadModpacks();
             if (!Backups.DeleteAll(true)) {
-                form1.showMsg("There was an issue deleting at least one backup. Please delete these in the Backups tab to avoid restoring an old " +
+                IO.ShowMsg("There was an issue deleting at least one backup. Please delete these in the Backups tab to avoid restoring an old " +
                     "version of the file in the future.", "Error");
             }
             Backups.LoadBackups();
-        }
-
-        public static bool CreateDefaultCfg() {
-            _cfg = new mainCfg();
-            // default values declared here so that mainCfg class does not implicitly set defaults and bypass warning triggers
-            MCC_home = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
-            MCC_version = GetCurrentBuild();   // sets MCC_version to null if not found
-            Backup_dir = @".\backups";
-            Modpack_dir = @".\modpacks";
-            DeleteOldBaks = false;
-            patched = new Dictionary<string, Dictionary<string, string>>();
-
-            SaveCfg();
-            form1.showMsg("A default configuration file has been created. Please review and update it as needed.", "Info");
-
-            return true;
-        }
-
-        public static void SaveCfg() {
-            string json = JsonConvert.SerializeObject(_cfg, Formatting.Indented);
-            using (FileStream fs = File.Create(_cfgLocation)) {
-                byte[] info = new UTF8Encoding(true).GetBytes(json);
-                fs.Write(info, 0, info.Length);
-            }
-        }
-
-        private static int ReadCfg() {
-            string json = File.ReadAllText(_cfgLocation);
-            try {
-                mainCfg values = JsonConvert.DeserializeObject<mainCfg>(json);
-                // TODO: implement old config version handling
-                if (String.IsNullOrEmpty(values.version)) {
-                    return 2;
-                }
-
-                MCC_home = values.MCC_home;
-                MCC_version = String.IsNullOrEmpty(values.MCC_version) ? GetCurrentBuild() : values.MCC_version;
-                Backup_dir = values.backup_dir;
-                Modpack_dir = values.modpack_dir;
-                DeleteOldBaks = values.deleteOldBaks;
-                patched = values.patched;
-            } catch (JsonSerializationException) {
-                return 1;
-            } catch (JsonReaderException) {
-                return 1;
-            } catch (KeyNotFoundException) {
-                return 1;
-            }
-            if (patched == null) {
-                return 2;
-            }
-
-            return 0;
-        }
-
-        public static int LoadCfg() {
-            bool stabilize = false;
-            bool needsStabilize = false;
-            if (!File.Exists(_cfgLocation)) {
-                CreateDefaultCfg();
-            } else {
-                int r = ReadCfg();
-                if (r == 1) {
-                    DialogResult ans = form1.showMsg("Your configuration has formatting errors, would you like to overwrite it with a default config?", "Question");
-                    if (ans == DialogResult.No) {
-                        return 3;
-                    }
-                    CreateDefaultCfg();
-                } else if (r == 2) {
-                    DialogResult ans = form1.showMsg("Your config file is using an old format, would you like to overwrite it with a default config?", "Question");
-                    if (ans == DialogResult.No) {
-                        return 3;
-                    }
-                    CreateDefaultCfg();
-                } else {
-                    // check if game was updated
-                    if (MCC_version != GetCurrentBuild()) {
-                        DialogResult ans = form1.showMsg("It appears that MCC has been updated. MCC Mod Manager needs to stabilize the game by uninstalling certain modpacks." +
-                            "\r\nWould you like to do this now? Selecting 'No' will disable features.", "Question");
-                        if (ans == DialogResult.Yes) {
-                            stabilize = true;
-                        } else {
-                            needsStabilize = true;
-                        }
-                    }
-                }
-            }
-
-            bool msg = false;
-            List<string> tmp = new List<string>();
-            foreach (KeyValuePair<string, Dictionary<string, string>> modpack in patched) {
-                if (!Modpacks.VerifyExists(modpack.Key)) {
-                    if (!msg) {
-                        msg = true;
-                        form1.showMsg("The '" + modpack.Key + "' modpack is missing from the modpacks folder. If this modpack is actually installed, " +
-                            "MCC Mod Manager won't be able to uninstall it. You should restore from backups or verify the game files through Steam." +
-                            "\r\nThis warning will only show once.", "Warning");
-                    }
-                    tmp.Add(modpack.Key);
-                }
-            }
-            foreach (string modpack in tmp) {
-                RmPatched(modpack);
-            }
-            SaveCfg();
-
-            // Update config tab
-            form1.cfgTextBox1Text = MCC_home;
-            form1.cfgTextBox2Text = Backup_dir;
-            form1.cfgTextBox3Text = Modpack_dir;
-            form1.delOldBaks = DeleteOldBaks;
-
-            if (stabilize) {
-                return 1;
-            } else if (needsStabilize) {
-                return 2;
-            } else {
-                return 0;
-            }
         }
 
         public static bool ChkHomeDir(String dir) {
@@ -285,5 +130,177 @@ namespace MCC_Mod_Manager {
 
             return true;
         }
+        #endregion
+
+        #region Api Functions
+
+        public static void SaveCfg() {
+            string json = JsonConvert.SerializeObject(_cfg, Formatting.Indented);
+            using (FileStream fs = File.Create(_cfgLocation)) {
+                byte[] info = new UTF8Encoding(true).GetBytes(json);
+                fs.Write(info, 0, info.Length);
+            }
+        }
+
+
+        public static int LoadCfg() {
+            bool stabilize = false;
+            bool needsStabilize = false;
+            if (!File.Exists(_cfgLocation)) {
+                CreateDefaultCfg();
+            } else {
+                int r = ReadCfg();
+                if (r == 1) {
+                    DialogResult ans = IO.ShowMsg("Your configuration has formatting errors, would you like to overwrite it with a default config?", "Question");
+                    if (ans == DialogResult.No) {
+                        return 3;
+                    }
+                    CreateDefaultCfg();
+                } else if (r == 2) {
+                    DialogResult ans = IO.ShowMsg("Your config file is using an old format, would you like to overwrite it with a default config?", "Question");
+                    if (ans == DialogResult.No) {
+                        return 3;
+                    }
+                    CreateDefaultCfg();
+                } else {
+                    // check if game was updated
+                    if (MCC_version != GetCurrentBuild()) {
+                        DialogResult ans = IO.ShowMsg("It appears that MCC has been updated. MCC Mod Manager needs to stabilize the game by uninstalling certain modpacks." +
+                            "\r\nWould you like to do this now? Selecting 'No' will disable features.", "Question");
+                        if (ans == DialogResult.Yes) {
+                            stabilize = true;
+                        } else {
+                            needsStabilize = true;
+                        }
+                    }
+                }
+            }
+
+            bool msg = false;
+            List<string> tmp = new List<string>();
+            foreach (KeyValuePair<string, Dictionary<string, string>> modpack in Patched) {
+                if (!Modpacks.VerifyExists(modpack.Key)) {
+                    if (!msg) {
+                        msg = true;
+                        IO.ShowMsg("The '" + modpack.Key + "' modpack is missing from the modpacks folder. If this modpack is actually installed, " +
+                            "MCC Mod Manager won't be able to uninstall it. You should restore from backups or verify the game files through Steam." +
+                            "\r\nThis warning will only show once.", "Warning");
+                    }
+                    tmp.Add(modpack.Key);
+                }
+            }
+            foreach (string modpack in tmp) {
+                RmPatched(modpack);
+            }
+            SaveCfg();
+
+            // Update config tab
+            Program.MasterForm.cfgTextBox1Text = MCC_home;
+            Program.MasterForm.cfgTextBox2Text = Backup_dir;
+            Program.MasterForm.cfgTextBox3Text = Modpack_dir;
+            Program.MasterForm.delOldBaks = DeleteOldBaks;
+
+            if (stabilize) {
+                return 1;
+            } else if (needsStabilize) {
+                return 2;
+            } else {
+                return 0;
+            }
+        }
+
+        public static List<string> GetEnabledModpacks() {
+            List<string> list = new List<string>();
+
+            foreach (KeyValuePair<string, Dictionary<string, string>> modpack in Patched) {
+                list.Add(modpack.Key);
+            }
+            return list;
+        }
+
+        public static bool IsPatched(string modpackName) {
+            try {
+                return Patched.ContainsKey(modpackName);
+            } catch (NullReferenceException) {
+                return false;
+            }
+        }
+
+        public static void RmPatched(string modpackName) {
+            Patched.Remove(modpackName);
+        }
+
+        public static string GetCurrentBuild() {
+            return IO.ReadFirstLine(MCC_home + @"\build_tag.txt");
+        }
+
+        #endregion
+
+        #region Helper Functions
+        public static bool AddPatched(string modpackName) {
+            Dictionary<string, string> modfiles = new Dictionary<string, string>();
+            modpackCfg mCfg = Modpacks.GetModpackConfig(modpackName);
+            using (ZipArchive archive = ZipFile.OpenRead(Config.Modpack_dir + @"\" + modpackName + ".zip")) {
+                if (mCfg == null) {
+                    IO.ShowMsg("Cannot set state to enabled. The file '" + modpackName + ".zip' is either not a compatible modpack or the config is corrupted.", "Error");
+                    return false;
+                }
+
+                List<string> patched = new List<string>();   // track patched files in case of failure mid patch
+                foreach (modpackEntry entry in mCfg.entries) {
+                    modfiles[entry.dest] = Modpacks.getMD5(Modpacks.ExpandPath(entry.dest));
+                }
+            }
+
+            Patched[modpackName] = modfiles;
+            return true;
+        }
+
+        public static bool CreateDefaultCfg() {
+            _cfg = new MainCfg();
+            // default values declared here so that mainCfg class does not implicitly set defaults and bypass warning triggers
+            MCC_home = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
+            MCC_version = GetCurrentBuild();   // sets MCC_version to null if not found
+            Backup_dir = @".\backups";
+            Modpack_dir = @".\modpacks";
+            DeleteOldBaks = false;
+            Patched = new Dictionary<string, Dictionary<string, string>>();
+
+            SaveCfg();
+            IO.ShowMsg("A default configuration file has been created. Please review and update it as needed.", "Info");
+
+            return true;
+        }
+
+        private static int ReadCfg() {
+            string json = File.ReadAllText(_cfgLocation);
+            try {
+                MainCfg values = JsonConvert.DeserializeObject<MainCfg>(json);
+                // TODO: implement old config version handling
+                if (String.IsNullOrEmpty(values.version)) {
+                    return 2;
+                }
+
+                MCC_home = values.MCC_home;
+                MCC_version = String.IsNullOrEmpty(values.MCC_version) ? GetCurrentBuild() : values.MCC_version;
+                Backup_dir = values.backup_dir;
+                Modpack_dir = values.modpack_dir;
+                DeleteOldBaks = values.deleteOldBaks;
+                Patched = values.patched;
+            } catch (JsonSerializationException) {
+                return 1;
+            } catch (JsonReaderException) {
+                return 1;
+            } catch (KeyNotFoundException) {
+                return 1;
+            }
+            if (Patched == null) {
+                return 2;
+            }
+
+            return 0;
+        }
+
+        #endregion
     }
 }
