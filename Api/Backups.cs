@@ -26,21 +26,21 @@ namespace MCC_Mod_Manager {
             if (ofd.ShowDialog() == DialogResult.OK) {
                 foreach (string file in ofd.FileNames) {
                     if (_baks.ContainsKey(file)) {
-                        DialogResult ans = IO.ShowMsg("A backup of ' " + file + "' already exists. Would you like to overwrite?", "Question");
+                        DialogResult ans = Utility.ShowMsg("A backup of ' " + file + "' already exists. Would you like to overwrite?", "Question");
                         if (ans == DialogResult.No) {
                             continue;
                         }
                     }
 
                     if (CreateBackup(file, true) != 0) {
-                        IO.ShowMsg("Could not create a backup of '" + file + "'. Is the file open somewhere?", "Error");
+                        Utility.ShowMsg("Could not create a backup of '" + file + "'. Is the file open somewhere?", "Error");
                     } else {
                         newbaks = true;
                     }
                 }
 
                 if (newbaks) {
-                    IO.ShowMsg("New Backup(s) Created", "Info");
+                    Utility.ShowMsg("New Backup(s) Created", "Info");
                     SaveBackups();
                     LoadBackups();
                 }
@@ -61,14 +61,14 @@ namespace MCC_Mod_Manager {
             }
 
             if (backupPaths.Count == 0) {
-                IO.ShowMsg("No items selected from the list.", "Error");
+                Utility.ShowMsg("No items selected from the list.", "Error");
                 return;
             }
             int r = RestoreBaks(backupPaths);
             if (r == 0) {
-                IO.ShowMsg("Selected files have been restored.", "Info");
+                Utility.ShowMsg("Selected files have been restored.", "Info");
             } else if (r == 1) {
-                IO.ShowMsg("At least one file restore failed. Your game may be in an unstable state.", "Warning");
+                Utility.ShowMsg("At least one file restore failed. Your game may be in an unstable state.", "Warning");
             }
         }
 
@@ -81,17 +81,17 @@ namespace MCC_Mod_Manager {
             foreach (KeyValuePair<string, string> entry in _baks) {
                 Program.MasterForm.PBar_update();
                 string bakPath = Config.Backup_dir + @"\" + entry.Value;
-                if (IO.CopyFile(bakPath, entry.Key, true) == 0) {
+                if (Utility.CopyFile(bakPath, entry.Key, true) == 0) {
                     if (Config.DeleteOldBaks) {
-                        if (!IO.DeleteFile(bakPath)) {
+                        if (!Utility.DeleteFile(bakPath)) {
                             remainingBaks.Add(entry.Key);
-                            IO.ShowMsg("Could not remove old backup '" + entry.Value + "'. Is the file open somewhere?", "Error");
+                            Utility.ShowMsg("Could not remove old backup '" + entry.Value + "'. Is the file open somewhere?", "Error");
                         }
                     }
                     chk = true;
                 } else {
                     remainingBaks.Add(entry.Key);
-                    IO.ShowMsg("Could not restore '" + Path.GetFileName(entry.Key) + "'. If the game is open, close it and try again.", "Error");
+                    Utility.ShowMsg("Could not restore '" + Path.GetFileName(entry.Key) + "'. If the game is open, close it and try again.", "Error");
                 }
             }
 
@@ -108,7 +108,7 @@ namespace MCC_Mod_Manager {
             }
 
             if (chk) {
-                IO.ShowMsg("Files have been restored.", "Info");
+                Utility.ShowMsg("Files have been restored.", "Info");
             }
             SaveBackups();
             UpdateBackupList();
@@ -119,7 +119,7 @@ namespace MCC_Mod_Manager {
         public static void DeleteSelected(List<CheckBox> bakList) {
             EnsureBackupFolderExists();
 
-            DialogResult ans = IO.ShowMsg("Are you sure you want to delete the selected backup(s)?\r\nNo crying afterwards?", "Question");
+            DialogResult ans = Utility.ShowMsg("Are you sure you want to delete the selected backup(s)?\r\nNo crying afterwards?", "Question");
             if (ans == DialogResult.No) {
                 return;
             }
@@ -147,24 +147,24 @@ namespace MCC_Mod_Manager {
                     if (requiredBaks.Contains(path)) {
                         continue;
                     }
-                    if (IO.DeleteFile(Config.Backup_dir + @"\" + _baks[path])) {
+                    if (Utility.DeleteFile(Config.Backup_dir + @"\" + _baks[path])) {
                         _baks.Remove(path);
                     } else {
-                        IO.ShowMsg("Could not delete '" + _baks[path] + "'. Is the file open somewhere?", "Error");
+                        Utility.ShowMsg("Could not delete '" + _baks[path] + "'. Is the file open somewhere?", "Error");
                     }
                 }
 
                 if (requiredBaks.Count == 0) {
-                    IO.ShowMsg("Selected files have been deleted.", "Info");
+                    Utility.ShowMsg("Selected files have been deleted.", "Info");
                 } else {
-                    IO.ShowMsg(requiredBaks.Count + " backups were not deleted because the original file(s) are currently patched with a mod. " +
+                    Utility.ShowMsg(requiredBaks.Count + " backups were not deleted because the original file(s) are currently patched with a mod. " +
                         "Deleting these backups would make it impossible to unpatch the mod(s).", "Info");
                 }
                 SaveBackups();
                 UpdateBackupList();
                 Program.MasterForm.PBar_hide();
             } else {
-                IO.ShowMsg("No items selected from the list.", "Error");
+                Utility.ShowMsg("No items selected from the list.", "Error");
                 Program.MasterForm.PBar_hide();
                 return;
             }
@@ -191,14 +191,14 @@ namespace MCC_Mod_Manager {
                 err = true;
             }
             if (err) {
-                DialogResult ans = IO.ShowMsg(
+                DialogResult ans = Utility.ShowMsg(
                     "The backup configuration file is corrupted. You may need to verify your game files on steam or reinstall." +
                     "Would you like to delete the corrupted backup config file?",
                     "Question"
                 );
                 if (ans == DialogResult.Yes) {
-                    if (!IO.DeleteFile(Config.BackupCfg)) {
-                        IO.ShowMsg("The backup file could not be deleted. Is it open somewhere?", "Error");
+                    if (!Utility.DeleteFile(Config.BackupCfg)) {
+                        Utility.ShowMsg("The backup file could not be deleted. Is it open somewhere?", "Error");
                     }
                 }
             }
@@ -222,7 +222,7 @@ namespace MCC_Mod_Manager {
                 }
             }
 
-            int res = IO.CopyFile(path, bakPath, overwrite);
+            int res = Utility.CopyFile(path, bakPath, overwrite);
             if (res == 0 || res == 1) {
                 _baks[path] = Path.GetFileName(bakPath);
                 SaveBackups();
@@ -238,24 +238,24 @@ namespace MCC_Mod_Manager {
 
             int ret;
             try {
-                ret = IO.CopyFile(Config.Backup_dir + @"\" + _baks[filePath], filePath, true);
+                ret = Utility.CopyFile(Config.Backup_dir + @"\" + _baks[filePath], filePath, true);
             } catch (KeyNotFoundException) {
                 ret = 99;
             }
             if (ret == 0) {
                 if (Config.DeleteOldBaks) {
-                    if (IO.DeleteFile(Config.Backup_dir + @"\" + _baks[filePath])) {
+                    if (Utility.DeleteFile(Config.Backup_dir + @"\" + _baks[filePath])) {
                         _baks.Remove(filePath);
                     } else {
-                        IO.ShowMsg("Could not remove old backup '" + _baks[filePath] + "'. Is the file open somewhere?", "Error");
+                        Utility.ShowMsg("Could not remove old backup '" + _baks[filePath] + "'. Is the file open somewhere?", "Error");
                     }
                 }
                 return true;
             } else if (ret == 99) {
-                IO.ShowMsg("Could not locate a backup for the file at '" + filePath + "'.", "Error");
+                Utility.ShowMsg("Could not locate a backup for the file at '" + filePath + "'.", "Error");
                 return false;
             } else {
-                IO.ShowMsg("Could not restore '" + _baks[filePath] + "'. If the game is open, close it and try again.", "Error");
+                Utility.ShowMsg("Could not restore '" + _baks[filePath] + "'. If the game is open, close it and try again.", "Error");
                 return false;
             }
         }
@@ -294,7 +294,7 @@ namespace MCC_Mod_Manager {
             EnsureBackupFolderExists();
 
             if (!y) {
-                DialogResult ans = IO.ShowMsg("Are you sure you want to delete ALL of your backup(s)?\r\nNo crying afterwards?", "Question");
+                DialogResult ans = Utility.ShowMsg("Are you sure you want to delete ALL of your backup(s)?\r\nNo crying afterwards?", "Question");
                 if (ans == DialogResult.No) {
                     return true;
                 }
@@ -307,7 +307,7 @@ namespace MCC_Mod_Manager {
                 toDelete.Add(entry.Key);
             }
             if (toDelete.Count == 0) {
-                IO.ShowMsg("Nothing to delete.", "Info");
+                Utility.ShowMsg("Nothing to delete.", "Info");
                 return true;
             }
 
@@ -318,16 +318,16 @@ namespace MCC_Mod_Manager {
                     remainingBaks.Add(path);
                     continue;
                 }
-                if (!IO.DeleteFile(Config.Backup_dir + @"\" + _baks[path])) {
+                if (!Utility.DeleteFile(Config.Backup_dir + @"\" + _baks[path])) {
                     remainingBaks.Add(path);
-                    IO.ShowMsg("Could not delete '" + path + "'. Is the file open somewhere?", "Error");
+                    Utility.ShowMsg("Could not delete '" + path + "'. Is the file open somewhere?", "Error");
                     err = true;
                 }
             }
 
             if (remainingBaks.Count == 0) {
                 _baks = new Dictionary<string, string>();
-                IO.ShowMsg("All backups deleted.", "Info");
+                Utility.ShowMsg("All backups deleted.", "Info");
             } else {
                 Dictionary<string, string> tmp = new Dictionary<string, string>();
                 foreach (string path in remainingBaks) {    // create backup config of files which couldn't be deleted
@@ -340,7 +340,7 @@ namespace MCC_Mod_Manager {
             Program.MasterForm.PBar_hide();
 
             if (requiredBaks.Count != 0) {
-                IO.ShowMsg(requiredBaks.Count + " backups were not deleted because the original file(s) are currently patched with a mod. " +
+                Utility.ShowMsg(requiredBaks.Count + " backups were not deleted because the original file(s) are currently patched with a mod. " +
                         "Deleting these backups would make it impossible to unpatch the mod(s).", "Info");
             }
             return !err;
@@ -389,7 +389,7 @@ namespace MCC_Mod_Manager {
         }
 
         public static bool DeleteBak(string path) {
-            if (IO.DeleteFile(Config.Backup_dir + @"\" + _baks[path])) {
+            if (Utility.DeleteFile(Config.Backup_dir + @"\" + _baks[path])) {
                 _baks.Remove(path);
                 return true;
             }

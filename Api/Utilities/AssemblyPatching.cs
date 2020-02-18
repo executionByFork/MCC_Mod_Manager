@@ -43,7 +43,7 @@ namespace MCC_Mod_Manager {
 			Patch currentPatch = LoadPatch(Config.Modpack_dir + @"\tmp\" + patchFileName);
 
 			// Copy the original map to the destination path
-			IO.CopyFile(unmoddedMapPath, outputPath, true); //if modpack has written to unmoddedmap, take from backups
+			Utility.CopyFile(unmoddedMapPath, outputPath, true); //if modpack has written to unmoddedmap, take from backups
 
 			// Open the destination map
 			using (var stream = new EndianStream(File.Open(outputPath, FileMode.Open, FileAccess.ReadWrite), Endian.BigEndian)) {
@@ -52,11 +52,11 @@ namespace MCC_Mod_Manager {
 				try {
 					cacheFile = CacheFileLoader.LoadCacheFile(stream, engineDb);
 				} catch (NotSupportedException nse) {
-					IO.ShowMsg("Error patching '" + patchFileName + "':" + nse.Message, "Error");
+					Utility.ShowMsg("Error patching '" + patchFileName + "':" + nse.Message, "Error");
 					return false;
 				}
 				if (!string.IsNullOrEmpty(currentPatch.BuildString) && cacheFile.BuildString != currentPatch.BuildString) {
-					IO.ShowMsg("Unable to patch. That patch is for a map with a build version of " + currentPatch.BuildString +
+					Utility.ShowMsg("Unable to patch. That patch is for a map with a build version of " + currentPatch.BuildString +
 						", and the unmodified map file doesn't match that.", "Error");
 					return false;
 				}
@@ -70,7 +70,7 @@ namespace MCC_Mod_Manager {
 				try {
 					PatchApplier.ApplyPatch(currentPatch, cacheFile, stream);
 				} catch (ArgumentException ae) {
-					IO.ShowMsg("There was an issue applying the patch file '" + patchFileName + "': " + ae.Message, "Info");
+					Utility.ShowMsg("There was an issue applying the patch file '" + patchFileName + "': " + ae.Message, "Info");
 					return false;
 				}
 			}
