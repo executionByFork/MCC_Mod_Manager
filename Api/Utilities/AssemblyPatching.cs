@@ -18,8 +18,6 @@ namespace MCC_Mod_Manager {
 		// All of the code in Blamite comes from the Assembly project as well
 		// https://github.com/XboxChaos/Assembly
 
-		public static Form1 form1;  // this is set on form load
-
 		private static Patch LoadPatch(string patchFilePath) {
 			using (var reader = new EndianReader(File.OpenRead(patchFilePath), Endian.LittleEndian)) {
 				string magic = reader.ReadAscii(4);
@@ -54,11 +52,11 @@ namespace MCC_Mod_Manager {
 				try {
 					cacheFile = CacheFileLoader.LoadCacheFile(stream, engineDb);
 				} catch (NotSupportedException nse) {
-					form1.showMsg("Error patching '" + patchFileName + "':" + nse.Message, "Error");
+					IO.ShowMsg("Error patching '" + patchFileName + "':" + nse.Message, "Error");
 					return false;
 				}
 				if (!string.IsNullOrEmpty(currentPatch.BuildString) && cacheFile.BuildString != currentPatch.BuildString) {
-					form1.showMsg("Unable to patch. That patch is for a map with a build version of " + currentPatch.BuildString +
+					IO.ShowMsg("Unable to patch. That patch is for a map with a build version of " + currentPatch.BuildString +
 						", and the unmodified map file doesn't match that.", "Error");
 					return false;
 				}
@@ -72,7 +70,7 @@ namespace MCC_Mod_Manager {
 				try {
 					PatchApplier.ApplyPatch(currentPatch, cacheFile, stream);
 				} catch (ArgumentException ae) {
-					form1.showMsg("There was an issue applying the patch file '" + patchFileName + "': " + ae.Message, "Info");
+					IO.ShowMsg("There was an issue applying the patch file '" + patchFileName + "': " + ae.Message, "Info");
 					return false;
 				}
 			}

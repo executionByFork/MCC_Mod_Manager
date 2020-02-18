@@ -21,7 +21,6 @@ namespace MCC_Mod_Manager {
     }
 
     static class Modpacks {
-        public static Form1 form1;  // this is set on form load
 
         private static bool EnsureModpackFolderExists() {
             if (!Directory.Exists(Config.Modpack_dir)) {
@@ -60,7 +59,7 @@ namespace MCC_Mod_Manager {
 
                     if (Path.GetExtension(ofd.FileName) == ".asmp") {
                         if ((string)panel.Tag != "alt") {
-                            form1.SwapRowType(panel);
+                            Program.MasterForm.SwapRowType(panel);
                         } else {
                             TextBox orig_txt = (TextBox)panel.GetChildAtPoint(Config.origTextBoxPoint);
                             Button orig_btn = (Button)panel.GetChildAtPoint(Config.origBtnPoint);
@@ -70,7 +69,7 @@ namespace MCC_Mod_Manager {
                         }
                     } else {    // if not an .asmp file
                         if ((string)panel.Tag != "normal") {
-                            form1.SwapRowType(panel);
+                            Program.MasterForm.SwapRowType(panel);
                         }
                     }
                 }
@@ -95,7 +94,7 @@ namespace MCC_Mod_Manager {
                     if (Path.GetExtension(ofd.FileName) == ".map") {
                         panel.GetChildAtPoint(Config.origTextBoxPoint).Text = ofd.FileName;
                     } else {
-                        form1.showMsg("The file must have a .map extension", "Error");
+                        IO.ShowMsg("The file must have a .map extension", "Error");
                     }
                 }
             }
@@ -105,7 +104,7 @@ namespace MCC_Mod_Manager {
         {
             Dictionary<string, List<string>> restoreMapping = new Dictionary<string, List<string>>();
             bool packClobbered = false;
-            foreach (KeyValuePair<string, Dictionary<string, string>> modpack in Config.patched) {
+            foreach (KeyValuePair<string, Dictionary<string, string>> modpack in Config.Patched) {
                 List<string> potentialRestores = new List<string>();
                 foreach (KeyValuePair<string, string> fileEntry in modpack.Value) {
                     if (getMD5(ExpandPath(fileEntry.Key)) == fileEntry.Value) { // if file is still modded after the update
@@ -130,7 +129,7 @@ namespace MCC_Mod_Manager {
             Dictionary<string, List<string>> restoreMap = GetFilesToRestore();
 
             foreach (KeyValuePair<string, List<string>> modpack in restoreMap) {
-                foreach (KeyValuePair<string, string> entry in Config.patched[modpack.Key]) {
+                foreach (KeyValuePair<string, string> entry in Config.Patched[modpack.Key]) {
                     if (modpack.Value.Contains(entry.Key)) {
                         Backups.RestoreBak(ExpandPath(entry.Key));
                     } else {
@@ -149,14 +148,14 @@ namespace MCC_Mod_Manager {
 
         public static bool LoadModpacks() {
             EnsureModpackFolderExists();
-            form1.ModListPanel_clear();
+            Program.MasterForm.ModListPanel_clear();
 
             string[] fileEntries = Directory.GetFiles(Config.Modpack_dir);
             foreach (string file in fileEntries) {
                 string modpackName = Path.GetFileName(file).Replace(".zip", "");
                 modpackCfg modpackConfig = GetModpackConfig(modpackName);
                 if (modpackConfig != null) {
-                    form1.ModListPanel_add(modpackName, modpackConfig.MCC_version == Config.GetCurrentBuild());
+                    Program.MasterForm.ModListPanel_add(modpackName, modpackConfig.MCC_version == Config.GetCurrentBuild());
                 }
             }
 
@@ -187,11 +186,11 @@ namespace MCC_Mod_Manager {
 
         public static void CreateModpack(string modpackName, List<Panel> modFilesList) {
             if (modFilesList.Count == 0) {
-                form1.showMsg("Please add at least one modded file entry", "Error");
+                IO.ShowMsg("Please add at least one modded file entry", "Error");
                 return;
             }
             if (String.IsNullOrEmpty(modpackName)) {
-                form1.showMsg("Please enter a modpack name", "Error");
+                IO.ShowMsg("Please enter a modpack name", "Error");
                 return;
             }
 
@@ -211,20 +210,20 @@ namespace MCC_Mod_Manager {
                 }
 
                 if (string.IsNullOrEmpty(srcText) || string.IsNullOrEmpty(destText) || ((string)row.Tag == "alt" && string.IsNullOrEmpty(origTextbox.Text))) {
-                    form1.showMsg("Filepaths cannot be empty.", "Error");
+                    IO.ShowMsg("Filepaths cannot be empty.", "Error");
                     return;
                 }
                 if (!File.Exists(srcText)) {
-                    form1.showMsg("The source file '" + srcText + "' does not exist.", "Error");
+                    IO.ShowMsg("The source file '" + srcText + "' does not exist.", "Error");
                     return;
                 }
                 if (!destText.StartsWith(Config.MCC_home)) {
-                    form1.showMsg("Destination files must be located within the MCC install directory. " +
+                    IO.ShowMsg("Destination files must be located within the MCC install directory. " +
                         "You may need to configure this directory if you haven't done so already.", "Error");
                     return;
                 }
                 if ((string)row.Tag == "alt" && origTextbox.Enabled && !origTextbox.Text.StartsWith(Config.MCC_home)) {
-                    form1.showMsg("Unmodified map files must be selected at their default install location within the MCC install directory to allow the patch " +
+                    IO.ShowMsg("Unmodified map files must be selected at their default install location within the MCC install directory to allow the patch " +
                         "to be correctly applied when this modpack is installed. The file you selected does not appear to lie inside the MCC install directory." +
                         "\r\nYou may need to configure this directory if you haven't done so already.", "Error");
                     return;
@@ -237,7 +236,7 @@ namespace MCC_Mod_Manager {
                     try {
                         isOriginalFile = IO.IsHaloFile(CompressPath(destText));
                     } catch (JsonReaderException) {
-                        form1.showMsg(@"MCC Mod Manager could not parse Formats\filetree.json", "Error");
+                        IO.ShowMsg(@"MCC Mod Manager could not parse Formats\filetree.json", "Error");
                         return;
                     }
 
@@ -258,7 +257,7 @@ namespace MCC_Mod_Manager {
             }
 
             if (chk.Distinct().Count() != chk.Count) {
-                form1.showMsg("You have multiple files trying to write to the same destination.", "Error");
+                IO.ShowMsg("You have multiple files trying to write to the same destination.", "Error");
                 return;
             }
 
@@ -266,15 +265,15 @@ namespace MCC_Mod_Manager {
             String modpackFilename = modpackName + ".zip";
             String zipPath = Config.Modpack_dir + @"\" + modpackFilename;
             if (File.Exists(zipPath)) {
-                form1.showMsg("A modpack with that name already exists.", "Error");
+                IO.ShowMsg("A modpack with that name already exists.", "Error");
                 return;
             }
 
-            form1.PBar_show(mCfg.entries.Count);
+            Program.MasterForm.PBar_show(mCfg.entries.Count);
             try {
                 using (var archive = ZipFile.Open(zipPath, ZipArchiveMode.Create)) {
                     foreach (var entry in mCfg.entries) {
-                        form1.PBar_update();
+                        Program.MasterForm.PBar_update();
                         String fileName = Path.GetFileName(entry.src);
                         archive.CreateEntryFromFile(entry.src, fileName);    // TODO: Fix issues when two source files have same name but diff path
                         entry.src = fileName;   // change src path to just modpack after archive creation but before json serialization
@@ -290,13 +289,13 @@ namespace MCC_Mod_Manager {
                     }
                 }
             } catch (NotSupportedException) {
-                form1.showMsg("The modpack name you have provided is not a valid filename on Windows.", "Error");
+                IO.ShowMsg("The modpack name you have provided is not a valid filename on Windows.", "Error");
                 return;
             }
 
-            form1.showMsg("Modpack '" + modpackFilename + "' created.", "Info");
-            form1.PBar_hide();
-            form1.resetCreateModpacksTab();
+            IO.ShowMsg("Modpack '" + modpackFilename + "' created.", "Info");
+            Program.MasterForm.PBar_hide();
+            Program.MasterForm.resetCreateModpacksTab();
             LoadModpacks();
             return;
         }
@@ -305,14 +304,14 @@ namespace MCC_Mod_Manager {
             bool chk = false;
             bool del = false;
             bool partial = false;
-            form1.PBar_show(modpacksList.Count());
+            Program.MasterForm.PBar_show(modpacksList.Count());
             foreach (CheckBox chb in modpacksList) {
-                form1.PBar_update();    //TODO: This updates on EVERY modpack which isn't quite accurate
+                Program.MasterForm.PBar_update();    //TODO: This updates on EVERY modpack which isn't quite accurate
                 if (chb.Checked) {
                     if (!chk) { // only prompt user once
-                        DialogResult ans = form1.showMsg("Are you sure you want to delete the selected modpacks(s)?\r\nNo crying afterwards?", "Question");
+                        DialogResult ans = IO.ShowMsg("Are you sure you want to delete the selected modpacks(s)?\r\nNo crying afterwards?", "Question");
                         if (ans == DialogResult.No) {
-                            form1.PBar_hide();
+                            Program.MasterForm.PBar_hide();
                             return;
                         }
                     }
@@ -320,7 +319,7 @@ namespace MCC_Mod_Manager {
 
                     string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
                     if (Config.IsPatched(modpackname)) {    // deliberately prompt for each modpack that is enabled
-                        DialogResult ans = form1.showMsg("WARNING: The " + modpackname + " modpack is showing as currently installed. " +
+                        DialogResult ans = IO.ShowMsg("WARNING: The " + modpackname + " modpack is showing as currently installed. " +
                             "Deleting this modpack will also unpatch it from the game. Continue?", "Question");
                         if (ans == DialogResult.No) {
                             partial = true;
@@ -335,25 +334,25 @@ namespace MCC_Mod_Manager {
                     }
 
                     if (!IO.DeleteFile(Config.Modpack_dir + @"\" + modpackname + ".zip")) {
-                        form1.showMsg("Could not delete '" + modpackname + ".zip'. Is the zip file open somewhere?", "Error");
+                        IO.ShowMsg("Could not delete '" + modpackname + ".zip'. Is the zip file open somewhere?", "Error");
                     }
                     del = true;
                     chb.Checked = false;
                 }
             }
             if (!chk) {
-                form1.showMsg("No items selected from the list.", "Error");
+                IO.ShowMsg("No items selected from the list.", "Error");
             } else if (!del) {
-                form1.showMsg("No modpacks were deleted.", "Warning");
+                IO.ShowMsg("No modpacks were deleted.", "Warning");
             } else if (del && partial) {
-                form1.showMsg("Only some of the selected modpacks have been deleted.", "Warning");
+                IO.ShowMsg("Only some of the selected modpacks have been deleted.", "Warning");
                 LoadModpacks();
             } else {
-                form1.showMsg("Selected modpacks have been deleted.", "Info");
+                IO.ShowMsg("Selected modpacks have been deleted.", "Info");
                 LoadModpacks();
             }
             Config.SaveCfg();
-            form1.PBar_hide();
+            Program.MasterForm.PBar_hide();
         }
 
         public static modpackCfg GetModpackConfig(string modpackName) {
@@ -474,7 +473,7 @@ namespace MCC_Mod_Manager {
         private static int PatchModpack(string modpackname) {
             string retStr = WillOverwriteOtherMod(modpackname);
             if (!String.IsNullOrEmpty(retStr)) {
-                form1.showMsg("Installing '" + modpackname + "' would overwrite files for '" + retStr + "'. Modpack will be skipped.", "Error");
+                IO.ShowMsg("Installing '" + modpackname + "' would overwrite files for '" + retStr + "'. Modpack will be skipped.", "Error");
                 return 2;
             }
 
@@ -483,7 +482,7 @@ namespace MCC_Mod_Manager {
                 modpackCfg modpackConfig = GetModpackConfig(modpackname);
                 using (ZipArchive archive = ZipFile.OpenRead(Config.Modpack_dir + @"\" + modpackname + ".zip")) {
                     if (modpackConfig == null) {
-                        form1.showMsg("The file '" + modpackname + ".zip' is either not a compatible modpack or the config is corrupted." +
+                        IO.ShowMsg("The file '" + modpackname + ".zip' is either not a compatible modpack or the config is corrupted." +
                             "\r\nTry using the 'Create Modpack' Tab to convert this mod into a compatible modpack.", "Error");
                         return 2;
                     }
@@ -500,10 +499,10 @@ namespace MCC_Mod_Manager {
                             } else {    // r == 4
                                 errMsg = "Unknown modfile type in modpack config.";
                             }
-                            form1.showMsg(errMsg + "\r\nCould not install the '" + modpackname + "' modpack.", "Error");
+                            IO.ShowMsg(errMsg + "\r\nCould not install the '" + modpackname + "' modpack.", "Error");
 
                             if (Backups.RestoreBaks(patched) != 0) {
-                                form1.showMsg("At least one file restore failed. Your game is likely in an unstable state.", "Warning");
+                                IO.ShowMsg("At least one file restore failed. Your game is likely in an unstable state.", "Warning");
                             }
                             return 2;
                         } else if (r == 1) {
@@ -514,10 +513,10 @@ namespace MCC_Mod_Manager {
                     }
                 }
             } catch (FileNotFoundException) {
-                form1.showMsg("Could not find the '" + modpackname + "' modpack.", "Error");
+                IO.ShowMsg("Could not find the '" + modpackname + "' modpack.", "Error");
                 return 2;
             } catch (InvalidDataException) {
-                form1.showMsg("The modpack '" + modpackname + "' appears corrupted." +
+                IO.ShowMsg("The modpack '" + modpackname + "' appears corrupted." +
                 "\r\nThis modpack cannot be installed.", "Error");
                 return 2;
             }
@@ -532,9 +531,9 @@ namespace MCC_Mod_Manager {
         private static int PatchModpacks(List<CheckBox> toPatch) {
             bool baksMade = false;
             bool packErr = false;
-            form1.PBar_show(toPatch.Count);
+            Program.MasterForm.PBar_show(toPatch.Count);
             foreach (CheckBox chb in toPatch) {
-                form1.PBar_update();
+                Program.MasterForm.PBar_update();
                 string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
                 int ret = PatchModpack(modpackname);
                 if (ret == 2) {
@@ -549,7 +548,7 @@ namespace MCC_Mod_Manager {
                 }
             }
 
-            form1.PBar_hide();
+            Program.MasterForm.PBar_hide();
             if (packErr) {   // fail / partial success - At least one modpack was not patched
                 return 2;
             } else if (baksMade) {  // success and new backup(s) created
@@ -564,7 +563,7 @@ namespace MCC_Mod_Manager {
                 modpackCfg modpackConfig = GetModpackConfig(modpackname);
                 using (ZipArchive archive = ZipFile.OpenRead(Config.Modpack_dir + @"\" + modpackname + ".zip")) {
                     if (modpackConfig == null) {
-                        form1.showMsg("Could not unpatch '" + modpackname + "' because the modpack's configuration is corrupted or missing." +
+                        IO.ShowMsg("Could not unpatch '" + modpackname + "' because the modpack's configuration is corrupted or missing." +
                             "\r\nPlease restore from backups using the Backups tab or verify integrity of game files on Steam.", "Error");
                         return 2;
                     }
@@ -576,7 +575,7 @@ namespace MCC_Mod_Manager {
                                 foreach (modpackEntry e in restored) {
                                     int r = PatchFile(archive, e);
                                     if (r == 2 || r == 3) {
-                                        form1.showMsg("Critical error encountered while unpatching '" + modpackname + "'." +
+                                        IO.ShowMsg("Critical error encountered while unpatching '" + modpackname + "'." +
                                             "\r\nYou may need to verify your game files on steam or reinstall.", "Error");
                                     }
                                 }
@@ -584,20 +583,20 @@ namespace MCC_Mod_Manager {
                             }
                         } else if (entry.type == "create") {
                             if (!IO.DeleteFile(ExpandPath(entry.dest))) {
-                                form1.showMsg("Could not delete the file '" + ExpandPath(entry.dest) + "'. This may affect your game. " +
+                                IO.ShowMsg("Could not delete the file '" + ExpandPath(entry.dest) + "'. This may affect your game. " +
                                     "if you encounter issue please delete this file manually.", "Warning");
                             }
                         } else {
-                            form1.showMsg("Unknown modfile type in modpack config.\r\nCould not install the '" + modpackname + "' modpack.", "Error");
+                            IO.ShowMsg("Unknown modfile type in modpack config.\r\nCould not install the '" + modpackname + "' modpack.", "Error");
                         }
                         restored.Add(entry);
                     }
                 }
             } catch (FileNotFoundException) {
-                form1.showMsg("Could not unpatch '" + modpackname + "'. Could not find the modpack file to read the config from.", "Error");
+                IO.ShowMsg("Could not unpatch '" + modpackname + "'. Could not find the modpack file to read the config from.", "Error");
                 return 2;
             } catch (InvalidDataException) {
-                form1.showMsg("Could not unpatch '" + modpackname + "'. The modpack file appears corrupted and the config cannot be read.", "Error");
+                IO.ShowMsg("Could not unpatch '" + modpackname + "'. The modpack file appears corrupted and the config cannot be read.", "Error");
                 return 2;
             }
 
@@ -606,9 +605,9 @@ namespace MCC_Mod_Manager {
 
         private static int UnpatchModpacks(List<CheckBox> toUnpatch) {
             bool packErr = false;
-            form1.PBar_show(toUnpatch.Count);
+            Program.MasterForm.PBar_show(toUnpatch.Count);
             foreach (CheckBox chb in toUnpatch) {
-                form1.PBar_update();
+                Program.MasterForm.PBar_update();
                 string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
                 int ret = UnpatchModpack(modpackname);
                 if (ret == 2) {
@@ -625,7 +624,7 @@ namespace MCC_Mod_Manager {
                 Backups.UpdateBackupList();
             }
 
-            form1.PBar_hide();
+            Program.MasterForm.PBar_hide();
             if (packErr) { // fail / partial success - At least one modpack was not patched
                 return 2;
             } else {    // success, no errors
@@ -646,7 +645,7 @@ namespace MCC_Mod_Manager {
             }
 
             if (toPatch.Count == 0 && toUnpatch.Count == 0) {
-                form1.showMsg("You did not select any changes. No modpacks were patched or unpatched.", "Info");
+                IO.ShowMsg("You did not select any changes. No modpacks were patched or unpatched.", "Info");
                 return;
             }
 
@@ -657,11 +656,11 @@ namespace MCC_Mod_Manager {
             Config.SaveCfg();
 
             if (retU == 2 || retP == 2) {   // fail / partial success - At least one modpack was not patched
-                form1.showMsg("Failed in patching/unpatching at least one modpack.", "Warning");
+                IO.ShowMsg("Failed in patching/unpatching at least one modpack.", "Warning");
             } else if (retP == 1) {  // success and new backup(s) created
-                form1.showMsg("The game has been updated with your modpack selection.\r\nNew backups were created.", "Info");
+                IO.ShowMsg("The game has been updated with your modpack selection.\r\nNew backups were created.", "Info");
             } else {    // success, no new backups (retU == 0 && retP == 0)
-                form1.showMsg("The game has been updated with your changes.", "Info");
+                IO.ShowMsg("The game has been updated with your changes.", "Info");
             }
         }
     }
