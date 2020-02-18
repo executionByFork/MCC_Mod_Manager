@@ -7,7 +7,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 namespace MCC_Mod_Manager {
-    static class IO {
+    static class Utility {
 
         public static DialogResult ShowMsg(string msg, string type) {
             if (type == "Info") {

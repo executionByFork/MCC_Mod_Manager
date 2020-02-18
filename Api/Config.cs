@@ -111,7 +111,7 @@ namespace MCC_Mod_Manager {
             SaveCfg();
             Modpacks.LoadModpacks();
             if (!Backups.DeleteAll(true)) {
-                IO.ShowMsg("There was an issue deleting at least one backup. Please delete these in the Backups tab to avoid restoring an old " +
+                Utility.ShowMsg("There was an issue deleting at least one backup. Please delete these in the Backups tab to avoid restoring an old " +
                     "version of the file in the future.", "Error");
             }
             Backups.LoadBackups();
@@ -151,13 +151,13 @@ namespace MCC_Mod_Manager {
             } else {
                 int r = ReadCfg();
                 if (r == 1) {
-                    DialogResult ans = IO.ShowMsg("Your configuration has formatting errors, would you like to overwrite it with a default config?", "Question");
+                    DialogResult ans = Utility.ShowMsg("Your configuration has formatting errors, would you like to overwrite it with a default config?", "Question");
                     if (ans == DialogResult.No) {
                         return 3;
                     }
                     CreateDefaultCfg();
                 } else if (r == 2) {
-                    DialogResult ans = IO.ShowMsg("Your config file is using an old format, would you like to overwrite it with a default config?", "Question");
+                    DialogResult ans = Utility.ShowMsg("Your config file is using an old format, would you like to overwrite it with a default config?", "Question");
                     if (ans == DialogResult.No) {
                         return 3;
                     }
@@ -165,7 +165,7 @@ namespace MCC_Mod_Manager {
                 } else {
                     // check if game was updated
                     if (MCC_version != GetCurrentBuild()) {
-                        DialogResult ans = IO.ShowMsg("It appears that MCC has been updated. MCC Mod Manager needs to stabilize the game by uninstalling certain modpacks." +
+                        DialogResult ans = Utility.ShowMsg("It appears that MCC has been updated. MCC Mod Manager needs to stabilize the game by uninstalling certain modpacks." +
                             "\r\nWould you like to do this now? Selecting 'No' will disable features.", "Question");
                         if (ans == DialogResult.Yes) {
                             stabilize = true;
@@ -182,7 +182,7 @@ namespace MCC_Mod_Manager {
                 if (!Modpacks.VerifyExists(modpack.Key)) {
                     if (!msg) {
                         msg = true;
-                        IO.ShowMsg("The '" + modpack.Key + "' modpack is missing from the modpacks folder. If this modpack is actually installed, " +
+                        Utility.ShowMsg("The '" + modpack.Key + "' modpack is missing from the modpacks folder. If this modpack is actually installed, " +
                             "MCC Mod Manager won't be able to uninstall it. You should restore from backups or verify the game files through Steam." +
                             "\r\nThis warning will only show once.", "Warning");
                     }
@@ -231,7 +231,7 @@ namespace MCC_Mod_Manager {
         }
 
         public static string GetCurrentBuild() {
-            return IO.ReadFirstLine(MCC_home + @"\build_tag.txt");
+            return Utility.ReadFirstLine(MCC_home + @"\build_tag.txt");
         }
 
         #endregion
@@ -242,7 +242,7 @@ namespace MCC_Mod_Manager {
             modpackCfg mCfg = Modpacks.GetModpackConfig(modpackName);
             using (ZipArchive archive = ZipFile.OpenRead(Config.Modpack_dir + @"\" + modpackName + ".zip")) {
                 if (mCfg == null) {
-                    IO.ShowMsg("Cannot set state to enabled. The file '" + modpackName + ".zip' is either not a compatible modpack or the config is corrupted.", "Error");
+                    Utility.ShowMsg("Cannot set state to enabled. The file '" + modpackName + ".zip' is either not a compatible modpack or the config is corrupted.", "Error");
                     return false;
                 }
 
@@ -267,7 +267,7 @@ namespace MCC_Mod_Manager {
             Patched = new Dictionary<string, Dictionary<string, string>>();
 
             SaveCfg();
-            IO.ShowMsg("A default configuration file has been created. Please review and update it as needed.", "Info");
+            Utility.ShowMsg("A default configuration file has been created. Please review and update it as needed.", "Info");
 
             return true;
         }
