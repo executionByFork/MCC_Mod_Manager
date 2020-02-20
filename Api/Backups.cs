@@ -7,8 +7,9 @@ using Newtonsoft.Json;
 using System.Windows.Forms;
 using System.Drawing;
 using System.IO.Compression;
+using MCC_Mod_Manager.Api.Utilities;
 
-namespace MCC_Mod_Manager {
+namespace MCC_Mod_Manager.Api {
     static class Backups {
         public static Dictionary<string, string> _baks = new Dictionary<string, string>();
 
@@ -409,9 +410,9 @@ namespace MCC_Mod_Manager {
         private static List<string> FilterNeededBackups(List<string> paths) {
             List<string> requiredBaks = new List<string>();
             foreach (string enabledModpack in Config.GetEnabledModpacks()) {
-                modpackCfg modpackConfig = Modpacks.GetModpackConfig(enabledModpack);
+                ModpackCfg modpackConfig = Modpacks.GetModpackConfig(enabledModpack);
 
-                foreach (modpackEntry entry in modpackConfig.entries) {
+                foreach (ModpackEntry entry in modpackConfig.entries) {
                     foreach (string path in paths) {
                         if (path == Modpacks.ExpandPath(entry.dest)) {
                             requiredBaks.Add(path);

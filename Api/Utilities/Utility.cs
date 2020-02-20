@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace MCC_Mod_Manager {
+namespace MCC_Mod_Manager.Api.Utilities {
     static class Utility {
 
         public static DialogResult ShowMsg(string msg, string type) {
