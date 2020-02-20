@@ -3,6 +3,7 @@ using Blamite.IO;
 using Blamite.Patching;
 using Blamite.Serialization;
 using Blamite.Serialization.Settings;
+using MCC_Mod_Manager.Api;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MCC_Mod_Manager {
+namespace MCC_Mod_Manager.Api.Utilities {
 	static class AssemblyPatching {
 		// Majority of the code in this class was pulled from the Assembly project on GitHub and ported to work with my mod manager
 		// All of the code in Blamite comes from the Assembly project as well

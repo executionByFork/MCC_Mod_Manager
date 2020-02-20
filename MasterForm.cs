@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MCC_Mod_Manager.Api;
+using MCC_Mod_Manager.Api.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -124,7 +126,7 @@ namespace MCC_Mod_Manager {
         }
 
         private void patchButton_Click(object sender, EventArgs e) {
-            Modpacks.RunPatchUnpatch(modListPanel.Controls.OfType<CheckBox>());
+            MyMods.RunPatchUnpatch(modListPanel.Controls.OfType<CheckBox>());
         }
 
         private void manualOverride_CheckedChanged(object sender, EventArgs e) {
@@ -150,7 +152,7 @@ namespace MCC_Mod_Manager {
         }
 
         private void DelModpack_Click(object sender, EventArgs e) {
-            Modpacks.DelModpack(modListPanel.Controls.OfType<CheckBox>());
+            MyMods.DelModpack(modListPanel.Controls.OfType<CheckBox>());
         }
 
         public int ModListPanel_getCount() {

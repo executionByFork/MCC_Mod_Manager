@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace MCC_Mod_Manager {
+namespace MCC_Mod_Manager.Api.Utilities {
     public class FolderSelectDialog {
         // Credz to ErikE @ https://stackoverflow.com/a/33836106/6576622
         private string _initialDirectory;

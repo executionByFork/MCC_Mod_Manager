@@ -6,8 +6,9 @@ using System.Drawing;
 using System.IO;
 using Newtonsoft.Json;
 using System.IO.Compression;
+using MCC_Mod_Manager.Api.Utilities;
 
-namespace MCC_Mod_Manager {
+namespace MCC_Mod_Manager.Api {
     public class MainCfg {
         public string version = Config.version;
         public string MCC_version;
@@ -239,7 +240,7 @@ namespace MCC_Mod_Manager {
         #region Helper Functions
         public static bool AddPatched(string modpackName) {
             Dictionary<string, string> modfiles = new Dictionary<string, string>();
-            modpackCfg mCfg = Modpacks.GetModpackConfig(modpackName);
+            ModpackCfg mCfg = Modpacks.GetModpackConfig(modpackName);
             using (ZipArchive archive = ZipFile.OpenRead(Config.Modpack_dir + @"\" + modpackName + ".zip")) {
                 if (mCfg == null) {
                     Utility.ShowMsg("Cannot set state to enabled. The file '" + modpackName + ".zip' is either not a compatible modpack or the config is corrupted.", "Error");
@@ -247,8 +248,8 @@ namespace MCC_Mod_Manager {
                 }
 
                 List<string> patched = new List<string>();   // track patched files in case of failure mid patch
-                foreach (modpackEntry entry in mCfg.entries) {
-                    modfiles[entry.dest] = Modpacks.getMD5(Modpacks.ExpandPath(entry.dest));
+                foreach (ModpackEntry entry in mCfg.entries) {
+                    modfiles[entry.dest] = Modpacks.GetMD5(Modpacks.ExpandPath(entry.dest));
                 }
             }
 
