@@ -288,7 +288,7 @@ namespace MCC_Mod_Manager.Api {
 
         private static bool EnsureModpackFolderExists() {
             if (!Directory.Exists(Config.Modpack_dir)) {
-                _ = Directory.CreateDirectory(Config.Modpack_dir);
+                Directory.CreateDirectory(Config.Modpack_dir);
             }
             return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
         }
