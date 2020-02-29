@@ -109,8 +109,8 @@
             this.topBar.Name = "topBar";
             this.topBar.Size = new System.Drawing.Size(582, 37);
             this.topBar.TabIndex = 1;
-            this.topBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
-            this.topBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
+            this.topBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseDown);
+            this.topBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseMove);
             // 
             // megaCaution
             // 
@@ -122,8 +122,8 @@
             this.megaCaution.TabIndex = 7;
             this.megaCaution.TabStop = false;
             this.megaCaution.Visible = false;
-            this.megaCaution.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
-            this.megaCaution.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
+            this.megaCaution.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseDown);
+            this.megaCaution.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseMove);
             // 
             // version_lbl
             // 
@@ -136,8 +136,8 @@
             this.version_lbl.TabIndex = 6;
             this.version_lbl.Text = "v???";
             this.version_lbl.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.version_lbl.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
-            this.version_lbl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
+            this.version_lbl.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseDown);
+            this.version_lbl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseMove);
             // 
             // refreshButton
             // 
@@ -148,9 +148,9 @@
             this.refreshButton.Size = new System.Drawing.Size(30, 30);
             this.refreshButton.TabIndex = 5;
             this.refreshButton.TabStop = false;
-            this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
-            this.refreshButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.refreshButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
+            this.refreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
+            this.refreshButton.MouseEnter += new System.EventHandler(this.BtnHoverOn);
+            this.refreshButton.MouseLeave += new System.EventHandler(this.BtnHoverOff);
             // 
             // minButton
             // 
@@ -161,9 +161,9 @@
             this.minButton.Size = new System.Drawing.Size(30, 30);
             this.minButton.TabIndex = 4;
             this.minButton.TabStop = false;
-            this.minButton.Click += new System.EventHandler(this.minButton_Click);
-            this.minButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.minButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
+            this.minButton.Click += new System.EventHandler(this.MinButton_Click);
+            this.minButton.MouseEnter += new System.EventHandler(this.BtnHoverOn);
+            this.minButton.MouseLeave += new System.EventHandler(this.BtnHoverOff);
             // 
             // titleLabel
             // 
@@ -175,8 +175,8 @@
             this.titleLabel.Size = new System.Drawing.Size(240, 19);
             this.titleLabel.TabIndex = 3;
             this.titleLabel.Text = "MCC Mod Manager by MrFRZ0";
-            this.titleLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
-            this.titleLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
+            this.titleLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseDown);
+            this.titleLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseMove);
             // 
             // exitButton
             // 
@@ -187,9 +187,9 @@
             this.exitButton.Size = new System.Drawing.Size(30, 30);
             this.exitButton.TabIndex = 2;
             this.exitButton.TabStop = false;
-            this.exitButton.Click += new System.EventHandler(this.exitButton_Click);
-            this.exitButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.exitButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
+            this.exitButton.Click += new System.EventHandler(this.ExitButton_Click);
+            this.exitButton.MouseEnter += new System.EventHandler(this.BtnHoverOn);
+            this.exitButton.MouseLeave += new System.EventHandler(this.BtnHoverOff);
             // 
             // homeTab
             // 
@@ -203,9 +203,9 @@
             this.homeTab.TabIndex = 2;
             this.homeTab.Text = "My Mods";
             this.homeTab.UseVisualStyleBackColor = false;
-            this.homeTab.Click += new System.EventHandler(this.homeTab_Click);
-            this.homeTab.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.homeTab.MouseLeave += new System.EventHandler(this.btnHoverOff);
+            this.homeTab.Click += new System.EventHandler(this.HomeTab_Click);
+            this.homeTab.MouseEnter += new System.EventHandler(this.BtnHoverOn);
+            this.homeTab.MouseLeave += new System.EventHandler(this.BtnHoverOff);
             // 
             // createTab
             // 
@@ -220,8 +220,8 @@
             this.createTab.Text = "Create Modpack";
             this.createTab.UseVisualStyleBackColor = false;
             this.createTab.Click += new System.EventHandler(this.CreateTab_Click);
-            this.createTab.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.createTab.MouseLeave += new System.EventHandler(this.btnHoverOff);
+            this.createTab.MouseEnter += new System.EventHandler(this.BtnHoverOn);
+            this.createTab.MouseLeave += new System.EventHandler(this.BtnHoverOff);
             // 
             // homePanel
             // 
@@ -250,7 +250,6 @@
             this.manualOverride.TabIndex = 8;
             this.manualOverride.Text = "Allow Manual Override";
             this.manualOverride.UseVisualStyleBackColor = true;
-            this.manualOverride.CheckedChanged += new System.EventHandler(this.manualOverride_CheckedChanged);
             // 
             // selectEnabled_chb
             // 
@@ -263,7 +262,6 @@
             this.selectEnabled_chb.TabIndex = 7;
             this.selectEnabled_chb.Text = "Select Enabled";
             this.selectEnabled_chb.UseVisualStyleBackColor = true;
-            this.selectEnabled_chb.CheckedChanged += new System.EventHandler(this.selectEnabled_chb_CheckedChanged);
             // 
             // homeEnabledLabel
             // 
@@ -285,9 +283,6 @@
             this.delModpack.TabIndex = 5;
             this.delModpack.Text = "Delete Selected";
             this.delModpack.UseVisualStyleBackColor = true;
-            this.delModpack.Click += new System.EventHandler(this.DelModpack_Click);
-            this.delModpack.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.delModpack.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // patchButton
             // 
@@ -298,9 +293,6 @@
             this.patchButton.TabIndex = 3;
             this.patchButton.Text = "Patch/Unpatch";
             this.patchButton.UseVisualStyleBackColor = true;
-            this.patchButton.Click += new System.EventHandler(this.patchButton_Click);
-            this.patchButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.patchButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // homeNameLabel
             // 
@@ -343,9 +335,9 @@
             this.configTab.TabIndex = 5;
             this.configTab.Text = "Configuration";
             this.configTab.UseVisualStyleBackColor = false;
-            this.configTab.Click += new System.EventHandler(this.configTab_Click);
-            this.configTab.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.configTab.MouseLeave += new System.EventHandler(this.btnHoverOff);
+            this.configTab.Click += new System.EventHandler(this.ConfigTab_Click);
+            this.configTab.MouseEnter += new System.EventHandler(this.BtnHoverOn);
+            this.configTab.MouseLeave += new System.EventHandler(this.BtnHoverOff);
             // 
             // createPanel
             // 
@@ -390,9 +382,6 @@
             this.clearBtn.TabIndex = 7;
             this.clearBtn.Text = "Clear All";
             this.clearBtn.UseVisualStyleBackColor = true;
-            this.clearBtn.Click += new System.EventHandler(this.clearBtn_Click);
-            this.clearBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.clearBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // addRowButton
             // 
@@ -403,9 +392,6 @@
             this.addRowButton.Size = new System.Drawing.Size(25, 25);
             this.addRowButton.TabIndex = 6;
             this.addRowButton.TabStop = false;
-            this.addRowButton.Click += new System.EventHandler(this.addRowButton_Click);
-            this.addRowButton.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.addRowButton.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // createModpackBtn
             // 
@@ -416,9 +402,6 @@
             this.createModpackBtn.TabIndex = 3;
             this.createModpackBtn.Text = "Create Modpack";
             this.createModpackBtn.UseVisualStyleBackColor = true;
-            this.createModpackBtn.Click += new System.EventHandler(this.createModpackBtn_Click);
-            this.createModpackBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.createModpackBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // createLabel2
             // 
@@ -476,9 +459,6 @@
             this.resetApp.TabIndex = 16;
             this.resetApp.Text = "Reset App";
             this.resetApp.UseVisualStyleBackColor = true;
-            this.resetApp.Click += new System.EventHandler(this.resetApp_Click);
-            this.resetApp.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.resetApp.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // delOldBaks_chb
             // 
@@ -516,7 +496,6 @@
             this.cfgBrowseBtn3.Text = "...";
             this.cfgBrowseBtn3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.cfgBrowseBtn3.UseVisualStyleBackColor = true;
-            this.cfgBrowseBtn3.Click += new System.EventHandler(this.cfgFolderBrowseBtn_Click);
             // 
             // panel2
             // 
@@ -544,7 +523,6 @@
             this.cfgBrowseBtn2.Text = "...";
             this.cfgBrowseBtn2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.cfgBrowseBtn2.UseVisualStyleBackColor = true;
-            this.cfgBrowseBtn2.Click += new System.EventHandler(this.cfgFolderBrowseBtn_Click);
             // 
             // panel1
             // 
@@ -572,7 +550,6 @@
             this.cfgBrowseBtn1.Text = "...";
             this.cfgBrowseBtn1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.cfgBrowseBtn1.UseVisualStyleBackColor = true;
-            this.cfgBrowseBtn1.Click += new System.EventHandler(this.cfgFolderBrowseBtn_Click);
             // 
             // configLabel3
             // 
@@ -603,9 +580,6 @@
             this.cfgUpdateBtn.TabIndex = 5;
             this.cfgUpdateBtn.Text = "Update";
             this.cfgUpdateBtn.UseVisualStyleBackColor = true;
-            this.cfgUpdateBtn.Click += new System.EventHandler(this.CfgUpdateBtn_Click);
-            this.cfgUpdateBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.cfgUpdateBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // configLabel1
             // 
@@ -629,9 +603,9 @@
             this.backupTab.TabIndex = 7;
             this.backupTab.Text = "Backups";
             this.backupTab.UseVisualStyleBackColor = false;
-            this.backupTab.Click += new System.EventHandler(this.backupTab_Click);
-            this.backupTab.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.backupTab.MouseLeave += new System.EventHandler(this.btnHoverOff);
+            this.backupTab.Click += new System.EventHandler(this.BackupTab_Click);
+            this.backupTab.MouseEnter += new System.EventHandler(this.BtnHoverOn);
+            this.backupTab.MouseLeave += new System.EventHandler(this.BtnHoverOff);
             // 
             // backupPanel
             // 
@@ -660,7 +634,6 @@
             this.fullBakPath_chb.TabIndex = 8;
             this.fullBakPath_chb.Text = "Show full path";
             this.fullBakPath_chb.UseVisualStyleBackColor = true;
-            this.fullBakPath_chb.CheckedChanged += new System.EventHandler(this.fullBakPath_chb_CheckedChanged);
             // 
             // restoreSelectedBtn
             // 
@@ -671,9 +644,6 @@
             this.restoreSelectedBtn.TabIndex = 7;
             this.restoreSelectedBtn.Text = "Restore Selected";
             this.restoreSelectedBtn.UseVisualStyleBackColor = true;
-            this.restoreSelectedBtn.Click += new System.EventHandler(this.restoreSelectedBtn_Click);
-            this.restoreSelectedBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.restoreSelectedBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // delAllBaksBtn
             // 
@@ -685,9 +655,6 @@
             this.delAllBaksBtn.TabIndex = 6;
             this.delAllBaksBtn.Text = "Delete All Backups";
             this.delAllBaksBtn.UseVisualStyleBackColor = true;
-            this.delAllBaksBtn.Click += new System.EventHandler(this.delAllBaksBtn_Click);
-            this.delAllBaksBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.delAllBaksBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // makeBakBtn
             // 
@@ -698,9 +665,6 @@
             this.makeBakBtn.TabIndex = 5;
             this.makeBakBtn.Text = "New Backup(s)";
             this.makeBakBtn.UseVisualStyleBackColor = true;
-            this.makeBakBtn.Click += new System.EventHandler(this.makeBakBtn_Click);
-            this.makeBakBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.makeBakBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // restoreAllBaksBtn
             // 
@@ -711,9 +675,6 @@
             this.restoreAllBaksBtn.TabIndex = 4;
             this.restoreAllBaksBtn.Text = "Restore All Files";
             this.restoreAllBaksBtn.UseVisualStyleBackColor = true;
-            this.restoreAllBaksBtn.Click += new System.EventHandler(this.restoreAllBaksBtn_Click);
-            this.restoreAllBaksBtn.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.restoreAllBaksBtn.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // delSelectedBak
             // 
@@ -725,9 +686,6 @@
             this.delSelectedBak.TabIndex = 3;
             this.delSelectedBak.Text = "Delete Selected";
             this.delSelectedBak.UseVisualStyleBackColor = true;
-            this.delSelectedBak.Click += new System.EventHandler(this.delSelectedBak_Click);
-            this.delSelectedBak.MouseEnter += new System.EventHandler(this.btnHoverOn);
-            this.delSelectedBak.MouseLeave += new System.EventHandler(this.btnHoverOff);
             // 
             // bakLabel2
             // 
@@ -813,62 +771,62 @@
         }
 
         #endregion
-        private System.Windows.Forms.Panel topBar;
-        private System.Windows.Forms.PictureBox exitButton;
-        private System.Windows.Forms.Label titleLabel;
-        private System.Windows.Forms.PictureBox minButton;
-        private System.Windows.Forms.Button homeTab;
-        private System.Windows.Forms.Button createTab;
-        private System.Windows.Forms.Panel homePanel;
-        private System.Windows.Forms.Button configTab;
-        private System.Windows.Forms.Panel modListPanel;
-        private System.Windows.Forms.Label homeSelectLabel;
-        private System.Windows.Forms.Label homeNameLabel;
-        private System.Windows.Forms.Button patchButton;
-        private System.Windows.Forms.PictureBox refreshButton;
-        private System.Windows.Forms.Panel createPanel;
-        private System.Windows.Forms.Button createModpackBtn;
-        private System.Windows.Forms.Panel createFilesPanel;
-        private System.Windows.Forms.Label createLabel2;
-        private System.Windows.Forms.Label createLabel1;
-        private System.Windows.Forms.PictureBox addRowButton;
-        private System.Windows.Forms.Panel configPanel;
-        private System.Windows.Forms.Label configLabel1;
-        private System.Windows.Forms.TextBox cfgTextBox1;
-        private System.Windows.Forms.Button cfgBrowseBtn1;
-        private System.Windows.Forms.Button cfgUpdateBtn;
-        private System.Windows.Forms.Button cfgBrowseBtn3;
-        private System.Windows.Forms.TextBox cfgTextBox3;
-        private System.Windows.Forms.Label configLabel3;
-        private System.Windows.Forms.Button cfgBrowseBtn2;
-        private System.Windows.Forms.TextBox cfgTextBox2;
-        private System.Windows.Forms.Label configLabel2;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button clearBtn;
-        private System.Windows.Forms.TextBox modpackName_txt;
-        private System.Windows.Forms.Label modpackName_label;
-        private System.Windows.Forms.Button backupTab;
-        private System.Windows.Forms.Panel backupPanel;
-        private System.Windows.Forms.Button restoreAllBaksBtn;
-        private System.Windows.Forms.Button delSelectedBak;
-        private System.Windows.Forms.Label bakLabel2;
-        private System.Windows.Forms.Label bakLabel1;
-        private System.Windows.Forms.Panel bakListPanel;
-        private System.Windows.Forms.Button makeBakBtn;
-        private System.Windows.Forms.Button delAllBaksBtn;
-        private System.Windows.Forms.Button restoreSelectedBtn;
-        private System.Windows.Forms.Button delModpack;
-        private System.Windows.Forms.Label version_lbl;
-        private System.Windows.Forms.CheckBox delOldBaks_chb;
-        private System.Windows.Forms.Panel betterPBar;
-        private System.Windows.Forms.CheckBox fullBakPath_chb;
-        private System.Windows.Forms.Label homeEnabledLabel;
-        private System.Windows.Forms.CheckBox selectEnabled_chb;
-        private System.Windows.Forms.CheckBox manualOverride;
-        private System.Windows.Forms.Button resetApp;
-        private System.Windows.Forms.PictureBox megaCaution;
+        public System.Windows.Forms.Panel topBar;
+        public System.Windows.Forms.PictureBox exitButton;
+        public System.Windows.Forms.Label titleLabel;
+        public System.Windows.Forms.PictureBox minButton;
+        public System.Windows.Forms.Button homeTab;
+        public System.Windows.Forms.Button createTab;
+        public System.Windows.Forms.Panel homePanel;
+        public System.Windows.Forms.Button configTab;
+        public System.Windows.Forms.Panel modListPanel;
+        public System.Windows.Forms.Label homeSelectLabel;
+        public System.Windows.Forms.Label homeNameLabel;
+        public System.Windows.Forms.Button patchButton;
+        public System.Windows.Forms.PictureBox refreshButton;
+        public System.Windows.Forms.Panel createPanel;
+        public System.Windows.Forms.Button createModpackBtn;
+        public System.Windows.Forms.Panel createFilesPanel;
+        public System.Windows.Forms.Label createLabel2;
+        public System.Windows.Forms.Label createLabel1;
+        public System.Windows.Forms.PictureBox addRowButton;
+        public System.Windows.Forms.Panel configPanel;
+        public System.Windows.Forms.Label configLabel1;
+        public System.Windows.Forms.TextBox cfgTextBox1;
+        public System.Windows.Forms.Button cfgBrowseBtn1;
+        public System.Windows.Forms.Button cfgUpdateBtn;
+        public System.Windows.Forms.Button cfgBrowseBtn3;
+        public System.Windows.Forms.TextBox cfgTextBox3;
+        public System.Windows.Forms.Label configLabel3;
+        public System.Windows.Forms.Button cfgBrowseBtn2;
+        public System.Windows.Forms.TextBox cfgTextBox2;
+        public System.Windows.Forms.Label configLabel2;
+        public System.Windows.Forms.Panel panel3;
+        public System.Windows.Forms.Panel panel2;
+        public System.Windows.Forms.Panel panel1;
+        public System.Windows.Forms.Button clearBtn;
+        public System.Windows.Forms.TextBox modpackName_txt;
+        public System.Windows.Forms.Label modpackName_label;
+        public System.Windows.Forms.Button backupTab;
+        public System.Windows.Forms.Panel backupPanel;
+        public System.Windows.Forms.Button restoreAllBaksBtn;
+        public System.Windows.Forms.Button delSelectedBak;
+        public System.Windows.Forms.Label bakLabel2;
+        public System.Windows.Forms.Label bakLabel1;
+        public System.Windows.Forms.Panel bakListPanel;
+        public System.Windows.Forms.Button makeBakBtn;
+        public System.Windows.Forms.Button delAllBaksBtn;
+        public System.Windows.Forms.Button restoreSelectedBtn;
+        public System.Windows.Forms.Button delModpack;
+        public System.Windows.Forms.Label version_lbl;
+        public System.Windows.Forms.CheckBox delOldBaks_chb;
+        public System.Windows.Forms.Panel betterPBar;
+        public System.Windows.Forms.CheckBox fullBakPath_chb;
+        public System.Windows.Forms.Label homeEnabledLabel;
+        public System.Windows.Forms.CheckBox selectEnabled_chb;
+        public System.Windows.Forms.CheckBox manualOverride;
+        public System.Windows.Forms.Button resetApp;
+        public System.Windows.Forms.PictureBox megaCaution;
     }
 }
 

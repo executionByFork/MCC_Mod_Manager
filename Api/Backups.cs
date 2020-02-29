@@ -14,8 +14,21 @@ namespace MCC_Mod_Manager.Api {
         public static Dictionary<string, string> _baks = new Dictionary<string, string>();
 
         #region Event Handlers
-        //Moving Program.MasterForm event handler shells to relevant API classes in subsequent PR.
-        public static void NewBackup() {
+
+        public static void ShowFullPathCheckbox_Click(object sender, EventArgs e) {
+            Config.fullBakPath = Program.MasterForm.fullBakPath_chb.Checked;
+            if (Config.fullBakPath) {   // swapping from filename to full path
+                foreach (CheckBox chb in Program.MasterForm.bakListPanel.Controls.OfType<CheckBox>()) {
+                    chb.Text = Config.dirtyPadding + Backups.GetBakKey(chb.Text.Replace(Config.dirtyPadding, ""));
+                }
+            } else {    // swapping from full path to filename
+                foreach (CheckBox chb in Program.MasterForm.bakListPanel.Controls.OfType<CheckBox>()) {
+                    chb.Text = Config.dirtyPadding + Backups._baks[chb.Text.Replace(Config.dirtyPadding, "")];
+                }
+            }
+        }
+
+        public static void MakeBakBtn_Click(object sender, EventArgs e) {
             EnsureBackupFolderExists();
 
             OpenFileDialog ofd = new OpenFileDialog {
@@ -48,11 +61,12 @@ namespace MCC_Mod_Manager.Api {
             }
         }
 
-        public static void RestoreSelected(IEnumerable<CheckBox> bakList) {
+        public static void RestoreSelectedBtn_Click(object sender, EventArgs e) {
+            IEnumerable<CheckBox> bakList = Program.MasterForm.bakListPanel.Controls.OfType<CheckBox>();
             List<string> backupPaths = new List<string>();
             foreach (CheckBox chb in bakList) {
                 if (chb.Checked) {
-                    if (Program.MasterForm.fullBakPath_Checked()) {
+                    if (Program.MasterForm.fullBakPath_chb.Checked) {
                         backupPaths.Add(chb.Text.Replace(Config.dirtyPadding, ""));
                     } else {
                         backupPaths.Add(GetBakKey(chb.Text.Replace(Config.dirtyPadding, "")));
@@ -73,7 +87,7 @@ namespace MCC_Mod_Manager.Api {
             }
         }
 
-        public static void RestoreAll() {
+        public static void RestoreAllBaksBtn_Click(object sender, EventArgs e) {
             EnsureBackupFolderExists();
 
             Program.MasterForm.PBar_show(_baks.Count);
@@ -117,7 +131,8 @@ namespace MCC_Mod_Manager.Api {
         }
 
 
-        public static void DeleteSelected(List<CheckBox> bakList) {
+        public static void DelSelectedBak_Click(object sender, EventArgs e) {
+            IEnumerable<CheckBox> bakList = Program.MasterForm.bakListPanel.Controls.OfType<CheckBox>();
             EnsureBackupFolderExists();
 
             DialogResult ans = Utility.ShowMsg("Are you sure you want to delete the selected backup(s)?\r\nNo crying afterwards?", "Question");
@@ -126,14 +141,14 @@ namespace MCC_Mod_Manager.Api {
             }
 
             bool chk = false;
-            Program.MasterForm.PBar_show(bakList.Count);
+            Program.MasterForm.PBar_show(bakList.Count());
             List<string> toDelete = new List<string>();
             foreach (CheckBox chb in bakList) {
                 Program.MasterForm.PBar_update();
                 if (chb.Checked) {
                     chk = true;
                     string path;
-                    if (Program.MasterForm.fullBakPath_Checked()) {
+                    if (Program.MasterForm.fullBakPath_chb.Checked) {
                         path = chb.Text.Replace(Config.dirtyPadding, "");
                     } else {
                         path = GetBakKey(chb.Text.Replace(Config.dirtyPadding, ""));
@@ -169,6 +184,10 @@ namespace MCC_Mod_Manager.Api {
                 Program.MasterForm.PBar_hide();
                 return;
             }
+        }
+
+        public static void DelAllBaksBtn_Click(object sender, EventArgs e) {
+            Backups.DeleteAll(false);
         }
 
         #endregion
@@ -361,7 +380,7 @@ namespace MCC_Mod_Manager.Api {
         public static bool UpdateBackupList() {
             EnsureBackupFolderExists();
 
-            Program.MasterForm.bakListPanel_clear();
+            Program.MasterForm.bakListPanel.Controls.Clear();
             foreach (KeyValuePair<string, string> entry in _baks) {
                 string entryName;
                 if (Config.fullBakPath) {
@@ -372,10 +391,10 @@ namespace MCC_Mod_Manager.Api {
                 CheckBox chb = new CheckBox {
                     AutoSize = true,
                     Text = Config.dirtyPadding + entryName,
-                    Location = new Point(30, Program.MasterForm.bakListPanel_getCount() * 20)
+                    Location = new Point(30, Program.MasterForm.bakListPanel.Controls.Count * 20)
                 };
 
-                Program.MasterForm.bakListPanel_add(chb);
+                Program.MasterForm.bakListPanel.Controls.Add(chb);
             }
             return true;
         }

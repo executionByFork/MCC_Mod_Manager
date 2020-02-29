@@ -106,30 +106,48 @@ namespace MCC_Mod_Manager.Api {
         #endregion
 
         #region Event Handlers
-        public static void DoResetApp() {
-            Patched = new Dictionary<string, Dictionary<string, string>>();
-            MCC_version = GetCurrentBuild();
-            SaveCfg();
-            Modpacks.LoadModpacks();
-            if (!Backups.DeleteAll(true)) {
-                Utility.ShowMsg("There was an issue deleting at least one backup. Please delete these in the Backups tab to avoid restoring an old " +
-                    "version of the file in the future.", "Error");
+        public static void BrowseFolderBtn_Click(object sender, EventArgs e) {
+            var dialog = new FolderSelectDialog {
+                InitialDirectory = Config.MCC_home,
+                Title = "Select a folder"
+            };
+            if (dialog.Show(Program.MasterForm.Handle)) {
+                ((Button)sender).Parent.GetChildAtPoint(new Point(5, 3)).Text = dialog.FileName;
             }
-            Backups.LoadBackups();
         }
 
-        public static bool ChkHomeDir(String dir) {
-            if (!File.Exists(dir + @"\haloreach\haloreach.dll")) {
-                return false;
-            }
-            if (!File.Exists(dir + @"\MCC\Content\Paks\MCC-WindowsNoEditor.pak")) {
-                return false;
-            }
-            if (!File.Exists(dir + @"\mcclauncher.exe")) {
-                return false;
+        public static void UpdateBtn_Click(object sender, EventArgs e) {
+            if (string.IsNullOrEmpty(Program.MasterForm.cfgTextBox1.Text) || string.IsNullOrEmpty(Program.MasterForm.cfgTextBox2.Text) || string.IsNullOrEmpty(Program.MasterForm.cfgTextBox3.Text)) {
+                Utility.ShowMsg("Config entries must not be empty.", "Error");
+                return;
             }
 
-            return true;
+            if (!Config.ChkHomeDir(Program.MasterForm.cfgTextBox1.Text)) {
+                Utility.ShowMsg("It seems you have selected the wrong MCC install directory. " +
+                    "Please make sure to select the folder named 'Halo The Master Chief Collection' in your Steam files.", "Error");
+                Program.MasterForm.cfgTextBox1.Text = Config.MCC_home;
+                return;
+            }
+            Config.MCC_home = Program.MasterForm.cfgTextBox1.Text;
+            Config.Backup_dir = Program.MasterForm.cfgTextBox2.Text;
+            Config.Modpack_dir = Program.MasterForm.cfgTextBox3.Text;
+            Config.DeleteOldBaks = Program.MasterForm.delOldBaks_chb.Checked;
+
+            Config.SaveCfg();
+
+            Utility.ShowMsg("Config Updated!", "Info");
+        }
+
+        public static void ResetApp_Click(object sender, EventArgs e) {
+            DialogResult ans = Utility.ShowMsg("WARNING: This dangerous, and odds are you don't need to do it." +
+                "\r\n\r\nThis button will reset the application state, so that the mod manager believes your Halo install is COMPLETELY unmodded. It will " +
+                "delete ALL of your backups, and WILL NOT restore them beforehand. This is to reset the app to a default state and flush out any broken files." +
+                "\r\n\r\nAre you sure you want to continue?", "Question");
+            if (ans == DialogResult.No) {
+                return;
+            }
+
+            Config.DoResetApp();
         }
         #endregion
 
@@ -196,10 +214,10 @@ namespace MCC_Mod_Manager.Api {
             SaveCfg();
 
             // Update config tab
-            Program.MasterForm.cfgTextBox1Text = MCC_home;
-            Program.MasterForm.cfgTextBox2Text = Backup_dir;
-            Program.MasterForm.cfgTextBox3Text = Modpack_dir;
-            Program.MasterForm.delOldBaks = DeleteOldBaks;
+            Program.MasterForm.cfgTextBox1.Text = MCC_home;
+            Program.MasterForm.cfgTextBox2.Text = Backup_dir;
+            Program.MasterForm.cfgTextBox3.Text = Modpack_dir;
+            Program.MasterForm.delOldBaks_chb.Checked = DeleteOldBaks;
 
             if (stabilize) {
                 return 1;
@@ -300,6 +318,32 @@ namespace MCC_Mod_Manager.Api {
             }
 
             return 0;
+        }
+
+        public static void DoResetApp() {
+            Patched = new Dictionary<string, Dictionary<string, string>>();
+            MCC_version = GetCurrentBuild();
+            SaveCfg();
+            Modpacks.LoadModpacks();
+            if (!Backups.DeleteAll(true)) {
+                Utility.ShowMsg("There was an issue deleting at least one backup. Please delete these in the Backups tab to avoid restoring an old " +
+                    "version of the file in the future.", "Error");
+            }
+            Backups.LoadBackups();
+        }
+
+        public static bool ChkHomeDir(String dir) {
+            if (!File.Exists(dir + @"\haloreach\haloreach.dll")) {
+                return false;
+            }
+            if (!File.Exists(dir + @"\MCC\Content\Paks\MCC-WindowsNoEditor.pak")) {
+                return false;
+            }
+            if (!File.Exists(dir + @"\mcclauncher.exe")) {
+                return false;
+            }
+
+            return true;
         }
 
         #endregion
