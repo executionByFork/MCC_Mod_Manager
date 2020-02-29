@@ -15,7 +15,35 @@ namespace MCC_Mod_Manager.Api {
 
         #region Event Handlers
 
-        public static void RunPatchUnpatch(IEnumerable<CheckBox> modpacksList) {
+        public static void SelectEnabled_chb_CheckedChanged(object sender, EventArgs e) {
+            foreach (CheckBox chb in Program.MasterForm.modListPanel.Controls.OfType<CheckBox>()) {
+                string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
+                if (Config.IsPatched(modpackname)) {
+                    chb.Checked = ((CheckBox)sender).Checked;
+                }
+            }
+        }
+
+        public static void ManualOverride_CheckedChanged(object sender, EventArgs e) {
+            if (Program.MasterForm.manualOverride.Checked == false) {   // make warning only show if checkbox is getting enabled
+                Modpacks.LoadModpacks();
+                return;
+            } else {
+                DialogResult ans = Utility.ShowMsg("Please do not mess with this unless you know what you are doing or are trying to fix a syncing issue.\r\n\r\n" +
+                    "This option allows you to click the red/green icons beside modpack entries to force the mod manager to flag a modpack as enabled/disabled. " +
+                    "This does not make changes to files, but it does make the mod manager 'think' that modpacks are/aren't installed." +
+                    "\r\n\r\nEnable this feature?", "Question");
+                if (ans == DialogResult.No) {
+                    Program.MasterForm.manualOverride.Checked = false;
+                    return;
+                }
+
+                Modpacks.LoadModpacks();
+            }
+        }
+
+        public static void PatchUnpatch_Click(object sender, EventArgs e) {
+            IEnumerable<CheckBox> modpacksList = Program.MasterForm.modListPanel.Controls.OfType<CheckBox>();
             List<CheckBox> toPatch = new List<CheckBox>();
             List<CheckBox> toUnpatch = new List<CheckBox>();
             foreach (CheckBox chb in modpacksList) {
@@ -47,7 +75,8 @@ namespace MCC_Mod_Manager.Api {
             }
         }
 
-        public static void DelModpack(IEnumerable<CheckBox> modpacksList) {
+        public static void DeleteSelected_Click(object sender, EventArgs e) {
+            IEnumerable<CheckBox> modpacksList = Program.MasterForm.modListPanel.Controls.OfType<CheckBox>();
             bool chk = false;
             bool del = false;
             bool partial = false;
@@ -101,7 +130,6 @@ namespace MCC_Mod_Manager.Api {
             Config.SaveCfg();
             Program.MasterForm.PBar_hide();
         }
-
         #endregion
 
         #region Api Functions
