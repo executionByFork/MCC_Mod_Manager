@@ -16,6 +16,7 @@ namespace MCC_Mod_Manager {
         }
 
         private void Form1_Load(object sender, EventArgs e) {
+            Program.MasterForm.Size = new System.Drawing.Size(577, 455);
             version_lbl.Text = Config.version;
             int r = Config.LoadCfg();
             if (r == 3) {
@@ -310,7 +311,7 @@ namespace MCC_Mod_Manager {
             foreach (PictureBox helm in betterPBar.Controls.OfType<PictureBox>()) {
                 helm.Visible = false;
             }
-            Program.MasterForm.Size = new System.Drawing.Size(577, 442);
+            Program.MasterForm.Size = new System.Drawing.Size(577, 455);
             return true;
         }
 

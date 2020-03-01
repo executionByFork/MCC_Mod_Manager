@@ -484,8 +484,6 @@ namespace MCC_Mod_Manager.Api {
             return true;
         }
 
-
-
         public static string GetMD5(string filePath) {
             try {
                 using (FileStream stream = File.OpenRead(filePath)) {
