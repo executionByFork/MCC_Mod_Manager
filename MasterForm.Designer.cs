@@ -109,8 +109,6 @@
             this.topBar.Name = "topBar";
             this.topBar.Size = new System.Drawing.Size(582, 37);
             this.topBar.TabIndex = 1;
-            this.topBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseDown);
-            this.topBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseMove);
             // 
             // megaCaution
             // 
@@ -122,8 +120,6 @@
             this.megaCaution.TabIndex = 7;
             this.megaCaution.TabStop = false;
             this.megaCaution.Visible = false;
-            this.megaCaution.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseDown);
-            this.megaCaution.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseMove);
             // 
             // version_lbl
             // 
@@ -136,8 +132,6 @@
             this.version_lbl.TabIndex = 6;
             this.version_lbl.Text = "v???";
             this.version_lbl.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.version_lbl.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseDown);
-            this.version_lbl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseMove);
             // 
             // refreshButton
             // 
@@ -148,9 +142,6 @@
             this.refreshButton.Size = new System.Drawing.Size(30, 30);
             this.refreshButton.TabIndex = 5;
             this.refreshButton.TabStop = false;
-            this.refreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
-            this.refreshButton.MouseEnter += new System.EventHandler(this.BtnHoverOn);
-            this.refreshButton.MouseLeave += new System.EventHandler(this.BtnHoverOff);
             // 
             // minButton
             // 
@@ -161,9 +152,6 @@
             this.minButton.Size = new System.Drawing.Size(30, 30);
             this.minButton.TabIndex = 4;
             this.minButton.TabStop = false;
-            this.minButton.Click += new System.EventHandler(this.MinButton_Click);
-            this.minButton.MouseEnter += new System.EventHandler(this.BtnHoverOn);
-            this.minButton.MouseLeave += new System.EventHandler(this.BtnHoverOff);
             // 
             // titleLabel
             // 
@@ -175,8 +163,6 @@
             this.titleLabel.Size = new System.Drawing.Size(240, 19);
             this.titleLabel.TabIndex = 3;
             this.titleLabel.Text = "MCC Mod Manager by MrFRZ0";
-            this.titleLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseDown);
-            this.titleLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseMove);
             // 
             // exitButton
             // 
@@ -187,9 +173,6 @@
             this.exitButton.Size = new System.Drawing.Size(30, 30);
             this.exitButton.TabIndex = 2;
             this.exitButton.TabStop = false;
-            this.exitButton.Click += new System.EventHandler(this.ExitButton_Click);
-            this.exitButton.MouseEnter += new System.EventHandler(this.BtnHoverOn);
-            this.exitButton.MouseLeave += new System.EventHandler(this.BtnHoverOff);
             // 
             // homeTab
             // 

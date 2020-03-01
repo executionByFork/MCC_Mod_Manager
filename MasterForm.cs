@@ -60,8 +60,8 @@ namespace MCC_Mod_Manager {
             this.version_lbl.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseDown);
             this.version_lbl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseMove);
 
-            //this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseDown);
-            //this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseMove);
+            this.megaCaution.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseDown);
+            this.megaCaution.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseMove);
 
             this.refreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
             this.refreshButton.MouseEnter += new System.EventHandler(this.BtnHoverOn);
