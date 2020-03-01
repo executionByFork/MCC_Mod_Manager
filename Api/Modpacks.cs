@@ -487,11 +487,15 @@ namespace MCC_Mod_Manager.Api {
 
 
         public static string GetMD5(string filePath) {
-            using (FileStream stream = File.OpenRead(filePath)) {
-                using (MD5 md5 = MD5.Create()) {
-                    byte[] hash = md5.ComputeHash(stream);
-                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+            try {
+                using (FileStream stream = File.OpenRead(filePath)) {
+                    using (MD5 md5 = MD5.Create()) {
+                        byte[] hash = md5.ComputeHash(stream);
+                        return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                    }
                 }
+            } catch(FileNotFoundException) {
+                return null;
             }
         }
 
