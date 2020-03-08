@@ -80,6 +80,7 @@
             this.bakLabel1 = new System.Windows.Forms.Label();
             this.bakListPanel = new System.Windows.Forms.Panel();
             this.betterPBar = new System.Windows.Forms.Panel();
+            this.pictureBoxIcon = new System.Windows.Forms.PictureBox();
             this.topBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.megaCaution)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).BeginInit();
@@ -93,11 +94,13 @@
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.backupPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxIcon)).BeginInit();
             this.SuspendLayout();
             // 
             // topBar
             // 
             this.topBar.BackColor = System.Drawing.Color.DarkGray;
+            this.topBar.Controls.Add(this.pictureBoxIcon);
             this.topBar.Controls.Add(this.megaCaution);
             this.topBar.Controls.Add(this.version_lbl);
             this.topBar.Controls.Add(this.refreshButton);
@@ -114,7 +117,7 @@
             // 
             this.megaCaution.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.megaCaution.Image = ((System.Drawing.Image)(resources.GetObject("megaCaution.Image")));
-            this.megaCaution.Location = new System.Drawing.Point(256, 3);
+            this.megaCaution.Location = new System.Drawing.Point(220, 4);
             this.megaCaution.Name = "megaCaution";
             this.megaCaution.Size = new System.Drawing.Size(30, 30);
             this.megaCaution.TabIndex = 7;
@@ -126,7 +129,7 @@
             this.version_lbl.AutoSize = true;
             this.version_lbl.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.version_lbl.Font = new System.Drawing.Font("Gadugi", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.version_lbl.Location = new System.Drawing.Point(429, 9);
+            this.version_lbl.Location = new System.Drawing.Point(426, 9);
             this.version_lbl.Name = "version_lbl";
             this.version_lbl.Size = new System.Drawing.Size(39, 19);
             this.version_lbl.TabIndex = 6;
@@ -158,11 +161,11 @@
             this.titleLabel.AutoSize = true;
             this.titleLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.titleLabel.Font = new System.Drawing.Font("Gadugi", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.titleLabel.Location = new System.Drawing.Point(16, 9);
+            this.titleLabel.Location = new System.Drawing.Point(59, 9);
             this.titleLabel.Name = "titleLabel";
-            this.titleLabel.Size = new System.Drawing.Size(240, 19);
+            this.titleLabel.Size = new System.Drawing.Size(155, 19);
             this.titleLabel.TabIndex = 3;
-            this.titleLabel.Text = "MCC Mod Manager by MrFRZ0";
+            this.titleLabel.Text = "MCC Mod Manager";
             // 
             // exitButton
             // 
@@ -706,7 +709,16 @@
             this.betterPBar.Size = new System.Drawing.Size(570, 44);
             this.betterPBar.TabIndex = 10;
             // 
-            // Form1
+            // pictureBoxIcon
+            // 
+            this.pictureBoxIcon.Image = global::MCC_Mod_Manager.Properties.Resources.HaloHelmetIcon_small;
+            this.pictureBoxIcon.Location = new System.Drawing.Point(10, 0);
+            this.pictureBoxIcon.Name = "pictureBoxIcon";
+            this.pictureBoxIcon.Size = new System.Drawing.Size(35, 37);
+            this.pictureBoxIcon.TabIndex = 8;
+            this.pictureBoxIcon.TabStop = false;
+            // 
+            // MasterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -724,7 +736,7 @@
             this.Controls.Add(this.homePanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Form1";
+            this.Name = "MasterForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MCC Mod Manager";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -749,6 +761,7 @@
             this.panel1.PerformLayout();
             this.backupPanel.ResumeLayout(false);
             this.backupPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxIcon)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -810,6 +823,7 @@
         public System.Windows.Forms.CheckBox manualOverride;
         public System.Windows.Forms.Button resetApp;
         public System.Windows.Forms.PictureBox megaCaution;
+        private System.Windows.Forms.PictureBox pictureBoxIcon;
     }
 }
 

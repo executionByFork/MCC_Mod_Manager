@@ -40,7 +40,7 @@ namespace MCC_Mod_Manager {
                 Modpacks.StabilizeGame();
                 Backups.LoadBackups();
             }
-            Modpacks.LoadModpacks();
+            MyMods.LoadModpacks();
             LoadEventHandlers();
             PBar_init();
             tt.SetToolTip(addRowButton, "Select mod file(s) to add");
@@ -53,6 +53,9 @@ namespace MCC_Mod_Manager {
 
             this.topBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseDown);
             this.topBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseMove);
+
+            this.pictureBoxIcon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseDown);
+            this.pictureBoxIcon.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseMove);
 
             this.titleLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseDown);
             this.titleLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBar_MouseMove);
@@ -197,7 +200,7 @@ namespace MCC_Mod_Manager {
         private void RefreshButton_Click(object sender, EventArgs e) {
             Config.LoadCfg();
             Backups.LoadBackups();
-            Modpacks.LoadModpacks();
+            MyMods.LoadModpacks();
         }
 
         #endregion
