@@ -34,7 +34,12 @@ namespace MCC_Mod_Manager.Api.Utilities {
             throw new FormatException("Please notify the developer: " + type + " is not a valid type for showMsg.");
         }
 
+        public static bool IsHaloFile(string filePath) {
+            return (GetUnmodifiedHash(filePath) != null);
+        }
+
         #region IO
+
         public static bool DeleteFile(string path) {
             try {
                 File.Delete(path);
@@ -103,9 +108,6 @@ namespace MCC_Mod_Manager.Api.Utilities {
             return RetrieveHash(dirArray, 1, fileTree);
         }
 
-        public static bool IsHaloFile(string filePath) {
-            return (GetUnmodifiedHash(filePath) != null);
-        }
         #endregion
     }
 }

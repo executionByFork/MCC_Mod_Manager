@@ -161,7 +161,6 @@ namespace MCC_Mod_Manager.Api {
             }
         }
 
-
         public static int LoadCfg() {
             bool stabilize = false;
             bool needsStabilize = false;
@@ -228,15 +227,6 @@ namespace MCC_Mod_Manager.Api {
             }
         }
 
-        public static List<string> GetEnabledModpacks() {
-            List<string> list = new List<string>();
-
-            foreach (KeyValuePair<string, Dictionary<string, string>> modpack in Patched) {
-                list.Add(modpack.Key);
-            }
-            return list;
-        }
-
         public static bool IsPatched(string modpackName) {
             try {
                 return Patched.ContainsKey(modpackName);
@@ -245,17 +235,6 @@ namespace MCC_Mod_Manager.Api {
             }
         }
 
-        public static void RmPatched(string modpackName) {
-            Patched.Remove(modpackName);
-        }
-
-        public static string GetCurrentBuild() {
-            return Utility.ReadFirstLine(MCC_home + @"\build_tag.txt");
-        }
-
-        #endregion
-
-        #region Helper Functions
         public static bool AddPatched(string modpackName) {
             Dictionary<string, string> modfiles = new Dictionary<string, string>();
             ModpackCfg mCfg = Modpacks.GetModpackConfig(modpackName);
@@ -275,20 +254,37 @@ namespace MCC_Mod_Manager.Api {
             return true;
         }
 
-        public static bool CreateDefaultCfg() {
-            _cfg = new MainCfg();
-            // default values declared here so that mainCfg class does not implicitly set defaults and bypass warning triggers
-            MCC_home = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
-            MCC_version = GetCurrentBuild();   // sets MCC_version to null if not found
-            Backup_dir = @".\backups";
-            Modpack_dir = @".\modpacks";
-            DeleteOldBaks = false;
+        public static void RmPatched(string modpackName) {
+            Patched.Remove(modpackName);
+        }
+
+        public static void DoResetApp() {
             Patched = new Dictionary<string, Dictionary<string, string>>();
-
+            MCC_version = GetCurrentBuild();
             SaveCfg();
-            Utility.ShowMsg("A default configuration file has been created. Please review and update it as needed.", "Info");
+            MyMods.LoadModpacks();
+            if (!Backups.DeleteAll(true)) {
+                Utility.ShowMsg("There was an issue deleting at least one backup. Please delete these in the Backups tab to avoid restoring an old " +
+                    "version of the file in the future.", "Error");
+            }
+            Backups.LoadBackups();
+        }
 
-            return true;
+        #endregion
+
+        #region Helper Functions
+
+        public static List<string> GetEnabledModpacks() {
+            List<string> list = new List<string>();
+
+            foreach (KeyValuePair<string, Dictionary<string, string>> modpack in Patched) {
+                list.Add(modpack.Key);
+            }
+            return list;
+        }
+
+        public static string GetCurrentBuild() {
+            return Utility.ReadFirstLine(MCC_home + @"\build_tag.txt");
         }
 
         private static int ReadCfg() {
@@ -320,16 +316,20 @@ namespace MCC_Mod_Manager.Api {
             return 0;
         }
 
-        public static void DoResetApp() {
+        public static bool CreateDefaultCfg() {
+            _cfg = new MainCfg();
+            // default values declared here so that mainCfg class does not implicitly set defaults and bypass warning triggers
+            MCC_home = @"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection";
+            MCC_version = GetCurrentBuild();   // sets MCC_version to null if not found
+            Backup_dir = @".\backups";
+            Modpack_dir = @".\modpacks";
+            DeleteOldBaks = false;
             Patched = new Dictionary<string, Dictionary<string, string>>();
-            MCC_version = GetCurrentBuild();
+
             SaveCfg();
-            Modpacks.LoadModpacks();
-            if (!Backups.DeleteAll(true)) {
-                Utility.ShowMsg("There was an issue deleting at least one backup. Please delete these in the Backups tab to avoid restoring an old " +
-                    "version of the file in the future.", "Error");
-            }
-            Backups.LoadBackups();
+            Utility.ShowMsg("A default configuration file has been created. Please review and update it as needed.", "Info");
+
+            return true;
         }
 
         public static bool ChkHomeDir(String dir) {

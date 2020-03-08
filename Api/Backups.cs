@@ -130,7 +130,6 @@ namespace MCC_Mod_Manager.Api {
             Program.MasterForm.PBar_hide();
         }
 
-
         public static void DelSelectedBak_Click(object sender, EventArgs e) {
             IEnumerable<CheckBox> bakList = Program.MasterForm.bakListPanel.Controls.OfType<CheckBox>();
             EnsureBackupFolderExists();
@@ -192,7 +191,7 @@ namespace MCC_Mod_Manager.Api {
 
         #endregion
 
-        #region Api Functions
+        #region UI Functions
 
         public static bool LoadBackups() {
             EnsureBackupFolderExists();
@@ -225,6 +224,32 @@ namespace MCC_Mod_Manager.Api {
 
             return true;
         }
+
+        public static bool UpdateBackupList() {
+            EnsureBackupFolderExists();
+
+            Program.MasterForm.bakListPanel.Controls.Clear();
+            foreach (KeyValuePair<string, string> entry in _baks) {
+                string entryName;
+                if (Config.fullBakPath) {
+                    entryName = entry.Key;
+                } else {
+                    entryName = entry.Value;
+                }
+                CheckBox chb = new CheckBox {
+                    AutoSize = true,
+                    Text = Config.dirtyPadding + entryName,
+                    Location = new Point(30, Program.MasterForm.bakListPanel.Controls.Count * 20)
+                };
+
+                Program.MasterForm.bakListPanel.Controls.Add(chb);
+            }
+            return true;
+        }
+
+        #endregion
+
+        #region Api Functions
 
         public static int CreateBackup(string path, bool overwrite) {
             EnsureBackupFolderExists();
@@ -365,6 +390,13 @@ namespace MCC_Mod_Manager.Api {
             }
             return !err;
         }
+        public static bool DeleteBak(string path) {
+            if (Utility.DeleteFile(Config.Backup_dir + @"\" + _baks[path])) {
+                _baks.Remove(path);
+                return true;
+            }
+            return false;
+        }
 
         public static bool SaveBackups() {
             EnsureBackupFolderExists();
@@ -377,26 +409,16 @@ namespace MCC_Mod_Manager.Api {
             return true;
         }
 
-        public static bool UpdateBackupList() {
-            EnsureBackupFolderExists();
+        #endregion
 
-            Program.MasterForm.bakListPanel.Controls.Clear();
-            foreach (KeyValuePair<string, string> entry in _baks) {
-                string entryName;
-                if (Config.fullBakPath) {
-                    entryName = entry.Key;
-                } else {
-                    entryName = entry.Value;
-                }
-                CheckBox chb = new CheckBox {
-                    AutoSize = true,
-                    Text = Config.dirtyPadding + entryName,
-                    Location = new Point(30, Program.MasterForm.bakListPanel.Controls.Count * 20)
-                };
+        #region Helper Functions
 
-                Program.MasterForm.bakListPanel.Controls.Add(chb);
+        private static bool EnsureBackupFolderExists() {
+            if (!Directory.Exists(Config.Backup_dir)) {
+                Directory.CreateDirectory(Config.Backup_dir);
             }
-            return true;
+
+            return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
         }
 
         public static string GetBakKey(string bakFileName) {
@@ -406,24 +428,6 @@ namespace MCC_Mod_Manager.Api {
                 }
             }
             return null;
-        }
-
-        public static bool DeleteBak(string path) {
-            if (Utility.DeleteFile(Config.Backup_dir + @"\" + _baks[path])) {
-                _baks.Remove(path);
-                return true;
-            }
-            return false;
-        }
-        #endregion
-
-        #region Helper Functions
-        private static bool EnsureBackupFolderExists() {
-            if (!Directory.Exists(Config.Backup_dir)) {
-                Directory.CreateDirectory(Config.Backup_dir);
-            }
-
-            return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
         }
 
         private static List<string> FilterNeededBackups(List<string> paths) {

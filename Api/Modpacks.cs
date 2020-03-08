@@ -188,8 +188,6 @@ namespace MCC_Mod_Manager.Api {
 
         #endregion
 
-        #region Api Functions
-
         #region UI Functions
 
         private static void ResetCreateModpacksTab() {
@@ -437,6 +435,8 @@ namespace MCC_Mod_Manager.Api {
             }
         }
         #endregion
+
+        #region Api Functions
 
         public static bool StabilizeGame() { // used after update is detected to uninstall half clobbered mods
             Dictionary<string, List<string>> restoreMap = GetFilesToRestore();
