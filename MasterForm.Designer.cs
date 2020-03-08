@@ -717,6 +717,7 @@
             this.pictureBoxIcon.Size = new System.Drawing.Size(35, 37);
             this.pictureBoxIcon.TabIndex = 8;
             this.pictureBoxIcon.TabStop = false;
+            this.pictureBoxIcon.Click += new System.EventHandler(this.pictureBoxIcon_Click);
             // 
             // MasterForm
             // 
@@ -730,10 +731,10 @@
             this.Controls.Add(this.createTab);
             this.Controls.Add(this.homeTab);
             this.Controls.Add(this.topBar);
+            this.Controls.Add(this.homePanel);
             this.Controls.Add(this.backupPanel);
             this.Controls.Add(this.createPanel);
             this.Controls.Add(this.configPanel);
-            this.Controls.Add(this.homePanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MasterForm";

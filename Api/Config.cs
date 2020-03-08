@@ -4,7 +4,9 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.IO.Compression;
 using MCC_Mod_Manager.Api.Utilities;
 
@@ -16,7 +18,12 @@ namespace MCC_Mod_Manager.Api {
         public string backup_dir;
         public string modpack_dir;
         public bool deleteOldBaks;
-        public Dictionary<string, Dictionary<string, string>> patched = new Dictionary<string, Dictionary<string, string>>();
+        public Dictionary<string, patchedEntry> patched = new Dictionary<string, patchedEntry>();
+    }
+
+    public class patchedEntry {
+        public bool error;
+        public Dictionary<string, string> files = new Dictionary<string, string>();
     }
 
     static class Config {
@@ -94,7 +101,7 @@ namespace MCC_Mod_Manager.Api {
             }
         }
 
-        public static Dictionary<string, Dictionary<string, string>> Patched {
+        public static Dictionary<string, patchedEntry> Patched {
             get {
                 return _cfg.patched;
             }
@@ -196,7 +203,7 @@ namespace MCC_Mod_Manager.Api {
 
             bool msg = false;
             List<string> tmp = new List<string>();
-            foreach (KeyValuePair<string, Dictionary<string, string>> modpack in Patched) {
+            foreach (KeyValuePair<string, patchedEntry> modpack in Patched) {
                 if (!Modpacks.VerifyExists(modpack.Key)) {
                     if (!msg) {
                         msg = true;
@@ -250,7 +257,8 @@ namespace MCC_Mod_Manager.Api {
                 }
             }
 
-            Patched[modpackName] = modfiles;
+            Patched[modpackName] = new patchedEntry();
+            Patched[modpackName].files = modfiles;
             return true;
         }
 
@@ -259,7 +267,7 @@ namespace MCC_Mod_Manager.Api {
         }
 
         public static void DoResetApp() {
-            Patched = new Dictionary<string, Dictionary<string, string>>();
+            Patched = new Dictionary<string, patchedEntry>();
             MCC_version = GetCurrentBuild();
             SaveCfg();
             MyMods.LoadModpacks();
@@ -277,7 +285,7 @@ namespace MCC_Mod_Manager.Api {
         public static List<string> GetEnabledModpacks() {
             List<string> list = new List<string>();
 
-            foreach (KeyValuePair<string, Dictionary<string, string>> modpack in Patched) {
+            foreach (KeyValuePair<string, patchedEntry> modpack in Patched) {
                 list.Add(modpack.Key);
             }
             return list;
@@ -289,28 +297,51 @@ namespace MCC_Mod_Manager.Api {
 
         private static int ReadCfg() {
             string json = File.ReadAllText(_cfgLocation);
+            JObject jsonObject = null;
             try {
-                MainCfg values = JsonConvert.DeserializeObject<MainCfg>(json);
-                // TODO: implement old config version handling
-                if (String.IsNullOrEmpty(values.version)) {
-                    return 2;
-                }
-
-                MCC_home = values.MCC_home;
-                MCC_version = String.IsNullOrEmpty(values.MCC_version) ? GetCurrentBuild() : values.MCC_version;
-                Backup_dir = values.backup_dir;
-                Modpack_dir = values.modpack_dir;
-                DeleteOldBaks = values.deleteOldBaks;
-                Patched = values.patched;
+                jsonObject = JObject.Parse(json);
             } catch (JsonSerializationException) {
                 return 1;
             } catch (JsonReaderException) {
                 return 1;
-            } catch (KeyNotFoundException) {
-                return 1;
             }
-            if (Patched == null) {
+            //MainCfg values = JsonConvert.DeserializeObject<MainCfg>(json);
+            if (jsonObject.SelectToken("version") == null) { // error on pre v0.5 config
                 return 2;
+            }
+
+            MCC_home = jsonObject.SelectToken("MCC_home").ToString();
+            if (jsonObject.SelectToken("MCC_version") == null) {    // check for pre v0.7 config
+                MCC_version = GetCurrentBuild();
+            } else {
+                MCC_version = jsonObject.SelectToken("MCC_version").ToString();
+            }
+
+            Backup_dir = jsonObject.SelectToken("backup_dir").ToString();
+            Modpack_dir = jsonObject.SelectToken("modpack_dir").ToString();
+            DeleteOldBaks = (bool)jsonObject.SelectToken("deleteOldBaks");
+
+            JObject tmp = (JObject)jsonObject.SelectToken("patched");
+            if (tmp == null || !tmp.HasValues) {  // convert config patch object from v0.7 to v0.8
+                Patched = new Dictionary<string, patchedEntry>();
+            } else {
+                try {
+                    if (tmp.Properties().ElementAt(0).Value.SelectToken("error") == null) {
+                        Patched = new Dictionary<string, patchedEntry>();
+                        var entries = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string,string>>>(jsonObject.SelectToken("patched").ToString());
+                        foreach (var entry in entries) {
+                            Patched[entry.Key] = new patchedEntry();
+                            Patched[entry.Key].error = false;   // assume no partial install modpack errors
+                            Patched[entry.Key].files = entry.Value;
+                        }
+                    } else {
+                        Patched = JsonConvert.DeserializeObject<Dictionary<string, patchedEntry>>(jsonObject.SelectToken("patched").ToString());
+                    }
+                } catch (JsonSerializationException) {
+                    return 1;
+                } catch (JsonReaderException) {
+                    return 1;
+                }
             }
 
             return 0;
@@ -324,7 +355,7 @@ namespace MCC_Mod_Manager.Api {
             Backup_dir = @".\backups";
             Modpack_dir = @".\modpacks";
             DeleteOldBaks = false;
-            Patched = new Dictionary<string, Dictionary<string, string>>();
+            Patched = new Dictionary<string, patchedEntry>();
 
             SaveCfg();
             Utility.ShowMsg("A default configuration file has been created. Please review and update it as needed.", "Info");

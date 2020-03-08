@@ -167,21 +167,6 @@ namespace MCC_Mod_Manager.Api {
             RedrawCreatePanel();
         }
 
-        public static void ForceModpackState(object sender, EventArgs e) {
-            PictureBox p = (PictureBox)sender;
-            string modpackname = ((CheckBox)p.Parent.GetChildAtPoint(new Point(p.Location.X + 45, p.Location.Y))).Text.Replace(Config.dirtyPadding, "");
-
-            if (Config.IsPatched(modpackname)) {
-                Config.RmPatched(modpackname);
-                p.Image = Properties.Resources.redDot_15px;
-            } else {
-                Config.AddPatched(modpackname);
-                p.Image = Properties.Resources.greenDot_15px;
-            }
-
-            Config.SaveCfg();
-        }
-
         public static void ClearBtn_Click(object sender, EventArgs e) {
             ResetCreateModpacksTab();
         }
@@ -193,39 +178,6 @@ namespace MCC_Mod_Manager.Api {
         private static void ResetCreateModpacksTab() {
             Program.MasterForm.createFilesPanel.Controls.Clear();
             Program.MasterForm.modpackName_txt.Text = "";
-        }
-
-        public static void ModListPanel_add(string modpackName, bool versionMatches) {
-            var modListCount = Program.MasterForm.modListPanel.Controls.OfType<CheckBox>().Count();
-            CheckBox chb = new CheckBox {
-                AutoSize = true,
-                Text = Config.dirtyPadding + modpackName,
-                Location = new Point(60, (modListCount * 20) + 1),
-                Checked = Config.IsPatched(modpackName) && Program.MasterForm.selectEnabled_chb.Checked
-            };
-            PictureBox p = new PictureBox {
-                Width = 15,
-                Height = 15,
-                Location = new Point(15, (modListCount * 20) + 1),
-                Image = Config.IsPatched(modpackName) ? Properties.Resources.greenDot_15px : Properties.Resources.redDot_15px
-            };
-            PictureBox c = new PictureBox {
-                Width = 15,
-                Height = 15,
-                Location = new Point(37, (modListCount * 20) + 1),
-                Image = Properties.Resources.caution_15px,
-                Visible = !versionMatches
-            };
-            if (Program.MasterForm.manualOverride.Checked) {
-                p.Click += Modpacks.ForceModpackState;
-                p.MouseEnter += Program.MasterForm.BtnHoverOn;
-                p.MouseLeave += Program.MasterForm.BtnHoverOff;
-            }
-
-            Program.MasterForm.modListPanel.Controls.Add(p);
-            Program.MasterForm.modListPanel.Controls.Add(c);
-            Program.MasterForm.tt.SetToolTip(c, "This modpack was made for a different version of MCC and may cause issues if installed.");
-            Program.MasterForm.modListPanel.Controls.Add(chb);
         }
 
         public static Panel MakeRow(string filepath, string type) {
@@ -328,7 +280,6 @@ namespace MCC_Mod_Manager.Api {
 
             return newPanel;
         }
-
 
         public static void SwapRowType(Panel p) {
             if ((string)p.Tag == "normal") {
@@ -442,7 +393,7 @@ namespace MCC_Mod_Manager.Api {
             Dictionary<string, List<string>> restoreMap = GetFilesToRestore();
 
             foreach (KeyValuePair<string, List<string>> modpack in restoreMap) {
-                foreach (KeyValuePair<string, string> entry in Config.Patched[modpack.Key]) {
+                foreach (KeyValuePair<string, string> entry in Config.Patched[modpack.Key].files) {
                     if (modpack.Value.Contains(entry.Key)) {
                         Backups.RestoreBak(ExpandPath(entry.Key));
                     } else {
@@ -528,9 +479,9 @@ namespace MCC_Mod_Manager.Api {
 {
             Dictionary<string, List<string>> restoreMapping = new Dictionary<string, List<string>>();
             bool packClobbered = false;
-            foreach (KeyValuePair<string, Dictionary<string, string>> modpack in Config.Patched) {
+            foreach (KeyValuePair<string, patchedEntry> modpack in Config.Patched) {
                 List<string> potentialRestores = new List<string>();
-                foreach (KeyValuePair<string, string> fileEntry in modpack.Value) {
+                foreach (KeyValuePair<string, string> fileEntry in modpack.Value.files) {
                     if (GetMD5(ExpandPath(fileEntry.Key)) == fileEntry.Value) { // if file is still modded after the update
                         potentialRestores.Add(fileEntry.Key);
                     } else {    // if file was changed by the update

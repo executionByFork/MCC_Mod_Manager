@@ -143,11 +143,48 @@ namespace MCC_Mod_Manager.Api {
                 string modpackName = Path.GetFileName(file).Replace(".zip", "");
                 ModpackCfg modpackConfig = Modpacks.GetModpackConfig(modpackName);
                 if (modpackConfig != null) {
-                    Modpacks.ModListPanel_add(modpackName, modpackConfig.MCC_version == Config.GetCurrentBuild());
+                    ModListPanel_add(modpackName, modpackConfig.MCC_version == Config.GetCurrentBuild());
                 }
             }
 
             return true;
+        }
+
+        public static void ModListPanel_add(string modpackName, bool versionMatches) {
+            var modListCount = Program.MasterForm.modListPanel.Controls.OfType<CheckBox>().Count();
+            CheckBox chb = new CheckBox {
+                AutoSize = true,
+                Text = Config.dirtyPadding + modpackName,
+                Location = new Point(60, (modListCount * 20) + 1),
+                Checked = Config.IsPatched(modpackName) && Program.MasterForm.selectEnabled_chb.Checked
+            };
+            PictureBox p = new PictureBox {
+                Width = 15,
+                Height = 15,
+                Location = new Point(15, (modListCount * 20) + 1),
+                Image = Config.IsPatched(modpackName) ? Properties.Resources.greenDot_15px : Properties.Resources.redDot_15px
+            };
+            PictureBox c = new PictureBox {
+                Width = 15,
+                Height = 15,
+                Location = new Point(37, (modListCount * 20) + 1),
+                Image = Properties.Resources.caution_15px,
+                Visible = !versionMatches
+            };
+            if (Program.MasterForm.manualOverride.Checked) {
+                p.Click += MyMods.ForceModpackState;
+                p.MouseEnter += Program.MasterForm.BtnHoverOn;
+                p.MouseLeave += Program.MasterForm.BtnHoverOff;
+            }
+
+            Program.MasterForm.modListPanel.Controls.Add(p);
+            Program.MasterForm.modListPanel.Controls.Add(c);
+            Program.MasterForm.tt.SetToolTip(c, "This modpack was made for a different version of MCC and may cause issues if installed.");
+            Program.MasterForm.modListPanel.Controls.Add(chb);
+
+            if (Config.Patched.ContainsKey(modpackName) && Config.Patched[modpackName].error == true) {
+                setModpackStatePartial(chb);
+            }
         }
 
         #endregion
@@ -166,6 +203,8 @@ namespace MCC_Mod_Manager.Api {
                 if (ret == 2) {
                     packErr = true;
                     chb.Checked = false;
+                } else if (ret == 3) {
+                    setModpackStatePartial(chb);
                 } else {    // modpack was patched
                     if (ret == 1) {
                         baksMade = true;
@@ -218,6 +257,7 @@ namespace MCC_Mod_Manager.Api {
 
                             if (Backups.RestoreBaks(patched) != 0) {
                                 Utility.ShowMsg("At least one file restore failed. Your game is likely in an unstable state.", "Warning");
+                                return 3;
                             }
                             return 2;
                         } else if (r == 1) {
@@ -326,6 +366,8 @@ namespace MCC_Mod_Manager.Api {
                 if (ret == 2) {
                     packErr = true;
                     chb.Checked = true;
+                } else if (ret == 3) {
+                    setModpackStatePartial(chb);
                 } else {    // modpack was unpatched
                     Config.RmPatched(modpackname);
                     ((PictureBox)chb.Parent.GetChildAtPoint(new Point(chb.Location.X - 45, chb.Location.Y))).Image = Properties.Resources.redDot_15px;
@@ -359,19 +401,23 @@ namespace MCC_Mod_Manager.Api {
                         if (String.IsNullOrEmpty(entry.type) || entry.type == "replace" || entry.type == "patch") { // assume replace type entry if null
                             if (!Backups.RestoreBak(Modpacks.ExpandPath(entry.dest))) {
                                 // repatch restored mod files
+                                bool err = false;
                                 foreach (ModpackEntry e in restored) {
                                     int r = PatchFile(archive, e);
                                     if (r == 2 || r == 3) {
-                                        Utility.ShowMsg("Critical error encountered while unpatching '" + modpackname + "'." +
-                                            "\r\nYou may need to verify your game files on steam or reinstall.", "Error");
+                                        err = true;
                                     }
                                 }
-                                return 2;
+                                if (err) {
+                                    Utility.ShowMsg("Critical error encountered while unpatching '" + modpackname + "'." +
+                                        "\r\nYou may need to verify your game files on steam or reinstall.", "Error");
+                                }
+                                return 3;
                             }
                         } else if (entry.type == "create") {
                             if (!Utility.DeleteFile(Modpacks.ExpandPath(entry.dest))) {
                                 Utility.ShowMsg("Could not delete the file '" + Modpacks.ExpandPath(entry.dest) + "'. This may affect your game. " +
-                                    "if you encounter issue please delete this file manually.", "Warning");
+                                    "if you encounter issues please delete this file manually.", "Warning");
                             }
                         } else {
                             Utility.ShowMsg("Unknown modfile type in modpack config.\r\nCould not install the '" + modpackname + "' modpack.", "Error");
@@ -389,7 +435,31 @@ namespace MCC_Mod_Manager.Api {
 
             return 0;
         }
+
         #endregion
+
+        public static void ForceModpackState(object sender, EventArgs e) {
+            PictureBox p = (PictureBox)sender;
+            string modpackname = ((CheckBox)p.Parent.GetChildAtPoint(new Point(p.Location.X + 45, p.Location.Y))).Text.Replace(Config.dirtyPadding, "");
+
+            if (Config.IsPatched(modpackname)) {
+                Config.RmPatched(modpackname);
+                p.Image = Properties.Resources.redDot_15px;
+            } else {
+                Config.AddPatched(modpackname);
+                p.Image = Properties.Resources.greenDot_15px;
+            }
+
+            Config.SaveCfg();
+        }
+
+        public static void setModpackStatePartial(CheckBox chb) {
+            PictureBox cautionSign = ((PictureBox)chb.Parent.GetChildAtPoint(new Point(chb.Location.X - 23, chb.Location.Y)));
+            cautionSign.Visible = true;
+            Config.Patched[chb.Text.Replace(Config.dirtyPadding, "")].error = true;
+            Program.MasterForm.tt.SetToolTip(cautionSign, "There was an error when patching/unpatching this modpack, leaving it partially installed. This will " +
+                "likely cause issues until the modpack is fully uninstalled.");
+        }
 
         #endregion
 

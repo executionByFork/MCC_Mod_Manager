@@ -46,6 +46,14 @@ namespace MCC_Mod_Manager {
             tt.SetToolTip(addRowButton, "Select mod file(s) to add");
         }
 
+        public readonly ToolTip tt = new ToolTip {
+            AutoPopDelay = 999999999,
+            InitialDelay = 100,
+            ReshowDelay = 300,
+            // Force the ToolTip text to be displayed whether or not the form is active.
+            ShowAlways = true
+        };
+
         #region GENERAL FUNCTIONS
 
         public void LoadEventHandlers() {
@@ -165,14 +173,6 @@ namespace MCC_Mod_Manager {
             this.Refresh();
         }
 
-        public readonly ToolTip tt = new ToolTip {
-            AutoPopDelay = 999999999,
-            InitialDelay = 100,
-            ReshowDelay = 300,
-            // Force the ToolTip text to be displayed whether or not the form is active.
-            ShowAlways = true
-        };
-
         #endregion
 
         #region TOP BAR
@@ -206,10 +206,9 @@ namespace MCC_Mod_Manager {
         #endregion
 
         //////////////////////////////////
-        /////        HOME TAB        ///// //MyMods
+        /////        HOME TAB        /////
         //////////////////////////////////
 
-        //Disappearing next PR
         private void HomeTab_Click(object sender, EventArgs e) {
             homeTab.BackColor = Color.WhiteSmoke;
             createTab.BackColor = Color.DarkGray;
@@ -223,10 +222,9 @@ namespace MCC_Mod_Manager {
         }
 
         //////////////////////////////////
-        /////       CREATE TAB       ///// //Modpacks
+        /////       CREATE TAB       /////
         //////////////////////////////////
 
-        //Disappearing next PR
         private void CreateTab_Click(object sender, EventArgs e) {
             homeTab.BackColor = Color.DarkGray;
             createTab.BackColor = Color.WhiteSmoke;
@@ -243,7 +241,6 @@ namespace MCC_Mod_Manager {
         /////       CONFIG TAB       /////
         //////////////////////////////////
 
-        //Disappearing next PR
         private void ConfigTab_Click(object sender, EventArgs e) {
             homeTab.BackColor = Color.DarkGray;
             createTab.BackColor = Color.DarkGray;
@@ -260,7 +257,6 @@ namespace MCC_Mod_Manager {
         /////       BACKUP TAB       /////
         //////////////////////////////////
 
-        //Disappearing next PR
         private void BackupTab_Click(object sender, EventArgs e) {
             homeTab.BackColor = Color.DarkGray;
             createTab.BackColor = Color.DarkGray;
@@ -319,5 +315,6 @@ namespace MCC_Mod_Manager {
         }
 
         #endregion
+
     }
 }

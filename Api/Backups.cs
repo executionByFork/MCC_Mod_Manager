@@ -172,7 +172,7 @@ namespace MCC_Mod_Manager.Api {
                 if (requiredBaks.Count == 0) {
                     Utility.ShowMsg("Selected files have been deleted.", "Info");
                 } else {
-                    Utility.ShowMsg(requiredBaks.Count + " backups were not deleted because the original file(s) are currently patched with a mod. " +
+                    Utility.ShowMsg(requiredBaks.Count + " backup(s) were not deleted because the original file(s) are currently patched with a mod. " +
                         "Deleting these backups would make it impossible to unpatch the mod(s).", "Info");
                 }
                 SaveBackups();
