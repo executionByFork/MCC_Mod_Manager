@@ -26,7 +26,7 @@ namespace MCC_Mod_Manager.Api {
 
         public static void ManualOverride_CheckedChanged(object sender, EventArgs e) {
             if (Program.MasterForm.manualOverride.Checked == false) {   // make warning only show if checkbox is getting enabled
-                Modpacks.LoadModpacks();
+                LoadModpacks();
                 return;
             } else {
                 DialogResult ans = Utility.ShowMsg("Please do not mess with this unless you know what you are doing or are trying to fix a syncing issue.\r\n\r\n" +
@@ -38,7 +38,7 @@ namespace MCC_Mod_Manager.Api {
                     return;
                 }
 
-                Modpacks.LoadModpacks();
+                LoadModpacks();
             }
         }
 
@@ -122,14 +122,34 @@ namespace MCC_Mod_Manager.Api {
                 Utility.ShowMsg("No modpacks were deleted.", "Warning");
             } else if (del && partial) {
                 Utility.ShowMsg("Only some of the selected modpacks have been deleted.", "Warning");
-                Modpacks.LoadModpacks();
+                LoadModpacks();
             } else {
                 Utility.ShowMsg("Selected modpacks have been deleted.", "Info");
-                Modpacks.LoadModpacks();
+                LoadModpacks();
             }
             Config.SaveCfg();
             Program.MasterForm.PBar_hide();
         }
+        #endregion
+
+        #region UI Functions
+
+        public static bool LoadModpacks() {
+            Modpacks.EnsureModpackFolderExists();
+            Program.MasterForm.modListPanel.Controls.Clear();
+
+            string[] fileEntries = Directory.GetFiles(Config.Modpack_dir);
+            foreach (string file in fileEntries) {
+                string modpackName = Path.GetFileName(file).Replace(".zip", "");
+                ModpackCfg modpackConfig = Modpacks.GetModpackConfig(modpackName);
+                if (modpackConfig != null) {
+                    Modpacks.ModListPanel_add(modpackName, modpackConfig.MCC_version == Config.GetCurrentBuild());
+                }
+            }
+
+            return true;
+        }
+
         #endregion
 
         #region Api Functions
@@ -223,24 +243,73 @@ namespace MCC_Mod_Manager.Api {
             }
         }
 
-        private static string WillOverwriteOtherMod(string modpack) {
-            ModpackCfg primaryConfig = Modpacks.GetModpackConfig(modpack);
-
-            foreach (string enabledModpack in Config.GetEnabledModpacks()) {
-                ModpackCfg modpackConfig = Modpacks.GetModpackConfig(enabledModpack);
-
-                // Deliberately not checking for null so program throws a stack trace
-                // This should never happen, but if it does I want the user to let me know about it
-                foreach (ModpackEntry entry in modpackConfig.entries) {
-                    foreach (ModpackEntry primary in primaryConfig.entries) {
-                        if (entry.dest == primary.dest) {
-                            return enabledModpack;
-                        }
+        private static int PatchFile(ZipArchive archive, ModpackEntry entry) {
+            string destination = Modpacks.ExpandPath(entry.dest);
+            bool baksMade = false;
+            ZipArchiveEntry modFile = archive.GetEntry(entry.src);
+            if (modFile == null) {
+                return 3;
+            }
+            if (String.IsNullOrEmpty(entry.type) || entry.type == "replace") {  // assume replace type entry
+                if (File.Exists(destination)) {
+                    if (Backups.CreateBackup(destination, false) == 0) {
+                        baksMade = true;
+                    }
+                    if (!Utility.DeleteFile(destination)) {
+                        return 2;
                     }
                 }
-            }
+                try {
+                    modFile.ExtractToFile(destination);
+                } catch (IOException) {
+                    return 2;
+                }
 
-            return null;
+                if (baksMade) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            } else if (entry.type == "patch") {
+                if (File.Exists(destination)) {
+                    if (Backups.CreateBackup(destination, false) == 0) {
+                        baksMade = true;
+                    }
+                    if (!Utility.DeleteFile(destination)) {
+                        return 2;
+                    }
+                }
+
+                string unmoddedPath = Modpacks.ExpandPath(entry.orig);
+                if (!Utility.GetUnmodifiedHash(entry.orig).Equals(Modpacks.GetMD5(unmoddedPath), StringComparison.OrdinalIgnoreCase)) {
+                    unmoddedPath = Config.Backup_dir + @"\" + Backups._baks[unmoddedPath];  // use backup version
+                }
+
+                if (!AssemblyPatching.ApplyPatch(modFile, Path.GetFileName(entry.src), unmoddedPath, destination)) {
+                    return 5;   // no extra error message
+                }
+
+                if (baksMade) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            } else if (entry.type == "create") {
+                if (File.Exists(destination)) {
+                    if (!Utility.DeleteFile(destination)) {
+                        return 2;
+                    }
+                }
+                try {
+                    modFile.ExtractToFile(destination);
+                } catch (IOException) {
+                    return 2;
+                }
+
+                return 0;
+            } else {
+                return 4;
+            }
         }
 
         #endregion
@@ -326,74 +395,26 @@ namespace MCC_Mod_Manager.Api {
 
         #region Helper Functions
 
-        private static int PatchFile(ZipArchive archive, ModpackEntry entry) {
-            string destination = Modpacks.ExpandPath(entry.dest);
-            bool baksMade = false;
-            ZipArchiveEntry modFile = archive.GetEntry(entry.src);
-            if (modFile == null) {
-                return 3;
+        private static string WillOverwriteOtherMod(string modpack) {
+            ModpackCfg primaryConfig = Modpacks.GetModpackConfig(modpack);
+
+            foreach (string enabledModpack in Config.GetEnabledModpacks()) {
+                ModpackCfg modpackConfig = Modpacks.GetModpackConfig(enabledModpack);
+
+                // Deliberately not checking for null so program throws a stack trace
+                // This should never happen, but if it does I want the user to let me know about it
+                foreach (ModpackEntry entry in modpackConfig.entries) {
+                    foreach (ModpackEntry primary in primaryConfig.entries) {
+                        if (entry.dest == primary.dest) {
+                            return enabledModpack;
+                        }
+                    }
+                }
             }
-            if (String.IsNullOrEmpty(entry.type) || entry.type == "replace") {  // assume replace type entry
-                if (File.Exists(destination)) {
-                    if (Backups.CreateBackup(destination, false) == 0) {
-                        baksMade = true;
-                    }
-                    if (!Utility.DeleteFile(destination)) {
-                        return 2;
-                    }
-                }
-                try {
-                    modFile.ExtractToFile(destination);
-                } catch (IOException) {
-                    return 2;
-                }
 
-                if (baksMade) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            } else if (entry.type == "patch") {
-                if (File.Exists(destination)) {
-                    if (Backups.CreateBackup(destination, false) == 0) {
-                        baksMade = true;
-                    }
-                    if (!Utility.DeleteFile(destination)) {
-                        return 2;
-                    }
-                }
-
-                string unmoddedPath = Modpacks.ExpandPath(entry.orig);
-                if (!Utility.GetUnmodifiedHash(entry.orig).Equals(Modpacks.GetMD5(unmoddedPath), StringComparison.OrdinalIgnoreCase)) {
-                    unmoddedPath = Config.Backup_dir + @"\" + Backups._baks[unmoddedPath];  // use backup version
-                }
-
-                if (!AssemblyPatching.ApplyPatch(modFile, Path.GetFileName(entry.src), unmoddedPath, destination)) {
-                    return 5;   // no extra error message
-                }
-
-                if (baksMade) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            } else if (entry.type == "create") {
-                if (File.Exists(destination)) {
-                    if (!Utility.DeleteFile(destination)) {
-                        return 2;
-                    }
-                }
-                try {
-                    modFile.ExtractToFile(destination);
-                } catch (IOException) {
-                    return 2;
-                }
-
-                return 0;
-            } else {
-                return 4;
-            }
+            return null;
         }
+
         #endregion
     }
 }

@@ -158,13 +158,28 @@ namespace MCC_Mod_Manager.Api {
             Utility.ShowMsg("Modpack '" + modpackFilename + "' created.", "Info");
             Program.MasterForm.PBar_hide();
             ResetCreateModpacksTab();
-            LoadModpacks();
+            MyMods.LoadModpacks();
             return;
         }
 
         public static void DeleteRow(object sender, EventArgs e) {
             Program.MasterForm.createFilesPanel.Controls.Remove((Panel)((PictureBox)sender).Parent);
             RedrawCreatePanel();
+        }
+
+        public static void ForceModpackState(object sender, EventArgs e) {
+            PictureBox p = (PictureBox)sender;
+            string modpackname = ((CheckBox)p.Parent.GetChildAtPoint(new Point(p.Location.X + 45, p.Location.Y))).Text.Replace(Config.dirtyPadding, "");
+
+            if (Config.IsPatched(modpackname)) {
+                Config.RmPatched(modpackname);
+                p.Image = Properties.Resources.redDot_15px;
+            } else {
+                Config.AddPatched(modpackname);
+                p.Image = Properties.Resources.greenDot_15px;
+            }
+
+            Config.SaveCfg();
         }
 
         public static void ClearBtn_Click(object sender, EventArgs e) {
@@ -175,7 +190,13 @@ namespace MCC_Mod_Manager.Api {
 
         #region Api Functions
 
-        #region Row your boat
+        #region UI Functions
+
+        private static void ResetCreateModpacksTab() {
+            Program.MasterForm.createFilesPanel.Controls.Clear();
+            Program.MasterForm.modpackName_txt.Text = "";
+        }
+
         public static void ModListPanel_add(string modpackName, bool versionMatches) {
             var modListCount = Program.MasterForm.modListPanel.Controls.OfType<CheckBox>().Count();
             CheckBox chb = new CheckBox {
@@ -417,6 +438,66 @@ namespace MCC_Mod_Manager.Api {
         }
         #endregion
 
+        public static bool StabilizeGame() { // used after update is detected to uninstall half clobbered mods
+            Dictionary<string, List<string>> restoreMap = GetFilesToRestore();
+
+            foreach (KeyValuePair<string, List<string>> modpack in restoreMap) {
+                foreach (KeyValuePair<string, string> entry in Config.Patched[modpack.Key]) {
+                    if (modpack.Value.Contains(entry.Key)) {
+                        Backups.RestoreBak(ExpandPath(entry.Key));
+                    } else {
+                        Backups.DeleteBak(ExpandPath(entry.Key));
+                    }
+                }
+
+                Config.RmPatched(modpack.Key);
+            }
+            Config.MCC_version = Config.GetCurrentBuild();
+            Config.SaveCfg();
+            Backups.SaveBackups();
+
+            return true;
+        }
+
+        #endregion
+
+        #region Helper Functions
+
+        public static bool EnsureModpackFolderExists() {
+            if (!Directory.Exists(Config.Modpack_dir)) {
+                Directory.CreateDirectory(Config.Modpack_dir);
+            }
+            return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
+        }
+
+        public static bool VerifyExists(string modpackname) {
+            if (File.Exists(Config.Modpack_dir + @"\" + modpackname + ".zip")) {
+                return true;
+            }
+            return false;
+        }
+
+        private static string CompressPath(string p) {
+            return p.Replace(Config.MCC_home, "$MCC_home");
+        }
+
+        public static string ExpandPath(string p) {
+            return p.Replace("$MCC_home", Config.MCC_home);
+        }
+
+        public static string GetMD5(string filePath) {
+            try {
+                using (FileStream stream = File.OpenRead(filePath)) {
+                    using (MD5 md5 = MD5.Create()) {
+                        byte[] hash = md5.ComputeHash(stream);
+                        return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                    }
+                }
+            } catch (FileNotFoundException) {
+                return null;
+            }
+        }
+
         public static ModpackCfg GetModpackConfig(string modpackName) {
             try {
                 using (ZipArchive archive = ZipFile.OpenRead(Config.Modpack_dir + @"\" + modpackName + ".zip")) {
@@ -443,87 +524,6 @@ namespace MCC_Mod_Manager.Api {
             }
         }
 
-        public static bool LoadModpacks() {
-            EnsureModpackFolderExists();
-            Program.MasterForm.modListPanel.Controls.Clear();
-
-            string[] fileEntries = Directory.GetFiles(Config.Modpack_dir);
-            foreach (string file in fileEntries) {
-                string modpackName = Path.GetFileName(file).Replace(".zip", "");
-                ModpackCfg modpackConfig = GetModpackConfig(modpackName);
-                if (modpackConfig != null) {
-                    ModListPanel_add(modpackName, modpackConfig.MCC_version == Config.GetCurrentBuild());
-                }
-            }
-
-            return true;
-        }
-
-        public static string ExpandPath(string p) {
-            return p.Replace("$MCC_home", Config.MCC_home);
-        }
-
-        public static bool StabilizeGame() { // used after update is detected to uninstall half clobbered mods
-            Dictionary<string, List<string>> restoreMap = GetFilesToRestore();
-
-            foreach (KeyValuePair<string, List<string>> modpack in restoreMap) {
-                foreach (KeyValuePair<string, string> entry in Config.Patched[modpack.Key]) {
-                    if (modpack.Value.Contains(entry.Key)) {
-                        Backups.RestoreBak(ExpandPath(entry.Key));
-                    } else {
-                        Backups.DeleteBak(ExpandPath(entry.Key));
-                    }
-                }
-
-                Config.RmPatched(modpack.Key);
-            }
-            Config.MCC_version = Config.GetCurrentBuild();
-            Config.SaveCfg();
-            Backups.SaveBackups();
-
-            return true;
-        }
-
-        public static string GetMD5(string filePath) {
-            try {
-                using (FileStream stream = File.OpenRead(filePath)) {
-                    using (MD5 md5 = MD5.Create()) {
-                        byte[] hash = md5.ComputeHash(stream);
-                        return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-                    }
-                }
-            } catch(FileNotFoundException) {
-                return null;
-            }
-        }
-
-        public static bool VerifyExists(string modpackname) {
-            if (File.Exists(Config.Modpack_dir + @"\" + modpackname + ".zip")) {
-                return true;
-            }
-            return false;
-        }
-
-        #endregion
-
-        #region Helper Functions
-
-        private static void ResetCreateModpacksTab() {
-            Program.MasterForm.createFilesPanel.Controls.Clear();
-            Program.MasterForm.modpackName_txt.Text = "";
-        }
-
-        private static bool EnsureModpackFolderExists() {
-            if (!Directory.Exists(Config.Modpack_dir)) {
-                Directory.CreateDirectory(Config.Modpack_dir);
-            }
-            return true;    // C# is dumb. If we dont return something here it 'optimizes' and runs this asynchronously
-        }
-
-        private static string CompressPath(string p) {
-            return p.Replace(Config.MCC_home, "$MCC_home");
-        }
-
         private static Dictionary<string, List<string>> GetFilesToRestore() // used after update is detected to find file changes
 {
             Dictionary<string, List<string>> restoreMapping = new Dictionary<string, List<string>>();
@@ -546,21 +546,6 @@ namespace MCC_Mod_Manager.Api {
             }
 
             return restoreMapping;
-        }
-
-        public static void ForceModpackState(object sender, EventArgs e) {
-            PictureBox p = (PictureBox)sender;
-            string modpackname = ((CheckBox)p.Parent.GetChildAtPoint(new Point(p.Location.X + 45, p.Location.Y))).Text.Replace(Config.dirtyPadding, "");
-
-            if (Config.IsPatched(modpackname)) {
-                Config.RmPatched(modpackname);
-                p.Image = Properties.Resources.redDot_15px;
-            } else {
-                Config.AddPatched(modpackname);
-                p.Image = Properties.Resources.greenDot_15px;
-            }
-
-            Config.SaveCfg();
         }
 
         #endregion
