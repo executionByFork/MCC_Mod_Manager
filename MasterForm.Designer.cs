@@ -717,7 +717,6 @@
             this.pictureBoxIcon.Size = new System.Drawing.Size(35, 37);
             this.pictureBoxIcon.TabIndex = 8;
             this.pictureBoxIcon.TabStop = false;
-            this.pictureBoxIcon.Click += new System.EventHandler(this.pictureBoxIcon_Click);
             // 
             // MasterForm
             // 
