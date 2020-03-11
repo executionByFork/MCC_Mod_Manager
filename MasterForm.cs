@@ -43,7 +43,6 @@ namespace MCC_Mod_Manager {
             MyMods.LoadModpacks();
             LoadEventHandlers();
             PBar_init();
-            tt.SetToolTip(addRowButton, "Select mod file(s) to add");
         }
 
         public readonly ToolTip tt = new ToolTip {
@@ -109,6 +108,15 @@ namespace MCC_Mod_Manager {
             this.addRowButton.Click += new System.EventHandler(Modpacks.AddRowButton_Click);
             this.addRowButton.MouseEnter += new System.EventHandler(this.BtnHoverOn);
             this.addRowButton.MouseLeave += new System.EventHandler(this.BtnHoverOff);
+            tt.SetToolTip(addRowButton, "Select mod file(s) to add");
+
+            this.readmeToggleButton.Click += new System.EventHandler(Modpacks.readmeToggleButton_Click);
+            this.readmeToggleButton.MouseEnter += new System.EventHandler(this.BtnHoverOn);
+            this.readmeToggleButton.MouseLeave += new System.EventHandler(this.BtnHoverOff);
+            tt.SetToolTip(readmeToggleButton, "Edit Readme");
+            this.readmeToggleButton.Tag = true;
+
+            this.readmeTxt.Text = Config._defaultReadmeText;
 
             this.createModpackBtn.Click += new System.EventHandler(Modpacks.CreateModpackBtn_Click);
             this.createModpackBtn.MouseEnter += new System.EventHandler(this.BtnHoverOn);

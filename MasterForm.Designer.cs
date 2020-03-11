@@ -25,6 +25,7 @@
         private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MasterForm));
             this.topBar = new System.Windows.Forms.Panel();
+            this.pictureBoxIcon = new System.Windows.Forms.PictureBox();
             this.megaCaution = new System.Windows.Forms.PictureBox();
             this.version_lbl = new System.Windows.Forms.Label();
             this.refreshButton = new System.Windows.Forms.PictureBox();
@@ -80,8 +81,10 @@
             this.bakLabel1 = new System.Windows.Forms.Label();
             this.bakListPanel = new System.Windows.Forms.Panel();
             this.betterPBar = new System.Windows.Forms.Panel();
-            this.pictureBoxIcon = new System.Windows.Forms.PictureBox();
+            this.readmeTxt = new System.Windows.Forms.TextBox();
+            this.readmeToggleButton = new System.Windows.Forms.PictureBox();
             this.topBar.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.megaCaution)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minButton)).BeginInit();
@@ -94,7 +97,7 @@
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.backupPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxIcon)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.readmeToggleButton)).BeginInit();
             this.SuspendLayout();
             // 
             // topBar
@@ -112,6 +115,15 @@
             this.topBar.Name = "topBar";
             this.topBar.Size = new System.Drawing.Size(582, 37);
             this.topBar.TabIndex = 1;
+            // 
+            // pictureBoxIcon
+            // 
+            this.pictureBoxIcon.Image = global::MCC_Mod_Manager.Properties.Resources.HaloHelmetIcon_small;
+            this.pictureBoxIcon.Location = new System.Drawing.Point(10, 0);
+            this.pictureBoxIcon.Name = "pictureBoxIcon";
+            this.pictureBoxIcon.Size = new System.Drawing.Size(35, 37);
+            this.pictureBoxIcon.TabIndex = 8;
+            this.pictureBoxIcon.TabStop = false;
             // 
             // megaCaution
             // 
@@ -328,6 +340,7 @@
             // createPanel
             // 
             this.createPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.createPanel.Controls.Add(this.readmeToggleButton);
             this.createPanel.Controls.Add(this.modpackName_label);
             this.createPanel.Controls.Add(this.modpackName_txt);
             this.createPanel.Controls.Add(this.clearBtn);
@@ -335,6 +348,7 @@
             this.createPanel.Controls.Add(this.createModpackBtn);
             this.createPanel.Controls.Add(this.createLabel2);
             this.createPanel.Controls.Add(this.createLabel1);
+            this.createPanel.Controls.Add(this.readmeTxt);
             this.createPanel.Controls.Add(this.createFilesPanel);
             this.createPanel.Location = new System.Drawing.Point(5, 89);
             this.createPanel.Name = "createPanel";
@@ -346,7 +360,7 @@
             // 
             this.modpackName_label.AutoSize = true;
             this.modpackName_label.Font = new System.Drawing.Font("Reem Kufi", 8.999999F);
-            this.modpackName_label.Location = new System.Drawing.Point(15, 295);
+            this.modpackName_label.Location = new System.Drawing.Point(6, 295);
             this.modpackName_label.Name = "modpackName_label";
             this.modpackName_label.Size = new System.Drawing.Size(96, 23);
             this.modpackName_label.TabIndex = 9;
@@ -354,17 +368,17 @@
             // 
             // modpackName_txt
             // 
-            this.modpackName_txt.Location = new System.Drawing.Point(18, 320);
+            this.modpackName_txt.Location = new System.Drawing.Point(6, 320);
             this.modpackName_txt.Name = "modpackName_txt";
-            this.modpackName_txt.Size = new System.Drawing.Size(288, 20);
+            this.modpackName_txt.Size = new System.Drawing.Size(317, 20);
             this.modpackName_txt.TabIndex = 8;
             // 
             // clearBtn
             // 
             this.clearBtn.Font = new System.Drawing.Font("Reem Kufi", 9.749999F);
-            this.clearBtn.Location = new System.Drawing.Point(438, 311);
+            this.clearBtn.Location = new System.Drawing.Point(455, 311);
             this.clearBtn.Name = "clearBtn";
-            this.clearBtn.Size = new System.Drawing.Size(120, 35);
+            this.clearBtn.Size = new System.Drawing.Size(103, 35);
             this.clearBtn.TabIndex = 7;
             this.clearBtn.Text = "Clear All";
             this.clearBtn.UseVisualStyleBackColor = true;
@@ -373,7 +387,7 @@
             // 
             this.addRowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.addRowButton.Image = ((System.Drawing.Image)(resources.GetObject("addRowButton.Image")));
-            this.addRowButton.Location = new System.Drawing.Point(19, 7);
+            this.addRowButton.Location = new System.Drawing.Point(49, 7);
             this.addRowButton.Name = "addRowButton";
             this.addRowButton.Size = new System.Drawing.Size(25, 25);
             this.addRowButton.TabIndex = 6;
@@ -382,7 +396,7 @@
             // createModpackBtn
             // 
             this.createModpackBtn.Font = new System.Drawing.Font("Reem Kufi", 9.749999F);
-            this.createModpackBtn.Location = new System.Drawing.Point(312, 311);
+            this.createModpackBtn.Location = new System.Drawing.Point(329, 311);
             this.createModpackBtn.Name = "createModpackBtn";
             this.createModpackBtn.Size = new System.Drawing.Size(120, 35);
             this.createModpackBtn.TabIndex = 3;
@@ -709,14 +723,29 @@
             this.betterPBar.Size = new System.Drawing.Size(570, 44);
             this.betterPBar.TabIndex = 10;
             // 
-            // pictureBoxIcon
+            // readmeTxt
             // 
-            this.pictureBoxIcon.Image = global::MCC_Mod_Manager.Properties.Resources.HaloHelmetIcon_small;
-            this.pictureBoxIcon.Location = new System.Drawing.Point(10, 0);
-            this.pictureBoxIcon.Name = "pictureBoxIcon";
-            this.pictureBoxIcon.Size = new System.Drawing.Size(35, 37);
-            this.pictureBoxIcon.TabIndex = 8;
-            this.pictureBoxIcon.TabStop = false;
+            this.readmeTxt.AcceptsReturn = true;
+            this.readmeTxt.AcceptsTab = true;
+            this.readmeTxt.Enabled = false;
+            this.readmeTxt.Location = new System.Drawing.Point(14, 33);
+            this.readmeTxt.Multiline = true;
+            this.readmeTxt.Name = "readmeTxt";
+            this.readmeTxt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.readmeTxt.Size = new System.Drawing.Size(536, 259);
+            this.readmeTxt.TabIndex = 11;
+            this.readmeTxt.TabStop = false;
+            this.readmeTxt.Visible = false;
+            // 
+            // readmeToggleButton
+            // 
+            this.readmeToggleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.readmeToggleButton.Image = ((System.Drawing.Image)(resources.GetObject("readmeToggleButton.Image")));
+            this.readmeToggleButton.Location = new System.Drawing.Point(18, 10);
+            this.readmeToggleButton.Name = "readmeToggleButton";
+            this.readmeToggleButton.Size = new System.Drawing.Size(25, 20);
+            this.readmeToggleButton.TabIndex = 12;
+            this.readmeToggleButton.TabStop = false;
             // 
             // MasterForm
             // 
@@ -730,10 +759,10 @@
             this.Controls.Add(this.createTab);
             this.Controls.Add(this.homeTab);
             this.Controls.Add(this.topBar);
-            this.Controls.Add(this.homePanel);
-            this.Controls.Add(this.backupPanel);
             this.Controls.Add(this.createPanel);
             this.Controls.Add(this.configPanel);
+            this.Controls.Add(this.homePanel);
+            this.Controls.Add(this.backupPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MasterForm";
@@ -742,6 +771,7 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.topBar.ResumeLayout(false);
             this.topBar.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.megaCaution)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.refreshButton)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.minButton)).EndInit();
@@ -761,7 +791,7 @@
             this.panel1.PerformLayout();
             this.backupPanel.ResumeLayout(false);
             this.backupPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxIcon)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.readmeToggleButton)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -824,6 +854,8 @@
         public System.Windows.Forms.Button resetApp;
         public System.Windows.Forms.PictureBox megaCaution;
         private System.Windows.Forms.PictureBox pictureBoxIcon;
+        public System.Windows.Forms.PictureBox readmeToggleButton;
+        public System.Windows.Forms.TextBox readmeTxt;
     }
 }
 

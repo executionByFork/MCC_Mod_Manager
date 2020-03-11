@@ -28,9 +28,10 @@ namespace MCC_Mod_Manager.Api {
 
     static class Config {
         #region Config Fields
-        public const string version = "v0.7";
+        public const string version = "v0.8";
         private const string _cfgLocation = @".\MCC_Mod_Manager.cfg";
         private const string _bakcfgName = @"\backups.cfg";
+        public const string _defaultReadmeText = @"Install using MCC Mod Manager: https://github.com/executionByFork/MCC_Mod_Manager/blob/master/README.md";
 
         // UI elements
         public static string dirtyPadding = "        ";

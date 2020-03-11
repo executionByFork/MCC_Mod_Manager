@@ -44,6 +44,32 @@ namespace MCC_Mod_Manager.Api {
             }
         }
 
+        public static void readmeToggleButton_Click(object sender, EventArgs e) {
+            if ((bool)Program.MasterForm.readmeToggleButton.Tag == false) {   // Hide readme editing
+                Program.MasterForm.readmeTxt.Enabled = false;
+                Program.MasterForm.readmeTxt.Visible = false;
+                Program.MasterForm.createFilesPanel.Visible = true;
+                Program.MasterForm.addRowButton.Visible = true;
+                Program.MasterForm.addRowButton.Enabled = true;
+                Program.MasterForm.createLabel1.Text = "Modded File";
+                Program.MasterForm.createLabel2.Visible = true;
+
+                Program.MasterForm.tt.SetToolTip(Program.MasterForm.readmeToggleButton, "Edit Readme");
+                Program.MasterForm.readmeToggleButton.Tag = true;   // use tag to track UI state
+            } else {    // Reveal readme editing
+                Program.MasterForm.readmeTxt.Enabled = true;
+                Program.MasterForm.readmeTxt.Visible = true;
+                Program.MasterForm.createFilesPanel.Visible = false;
+                Program.MasterForm.addRowButton.Visible = false;
+                Program.MasterForm.addRowButton.Enabled = false;
+                Program.MasterForm.createLabel1.Text = "Editing README.txt";
+                Program.MasterForm.createLabel2.Visible = false;
+
+                Program.MasterForm.tt.SetToolTip(Program.MasterForm.readmeToggleButton, "Manage files");
+                Program.MasterForm.readmeToggleButton.Tag = false;  // use tag to track UI state
+            }
+        }
+
         public static void CreateModpackBtn_Click(object sender, EventArgs e) {
             string modpackName = Program.MasterForm.modpackName_txt.Text;
             IEnumerable<Panel> modFilesList = Program.MasterForm.createFilesPanel.Controls.OfType<Panel>();
@@ -147,7 +173,11 @@ namespace MCC_Mod_Manager.Api {
                     }
                     ZipArchiveEntry readmeFile = archive.CreateEntry("README.txt");
                     using (StreamWriter writer = new StreamWriter(readmeFile.Open())) {
-                        writer.WriteLine("Install using MCC Mod Manager: https://github.com/executionByFork/MCC_Mod_Manager/tree/master");
+                        if (String.IsNullOrEmpty(Program.MasterForm.readmeTxt.Text)) {
+                            writer.WriteLine(Config._defaultReadmeText);
+                        } else {
+                            writer.WriteLine(Program.MasterForm.readmeTxt.Text);
+                        }
                     }
                 }
             } catch (NotSupportedException) {
@@ -178,6 +208,7 @@ namespace MCC_Mod_Manager.Api {
         private static void ResetCreateModpacksTab() {
             Program.MasterForm.createFilesPanel.Controls.Clear();
             Program.MasterForm.modpackName_txt.Text = "";
+            Program.MasterForm.readmeTxt.Text = Config._defaultReadmeText;
         }
 
         public static Panel MakeRow(string filepath, string type) {
