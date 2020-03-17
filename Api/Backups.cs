@@ -75,14 +75,14 @@ namespace MCC_Mod_Manager.Api {
                 }
             }
 
-            if (backupPaths.Count == 0) {
+            if (!backupPaths.Any()) {
                 Utility.ShowMsg("No items selected from the list.", "Error");
                 return;
             }
             int r = RestoreBaks(backupPaths);
             if (r == 0) {
                 Utility.ShowMsg("Selected files have been restored.", "Info");
-            } else if (r == 1) {
+            } else if (r == 1 || r == 2) {
                 Utility.ShowMsg("At least one file restore failed. Your game may be in an unstable state.", "Warning");
             }
         }
@@ -90,44 +90,18 @@ namespace MCC_Mod_Manager.Api {
         public static void RestoreAllBaksBtn_Click(object sender, EventArgs e) {
             EnsureBackupFolderExists();
 
-            Program.MasterForm.PBar_show(_baks.Count);
-            List<string> remainingBaks = new List<string>();
-            bool chk = false;
-            foreach (KeyValuePair<string, string> entry in _baks) {
-                Program.MasterForm.PBar_update();
-                string bakPath = Config.Backup_dir + @"\" + entry.Value;
-                if (Utility.CopyFile(bakPath, entry.Key, true) == 0) {
-                    if (Config.DeleteOldBaks) {
-                        if (!Utility.DeleteFile(bakPath)) {
-                            remainingBaks.Add(entry.Key);
-                            Utility.ShowMsg("Could not remove old backup '" + entry.Value + "'. Is the file open somewhere?", "Error");
-                        }
-                    }
-                    chk = true;
-                } else {
-                    remainingBaks.Add(entry.Key);
-                    Utility.ShowMsg("Could not restore '" + Path.GetFileName(entry.Key) + "'. If the game is open, close it and try again.", "Error");
-                }
+            List<string> bakList = new List<string>();
+            foreach (KeyValuePair<string, string> b in _baks) {
+                bakList.Add(b.Key);
             }
 
-            if (Config.DeleteOldBaks) {
-                if (remainingBaks.Count == 0) {
-                    _baks = new Dictionary<string, string>();
-                } else {
-                    Dictionary<string, string> tmp = new Dictionary<string, string>();
-                    foreach (string path in remainingBaks) {    // create backup config of files which couldn't be restored/removed
-                        tmp[path] = _baks[path];
-                    }
-                    _baks = tmp;
-                }
-            }
+            int r = RestoreBaks(bakList);
 
-            if (chk) {
+            if (r == 0) {
                 Utility.ShowMsg("Files have been restored.", "Info");
+            } else if (r == 1 || r == 2) {
+                Utility.ShowMsg("At least one file restore failed. Your game may be in an unstable state.", "Warning");
             }
-            SaveBackups();
-            UpdateBackupList();
-            Program.MasterForm.PBar_hide();
         }
 
         public static void DelSelectedBak_Click(object sender, EventArgs e) {
