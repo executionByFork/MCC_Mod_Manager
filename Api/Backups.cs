@@ -61,6 +61,38 @@ namespace MCC_Mod_Manager.Api {
             }
         }
 
+        private static Dictionary<string, List<string>> checkForPartialRestores(List<string> paths) {
+            // paths is list of full, original file paths of backed up files
+            Dictionary<string, List<string>> enabledModpacks = new Dictionary<string, List<string>>();
+            foreach (KeyValuePair<string, patchedEntry> item in Config.Patched) {
+                enabledModpacks[item.Key] = new List<string>(item.Value.files.Keys);
+            }
+
+            foreach (string path in paths) {
+                foreach (KeyValuePair<string, List<string>> modpack in enabledModpacks) {
+                    if (modpack.Value.Contains(Utility.CompressPath(path))) {
+                        modpack.Value.Remove(Utility.CompressPath(path));
+                        break;
+                    }
+                }
+            }
+
+            Dictionary<string, List<string>> results = new Dictionary<string, List<string>>();
+            results["disable"] = new List<string>();
+            results["partials"] = new List<string>();
+
+            Dictionary<string, patchedEntry> enabledModpacksCheck = Config.Patched;
+            foreach (KeyValuePair<string, List<string>> modpack in enabledModpacks) {
+                if (!modpack.Value.Any()) {
+                    results["disable"].Add(modpack.Key);
+                } else if (modpack.Value.Count != enabledModpacksCheck[modpack.Key].files.Count) {
+                    results["partials"].Add(modpack.Key);
+                }
+            }
+
+            return results;
+        }
+
         public static void RestoreSelectedBtn_Click(object sender, EventArgs e) {
             IEnumerable<CheckBox> bakList = Program.MasterForm.bakListPanel.Controls.OfType<CheckBox>();
             List<string> backupPaths = new List<string>();
@@ -79,7 +111,18 @@ namespace MCC_Mod_Manager.Api {
                 Utility.ShowMsg("No items selected from the list.", "Error");
                 return;
             }
+            Dictionary<string, List<string>> x = checkForPartialRestores(backupPaths);
+            if (x["partials"].Any()) {
+                DialogResult ans = Utility.ShowMsg("Restoring the selected backups will partially unpatch at least one modpack. All files within a modpack " +
+                    "are intended to be patched and unpatched together. This may cause issues with your game.\r\nContinue?", "Question");
+                if (ans == DialogResult.No) {
+                    return;
+                }
+            }
             int r = RestoreBaks(backupPaths);
+            MyMods.setModpacksDisabled(x["disable"]);
+            MyMods.setModpacksPartial(x["partials"]);
+
             if (r == 0) {
                 Utility.ShowMsg("Selected files have been restored.", "Info");
             } else if (r == 1 || r == 2) {
@@ -89,13 +132,22 @@ namespace MCC_Mod_Manager.Api {
 
         public static void RestoreAllBaksBtn_Click(object sender, EventArgs e) {
             EnsureBackupFolderExists();
-
             List<string> bakList = new List<string>();
             foreach (KeyValuePair<string, string> b in _baks) {
                 bakList.Add(b.Key);
             }
 
+            Dictionary<string, List<string>> x = checkForPartialRestores(bakList);
+            if (x["partials"].Any()) {
+                DialogResult ans = Utility.ShowMsg("Restoring the selected backups will partially unpatch at least one modpack. All files within a modpack " +
+                    "are intended to be patched and unpatched together. This may cause issues with your game.\r\nContinue?", "Question");
+                if (ans == DialogResult.No) {
+                    return;
+                }
+            }
             int r = RestoreBaks(bakList);
+            MyMods.setModpacksDisabled(x["disable"]);
+            MyMods.setModpacksPartial(x["partials"]);
 
             if (r == 0) {
                 Utility.ShowMsg("Files have been restored.", "Info");

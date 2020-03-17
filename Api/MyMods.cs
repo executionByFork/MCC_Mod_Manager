@@ -187,6 +187,21 @@ namespace MCC_Mod_Manager.Api {
             }
         }
 
+        public static void ForceModpackState(object sender, EventArgs e) {
+            PictureBox p = (PictureBox)sender;
+            string modpackname = ((CheckBox)p.Parent.GetChildAtPoint(new Point(p.Location.X + 45, p.Location.Y))).Text.Replace(Config.dirtyPadding, "");
+
+            if (Config.IsPatched(modpackname)) {
+                Config.RmPatched(modpackname);
+                p.Image = Properties.Resources.redDot_15px;
+            } else {
+                Config.AddPatched(modpackname);
+                p.Image = Properties.Resources.greenDot_15px;
+            }
+
+            Config.SaveCfg();
+        }
+
         #endregion
 
         #region Api Functions
@@ -438,27 +453,47 @@ namespace MCC_Mod_Manager.Api {
 
         #endregion
 
-        public static void ForceModpackState(object sender, EventArgs e) {
-            PictureBox p = (PictureBox)sender;
-            string modpackname = ((CheckBox)p.Parent.GetChildAtPoint(new Point(p.Location.X + 45, p.Location.Y))).Text.Replace(Config.dirtyPadding, "");
-
-            if (Config.IsPatched(modpackname)) {
-                Config.RmPatched(modpackname);
-                p.Image = Properties.Resources.redDot_15px;
-            } else {
-                Config.AddPatched(modpackname);
-                p.Image = Properties.Resources.greenDot_15px;
+        public static void setModpacksDisabled(List<string> modpackList) {
+            foreach (CheckBox chb in Program.MasterForm.modListPanel.Controls.OfType<CheckBox>()) {
+                string modpackName = chb.Text.Replace(Config.dirtyPadding, "");
+                if (modpackList.Contains(modpackName)) {
+                    ((PictureBox)chb.Parent.GetChildAtPoint(new Point(chb.Location.X - 45, chb.Location.Y))).Image = Properties.Resources.redDot_15px;
+                    modpackList.Remove(modpackName);
+                    Config.RmPatched(modpackName);
+                    if (!modpackList.Any()) {
+                        break;
+                    }
+                }
             }
+            Config.SaveCfg();
+        }
 
+        public static void setModpacksPartial(List<string> modpackList) {
+            foreach (CheckBox chb in Program.MasterForm.modListPanel.Controls.OfType<CheckBox>()) {
+                string modpackName = chb.Text.Replace(Config.dirtyPadding, "");
+                if (modpackList.Contains(modpackName)) {
+                    setModpackStatePartial(chb);
+                    modpackList.Remove(modpackName);
+                    if (!modpackList.Any()) {
+                        break;
+                    }
+                }
+            }
             Config.SaveCfg();
         }
 
         public static void setModpackStatePartial(CheckBox chb) {
-            PictureBox cautionSign = ((PictureBox)chb.Parent.GetChildAtPoint(new Point(chb.Location.X - 23, chb.Location.Y)));
-            cautionSign.Visible = true;
             Config.Patched[chb.Text.Replace(Config.dirtyPadding, "")].error = true;
-            Program.MasterForm.tt.SetToolTip(cautionSign, "There was an error when patching/unpatching this modpack, leaving it partially installed. This will " +
-                "likely cause issues until the modpack is fully uninstalled.");
+
+            // change this crap code when the MyMods tab is reworked like the CreateModpacks tab
+            foreach (PictureBox cautionSign in Program.MasterForm.modListPanel.Controls.OfType<PictureBox>()) {
+                if (cautionSign.Bounds.Contains(new Point(chb.Location.X - 23, chb.Location.Y))) {
+                    cautionSign.Visible = true;
+                    Program.MasterForm.tt.SetToolTip(cautionSign, "This modpack is only partially installed and will " +
+                        "likely cause issues. Please try unpatching this modpack.");
+                    break;
+                }
+            }
         }
 
         #endregion
