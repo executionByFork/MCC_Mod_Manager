@@ -38,6 +38,14 @@ namespace MCC_Mod_Manager.Api.Utilities {
             return (GetUnmodifiedHash(filePath) != null);
         }
 
+        public static string CompressPath(string p) {
+            return p.Replace(Config.MCC_home, "$MCC_home");
+        }
+
+        public static string ExpandPath(string p) {
+            return p.Replace("$MCC_home", Config.MCC_home);
+        }
+
         #region IO
 
         public static bool DeleteFile(string path) {

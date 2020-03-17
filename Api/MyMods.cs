@@ -264,7 +264,7 @@ namespace MCC_Mod_Manager.Api {
                             baksMade = true;
                         }
 
-                        patched.Add(Modpacks.ExpandPath(entry.dest));
+                        patched.Add(Utility.ExpandPath(entry.dest));
                     }
                 }
             } catch (FileNotFoundException) {
@@ -284,7 +284,7 @@ namespace MCC_Mod_Manager.Api {
         }
 
         private static int PatchFile(ZipArchive archive, ModpackEntry entry) {
-            string destination = Modpacks.ExpandPath(entry.dest);
+            string destination = Utility.ExpandPath(entry.dest);
             bool baksMade = false;
             ZipArchiveEntry modFile = archive.GetEntry(entry.src);
             if (modFile == null) {
@@ -320,7 +320,7 @@ namespace MCC_Mod_Manager.Api {
                     }
                 }
 
-                string unmoddedPath = Modpacks.ExpandPath(entry.orig);
+                string unmoddedPath = Utility.ExpandPath(entry.orig);
                 if (!Utility.GetUnmodifiedHash(entry.orig).Equals(Modpacks.GetMD5(unmoddedPath), StringComparison.OrdinalIgnoreCase)) {
                     unmoddedPath = Config.Backup_dir + @"\" + Backups._baks[unmoddedPath];  // use backup version
                 }
@@ -399,7 +399,7 @@ namespace MCC_Mod_Manager.Api {
                     List<ModpackEntry> restored = new List<ModpackEntry>(); // track restored files in case of failure mid unpatch
                     foreach (ModpackEntry entry in modpackConfig.entries) {
                         if (String.IsNullOrEmpty(entry.type) || entry.type == "replace" || entry.type == "patch") { // assume replace type entry if null
-                            if (!Backups.RestoreBak(Modpacks.ExpandPath(entry.dest))) {
+                            if (!Backups.RestoreBak(Utility.ExpandPath(entry.dest))) {
                                 // repatch restored mod files
                                 bool err = false;
                                 foreach (ModpackEntry e in restored) {
@@ -415,8 +415,8 @@ namespace MCC_Mod_Manager.Api {
                                 return 3;
                             }
                         } else if (entry.type == "create") {
-                            if (!Utility.DeleteFile(Modpacks.ExpandPath(entry.dest))) {
-                                Utility.ShowMsg("Could not delete the file '" + Modpacks.ExpandPath(entry.dest) + "'. This may affect your game. " +
+                            if (!Utility.DeleteFile(Utility.ExpandPath(entry.dest))) {
+                                Utility.ShowMsg("Could not delete the file '" + Utility.ExpandPath(entry.dest) + "'. This may affect your game. " +
                                     "if you encounter issues please delete this file manually.", "Warning");
                             }
                         } else {

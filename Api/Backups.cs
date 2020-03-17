@@ -437,7 +437,7 @@ namespace MCC_Mod_Manager.Api {
 
                 foreach (ModpackEntry entry in modpackConfig.entries) {
                     foreach (string path in paths) {
-                        if (path == Modpacks.ExpandPath(entry.dest)) {
+                        if (path == Utility.ExpandPath(entry.dest)) {
                             requiredBaks.Add(path);
                         }
                     }

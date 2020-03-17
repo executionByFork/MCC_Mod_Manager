@@ -254,7 +254,7 @@ namespace MCC_Mod_Manager.Api {
 
                 List<string> patched = new List<string>();   // track patched files in case of failure mid patch
                 foreach (ModpackEntry entry in mCfg.entries) {
-                    modfiles[entry.dest] = Modpacks.GetMD5(Modpacks.ExpandPath(entry.dest));
+                    modfiles[entry.dest] = Modpacks.GetMD5(Utility.ExpandPath(entry.dest));
                 }
             }
 

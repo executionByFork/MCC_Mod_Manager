@@ -122,7 +122,7 @@ namespace MCC_Mod_Manager.Api {
                 } else {
                     bool isOriginalFile;
                     try {
-                        isOriginalFile = Utility.IsHaloFile(CompressPath(destText));
+                        isOriginalFile = Utility.IsHaloFile(Utility.CompressPath(destText));
                     } catch (JsonReaderException) {
                         Utility.ShowMsg(@"MCC Mod Manager could not parse Formats\filetree.json", "Error");
                         return;
@@ -137,8 +137,8 @@ namespace MCC_Mod_Manager.Api {
 
                 mCfg.entries.Add(new ModpackEntry {
                     src = srcText,
-                    orig = (patchType == "patch") ? CompressPath(origTextbox.Text) : null,
-                    dest = CompressPath(destText),  // make modpack compatable with any MCC_home directory
+                    orig = (patchType == "patch") ? Utility.CompressPath(origTextbox.Text) : null,
+                    dest = Utility.CompressPath(destText),  // make modpack compatable with any MCC_home directory
                     type = patchType
                 });
                 chk.Add(destText);
@@ -426,9 +426,9 @@ namespace MCC_Mod_Manager.Api {
             foreach (KeyValuePair<string, List<string>> modpack in restoreMap) {
                 foreach (KeyValuePair<string, string> entry in Config.Patched[modpack.Key].files) {
                     if (modpack.Value.Contains(entry.Key)) {
-                        Backups.RestoreBak(ExpandPath(entry.Key));
+                        Backups.RestoreBak(Utility.ExpandPath(entry.Key));
                     } else {
-                        Backups.DeleteBak(ExpandPath(entry.Key));
+                        Backups.DeleteBak(Utility.ExpandPath(entry.Key));
                     }
                 }
 
@@ -457,14 +457,6 @@ namespace MCC_Mod_Manager.Api {
                 return true;
             }
             return false;
-        }
-
-        private static string CompressPath(string p) {
-            return p.Replace(Config.MCC_home, "$MCC_home");
-        }
-
-        public static string ExpandPath(string p) {
-            return p.Replace("$MCC_home", Config.MCC_home);
         }
 
         public static string GetMD5(string filePath) {
@@ -513,7 +505,7 @@ namespace MCC_Mod_Manager.Api {
             foreach (KeyValuePair<string, patchedEntry> modpack in Config.Patched) {
                 List<string> potentialRestores = new List<string>();
                 foreach (KeyValuePair<string, string> fileEntry in modpack.Value.files) {
-                    if (GetMD5(ExpandPath(fileEntry.Key)) == fileEntry.Value) { // if file is still modded after the update
+                    if (GetMD5(Utility.ExpandPath(fileEntry.Key)) == fileEntry.Value) { // if file is still modded after the update
                         potentialRestores.Add(fileEntry.Key);
                     } else {    // if file was changed by the update
                         if (!packClobbered) {   // if part of this pack has not yet been clobbered
