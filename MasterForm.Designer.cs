@@ -45,6 +45,7 @@
             this.modListPanel = new System.Windows.Forms.Panel();
             this.configTab = new System.Windows.Forms.Button();
             this.createPanel = new System.Windows.Forms.Panel();
+            this.readmeToggleButton = new System.Windows.Forms.PictureBox();
             this.modpackName_label = new System.Windows.Forms.Label();
             this.modpackName_txt = new System.Windows.Forms.TextBox();
             this.clearBtn = new System.Windows.Forms.Button();
@@ -52,6 +53,7 @@
             this.createModpackBtn = new System.Windows.Forms.Button();
             this.createLabel2 = new System.Windows.Forms.Label();
             this.createLabel1 = new System.Windows.Forms.Label();
+            this.readmeTxt = new System.Windows.Forms.TextBox();
             this.createFilesPanel = new System.Windows.Forms.Panel();
             this.configPanel = new System.Windows.Forms.Panel();
             this.resetApp = new System.Windows.Forms.Button();
@@ -81,8 +83,6 @@
             this.bakLabel1 = new System.Windows.Forms.Label();
             this.bakListPanel = new System.Windows.Forms.Panel();
             this.betterPBar = new System.Windows.Forms.Panel();
-            this.readmeTxt = new System.Windows.Forms.TextBox();
-            this.readmeToggleButton = new System.Windows.Forms.PictureBox();
             this.topBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.megaCaution)).BeginInit();
@@ -91,13 +91,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.exitButton)).BeginInit();
             this.homePanel.SuspendLayout();
             this.createPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.readmeToggleButton)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.addRowButton)).BeginInit();
             this.configPanel.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.backupPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.readmeToggleButton)).BeginInit();
             this.SuspendLayout();
             // 
             // topBar
@@ -356,6 +356,16 @@
             this.createPanel.TabIndex = 5;
             this.createPanel.Visible = false;
             // 
+            // readmeToggleButton
+            // 
+            this.readmeToggleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.readmeToggleButton.Image = ((System.Drawing.Image)(resources.GetObject("readmeToggleButton.Image")));
+            this.readmeToggleButton.Location = new System.Drawing.Point(18, 10);
+            this.readmeToggleButton.Name = "readmeToggleButton";
+            this.readmeToggleButton.Size = new System.Drawing.Size(25, 20);
+            this.readmeToggleButton.TabIndex = 12;
+            this.readmeToggleButton.TabStop = false;
+            // 
             // modpackName_label
             // 
             this.modpackName_label.AutoSize = true;
@@ -422,6 +432,20 @@
             this.createLabel1.Size = new System.Drawing.Size(76, 23);
             this.createLabel1.TabIndex = 1;
             this.createLabel1.Text = "Modded File";
+            // 
+            // readmeTxt
+            // 
+            this.readmeTxt.AcceptsReturn = true;
+            this.readmeTxt.AcceptsTab = true;
+            this.readmeTxt.Enabled = false;
+            this.readmeTxt.Location = new System.Drawing.Point(14, 33);
+            this.readmeTxt.Multiline = true;
+            this.readmeTxt.Name = "readmeTxt";
+            this.readmeTxt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.readmeTxt.Size = new System.Drawing.Size(536, 259);
+            this.readmeTxt.TabIndex = 11;
+            this.readmeTxt.TabStop = false;
+            this.readmeTxt.Visible = false;
             // 
             // createFilesPanel
             // 
@@ -723,30 +747,6 @@
             this.betterPBar.Size = new System.Drawing.Size(570, 44);
             this.betterPBar.TabIndex = 10;
             // 
-            // readmeTxt
-            // 
-            this.readmeTxt.AcceptsReturn = true;
-            this.readmeTxt.AcceptsTab = true;
-            this.readmeTxt.Enabled = false;
-            this.readmeTxt.Location = new System.Drawing.Point(14, 33);
-            this.readmeTxt.Multiline = true;
-            this.readmeTxt.Name = "readmeTxt";
-            this.readmeTxt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.readmeTxt.Size = new System.Drawing.Size(536, 259);
-            this.readmeTxt.TabIndex = 11;
-            this.readmeTxt.TabStop = false;
-            this.readmeTxt.Visible = false;
-            // 
-            // readmeToggleButton
-            // 
-            this.readmeToggleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.readmeToggleButton.Image = ((System.Drawing.Image)(resources.GetObject("readmeToggleButton.Image")));
-            this.readmeToggleButton.Location = new System.Drawing.Point(18, 10);
-            this.readmeToggleButton.Name = "readmeToggleButton";
-            this.readmeToggleButton.Size = new System.Drawing.Size(25, 20);
-            this.readmeToggleButton.TabIndex = 12;
-            this.readmeToggleButton.TabStop = false;
-            // 
             // MasterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -759,10 +759,10 @@
             this.Controls.Add(this.createTab);
             this.Controls.Add(this.homeTab);
             this.Controls.Add(this.topBar);
-            this.Controls.Add(this.createPanel);
-            this.Controls.Add(this.configPanel);
             this.Controls.Add(this.homePanel);
             this.Controls.Add(this.backupPanel);
+            this.Controls.Add(this.createPanel);
+            this.Controls.Add(this.configPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MasterForm";
@@ -780,6 +780,7 @@
             this.homePanel.PerformLayout();
             this.createPanel.ResumeLayout(false);
             this.createPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.readmeToggleButton)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.addRowButton)).EndInit();
             this.configPanel.ResumeLayout(false);
             this.configPanel.PerformLayout();
@@ -791,7 +792,6 @@
             this.panel1.PerformLayout();
             this.backupPanel.ResumeLayout(false);
             this.backupPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.readmeToggleButton)).EndInit();
             this.ResumeLayout(false);
 
         }

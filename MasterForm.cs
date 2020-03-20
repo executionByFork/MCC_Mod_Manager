@@ -300,6 +300,7 @@ namespace MCC_Mod_Manager {
             pBarSections = sections;
             pBarCounter = 0;
             Program.MasterForm.Size = new System.Drawing.Size(577, 497);
+            this.Cursor = Cursors.WaitCursor;
             return true;
         }
         public bool PBar_update() {
@@ -319,6 +320,7 @@ namespace MCC_Mod_Manager {
                 helm.Visible = false;
             }
             Program.MasterForm.Size = new System.Drawing.Size(577, 455);
+            this.Cursor = Cursors.Default;
             return true;
         }
 

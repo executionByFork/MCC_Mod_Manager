@@ -50,6 +50,10 @@ namespace MCC_Mod_Manager.Api {
         public static readonly Font btnFont = new Font("Lucida Console", 10, FontStyle.Regular);
         public static readonly Font arrowFont = new Font("Reem Kufi", 12, FontStyle.Bold);
 
+        public static readonly Point MyModsEnabledPoint = new Point(15, 1);
+        public static readonly Point MyModsCautionPoint = new Point(37, 1);
+        public static readonly Point MyModsChbPoint = new Point(60, 1);
+
         private static MainCfg _cfg = new MainCfg(); // this is set on form load
         public static bool fullBakPath = false;
 
