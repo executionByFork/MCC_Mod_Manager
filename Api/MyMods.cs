@@ -47,19 +47,39 @@ namespace MCC_Mod_Manager.Api {
             IEnumerable<Panel> modpacksList = Program.MasterForm.modListPanel.Controls.OfType<Panel>();
             List<CheckBox> toPatch = new List<CheckBox>();
             List<CheckBox> toUnpatch = new List<CheckBox>();
+            List<string> oldModpacks = new List<string>();
             foreach (Panel p in modpacksList) {
                 CheckBox chb = (CheckBox)p.GetChildAtPoint(Config.MyModsChbPoint);
                 string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
                 if (chb.Checked && !Config.IsPatched(modpackname)) {
                     toPatch.Add(chb);
+                    if ((string)p.Tag != Config.GetCurrentBuild()) {
+                        oldModpacks.Add(modpackname);
+                    }
                 } else if (!chb.Checked && Config.IsPatched(modpackname)) {
                     toUnpatch.Add(chb);
                 }
             }
 
-            if (toPatch.Count == 0 && toUnpatch.Count == 0) {
+            if (!toPatch.Any() && !toUnpatch.Any()) {
                 Utility.ShowMsg("You did not select any changes. No modpacks were patched or unpatched.", "Info");
                 return;
+            }
+            if (oldModpacks.Any()) {
+                string list = "";
+                foreach (string name in oldModpacks) {
+                    if (!String.IsNullOrEmpty(list)) {
+                        list += ", ";
+                    }
+                    list += name;
+                }
+
+                DialogResult ans = Utility.ShowMsg("The following modpacks were made for an older version of the game and may cause issues:\r\n" + list +
+                    "\r\nContinue with patch?", "Question");
+                if (ans == DialogResult.No) {
+                    Program.MasterForm.PBar_hide();
+                    return;
+                }
             }
 
             // Unpatch mods before trying to patch new ones
@@ -146,19 +166,20 @@ namespace MCC_Mod_Manager.Api {
                 string modpackName = Path.GetFileName(file).Replace(".zip", "");
                 ModpackCfg modpackConfig = Modpacks.GetModpackConfig(modpackName);
                 if (modpackConfig != null) {
-                    ModListPanel_add(modpackName, modpackConfig.MCC_version == Config.GetCurrentBuild());
+                    ModListPanel_add(modpackName, modpackConfig.MCC_version);
                 }
             }
 
             return true;
         }
 
-        public static void ModListPanel_add(string modpackName, bool versionMatches) {
+        public static void ModListPanel_add(string modpackName, string modpackGameVersion) {
             var modListCount = Program.MasterForm.modListPanel.Controls.OfType<Panel>().Count();
             Panel container = new Panel {
                 Width = 400,
                 Height = 17,
-                Location = new Point(0, (modListCount * 20) + 1)
+                Location = new Point(0, (modListCount * 20) + 1),
+                Tag = modpackGameVersion    //tag the game version this modpack was made for, to make it easier to do prelim patch checks
             };
             
             CheckBox chb = new CheckBox {
@@ -178,7 +199,7 @@ namespace MCC_Mod_Manager.Api {
                 Height = 15,
                 Location = Config.MyModsCautionPoint,
                 Image = Properties.Resources.caution_15px,
-                Visible = !versionMatches
+                Visible = false
             };
             if (Program.MasterForm.manualOverride.Checked) {
                 p.Click += MyMods.ForceModpackState;
@@ -189,13 +210,7 @@ namespace MCC_Mod_Manager.Api {
             Program.MasterForm.modListPanel.Controls.Add(container);
             container.Controls.Add(p);
             container.Controls.Add(c);
-            Program.MasterForm.tt.SetToolTip(c, "This modpack was made for a different version of MCC and may cause issues if installed.");
             container.Controls.Add(chb);
-
-            // TODO: Remove this and warn user about old modpack on patch instead
-            if (Config.Patched.ContainsKey(modpackName) && Config.Patched[modpackName].error == true) {
-                setModpackStatePartial(container);
-            }
         }
 
         public static void ForceModpackState(object sender, EventArgs e) {
