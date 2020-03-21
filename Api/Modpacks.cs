@@ -28,7 +28,8 @@ namespace MCC_Mod_Manager.Api {
         public static void AddRowButton_Click(object sender, EventArgs e) {
             OpenFileDialog ofd = new OpenFileDialog {
                 InitialDirectory = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}",  // using the GUID to access 'This PC' folder
-                Multiselect = true
+                Multiselect = true,
+                Title = "Select a new mod file to apply to your game:"
             };
 
             if (ofd.ShowDialog() == DialogResult.OK) {
@@ -357,7 +358,8 @@ namespace MCC_Mod_Manager.Api {
 
             if ((string)btn.Tag == "btn1") {
                 OpenFileDialog ofd = new OpenFileDialog {
-                    InitialDirectory = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"  // using the GUID to access 'This PC' folder
+                    InitialDirectory = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}",  // using the GUID to access 'This PC' folder
+                    Title = "Select a new mod file to apply to your game:"
                 };
                 if (ofd.ShowDialog() == DialogResult.OK) {
                     panel.GetChildAtPoint(Config.sourceTextBoxPoint).Text = ofd.FileName;
@@ -381,7 +383,8 @@ namespace MCC_Mod_Manager.Api {
             } else if ((string)btn.Tag == "btn2") {
                 OpenFileDialog ofd = new OpenFileDialog {
                     CheckFileExists = false,    // allow modpack creators to type in a filename for creating new files
-                    InitialDirectory = Config.MCC_home
+                    InitialDirectory = Config.MCC_home,
+                    Title = "Select a matching file to overwrite in your game:"
                 };
                 if (ofd.ShowDialog() == DialogResult.OK) {
                     if ((string)panel.Tag == "normal") {

@@ -100,6 +100,8 @@ namespace MCC_Mod_Manager {
             this.manualOverride.CheckedChanged += new System.EventHandler(MyMods.ManualOverride_CheckedChanged);
 
             this.selectEnabled_chb.CheckedChanged += new System.EventHandler(MyMods.SelectEnabled_chb_CheckedChanged);
+            this.selectDisabled_chb.CheckedChanged += new System.EventHandler(MyMods.SelectDisabled_chb_CheckedChanged);
+            this.selectAll_chb.CheckedChanged += new System.EventHandler(MyMods.SelectAll_chb_CheckedChanged);
 
             #endregion
 
@@ -212,70 +214,6 @@ namespace MCC_Mod_Manager {
         }
 
         #endregion
-
-        //////////////////////////////////
-        /////        HOME TAB        /////
-        //////////////////////////////////
-
-        private void HomeTab_Click(object sender, EventArgs e) {
-            homeTab.BackColor = Color.WhiteSmoke;
-            createTab.BackColor = Color.DarkGray;
-            configTab.BackColor = Color.DarkGray;
-            backupTab.BackColor = Color.DarkGray;
-
-            homePanel.Visible = true;
-            createPanel.Visible = false;
-            configPanel.Visible = false;
-            backupPanel.Visible = false;
-        }
-
-        //////////////////////////////////
-        /////       CREATE TAB       /////
-        //////////////////////////////////
-
-        private void CreateTab_Click(object sender, EventArgs e) {
-            homeTab.BackColor = Color.DarkGray;
-            createTab.BackColor = Color.WhiteSmoke;
-            configTab.BackColor = Color.DarkGray;
-            backupTab.BackColor = Color.DarkGray;
-
-            homePanel.Visible = false;
-            createPanel.Visible = true;
-            configPanel.Visible = false;
-            backupPanel.Visible = false;
-        }
-
-        //////////////////////////////////
-        /////       CONFIG TAB       /////
-        //////////////////////////////////
-
-        private void ConfigTab_Click(object sender, EventArgs e) {
-            homeTab.BackColor = Color.DarkGray;
-            createTab.BackColor = Color.DarkGray;
-            configTab.BackColor = Color.WhiteSmoke;
-            backupTab.BackColor = Color.DarkGray;
-
-            homePanel.Visible = false;
-            createPanel.Visible = false;
-            configPanel.Visible = true;
-            backupPanel.Visible = false;
-        }
-
-        //////////////////////////////////
-        /////       BACKUP TAB       /////
-        //////////////////////////////////
-
-        private void BackupTab_Click(object sender, EventArgs e) {
-            homeTab.BackColor = Color.DarkGray;
-            createTab.BackColor = Color.DarkGray;
-            configTab.BackColor = Color.DarkGray;
-            backupTab.BackColor = Color.WhiteSmoke;
-
-            homePanel.Visible = false;
-            createPanel.Visible = false;
-            configPanel.Visible = false;
-            backupPanel.Visible = true;
-        }
 
         #region PROGRESS BAR
 
