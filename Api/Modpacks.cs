@@ -29,7 +29,7 @@ namespace MCC_Mod_Manager.Api {
             OpenFileDialog ofd = new OpenFileDialog {
                 InitialDirectory = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}",  // using the GUID to access 'This PC' folder
                 Multiselect = true,
-                Title = "Select a new mod file to apply to your game:"
+                Title = "Select one or more mod files:"
             };
 
             if (ofd.ShowDialog() == DialogResult.OK) {
@@ -359,7 +359,7 @@ namespace MCC_Mod_Manager.Api {
             if ((string)btn.Tag == "btn1") {
                 OpenFileDialog ofd = new OpenFileDialog {
                     InitialDirectory = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}",  // using the GUID to access 'This PC' folder
-                    Title = "Select a new mod file to apply to your game:"
+                    Title = "Select a mod file:"
                 };
                 if (ofd.ShowDialog() == DialogResult.OK) {
                     panel.GetChildAtPoint(Config.sourceTextBoxPoint).Text = ofd.FileName;
@@ -384,7 +384,7 @@ namespace MCC_Mod_Manager.Api {
                 OpenFileDialog ofd = new OpenFileDialog {
                     CheckFileExists = false,    // allow modpack creators to type in a filename for creating new files
                     InitialDirectory = Config.MCC_home,
-                    Title = "Select a matching file to overwrite in your game:"
+                    Title = "Select a destination:"
                 };
                 if (ofd.ShowDialog() == DialogResult.OK) {
                     if ((string)panel.Tag == "normal") {
