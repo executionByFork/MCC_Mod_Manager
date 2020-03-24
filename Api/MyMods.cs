@@ -16,19 +16,18 @@ namespace MCC_Mod_Manager.Api {
         #region Event Handlers
 
         public static void SelectEnabled_chb_CheckedChanged(object sender, EventArgs e) {
-            ApplyBulkChecks(((CheckBox)sender).Checked, true);
+            ApplyBulkChecks(((CheckBox)sender).Checked, false, true);
         }
 
         public static void SelectDisabled_chb_CheckedChanged(object sender, EventArgs e) {
-            ApplyBulkChecks(((CheckBox)sender).Checked, false);
+            ApplyBulkChecks(((CheckBox)sender).Checked, false, false);
         }
 
         public static void SelectAll_chb_CheckedChanged(object sender, EventArgs e) {
             Program.MasterForm.selectEnabled_chb.Checked = ((CheckBox)sender).Checked;
             Program.MasterForm.selectDisabled_chb.Checked = ((CheckBox)sender).Checked;
 
-            ApplyBulkChecks(Program.MasterForm.selectEnabled_chb.Checked, true);
-            ApplyBulkChecks(Program.MasterForm.selectDisabled_chb.Checked, false);
+            ApplyBulkChecks(((CheckBox)sender).Checked, true);
         }
 
         public static void ManualOverride_CheckedChanged(object sender, EventArgs e) {
@@ -567,13 +566,13 @@ namespace MCC_Mod_Manager.Api {
         /// </summary>
         /// <param name="masterBoxValue"></param>
         /// <param name="isSelectPatched"></param>
-        public static void ApplyBulkChecks(bool parentChbValue, bool isPatchedChb) {
+        public static void ApplyBulkChecks(bool parentChbValue, bool isSelectAll, bool isPatchedChb = false) {
             foreach (Panel p in Program.MasterForm.modListPanel.Controls.OfType<Panel>()) {
                 CheckBox chb = (CheckBox)p.GetChildAtPoint(Config.MyModsChbPoint);
                 string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
-                if (isPatchedChb && Config.IsPatched(modpackname)) {
+                if (isSelectAll || (isPatchedChb && Config.IsPatched(modpackname))) {
                     chb.Checked = parentChbValue;
-                } else if (!isPatchedChb && !Config.IsPatched(modpackname)) {
+                } else if (isSelectAll || (!isPatchedChb && !Config.IsPatched(modpackname))) {
                     chb.Checked = parentChbValue;
                 }
             }
