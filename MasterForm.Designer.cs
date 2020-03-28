@@ -113,7 +113,7 @@
             this.topBar.Dock = System.Windows.Forms.DockStyle.Top;
             this.topBar.Location = new System.Drawing.Point(0, 0);
             this.topBar.Name = "topBar";
-            this.topBar.Size = new System.Drawing.Size(579, 37);
+            this.topBar.Size = new System.Drawing.Size(582, 37);
             this.topBar.TabIndex = 1;
             // 
             // pictureBoxIcon
@@ -129,7 +129,7 @@
             // 
             this.megaCaution.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.megaCaution.Image = ((System.Drawing.Image)(resources.GetObject("megaCaution.Image")));
-            this.megaCaution.Location = new System.Drawing.Point(217, 4);
+            this.megaCaution.Location = new System.Drawing.Point(220, 4);
             this.megaCaution.Name = "megaCaution";
             this.megaCaution.Size = new System.Drawing.Size(30, 30);
             this.megaCaution.TabIndex = 7;
@@ -152,7 +152,7 @@
             // 
             this.refreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.refreshButton.Image = ((System.Drawing.Image)(resources.GetObject("refreshButton.Image")));
-            this.refreshButton.Location = new System.Drawing.Point(475, 3);
+            this.refreshButton.Location = new System.Drawing.Point(478, 3);
             this.refreshButton.Name = "refreshButton";
             this.refreshButton.Size = new System.Drawing.Size(30, 30);
             this.refreshButton.TabIndex = 5;
@@ -162,7 +162,7 @@
             // 
             this.minButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.minButton.Image = ((System.Drawing.Image)(resources.GetObject("minButton.Image")));
-            this.minButton.Location = new System.Drawing.Point(511, 3);
+            this.minButton.Location = new System.Drawing.Point(514, 3);
             this.minButton.Name = "minButton";
             this.minButton.Size = new System.Drawing.Size(30, 30);
             this.minButton.TabIndex = 4;
@@ -183,7 +183,7 @@
             // 
             this.exitButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.exitButton.Image = ((System.Drawing.Image)(resources.GetObject("exitButton.Image")));
-            this.exitButton.Location = new System.Drawing.Point(545, 3);
+            this.exitButton.Location = new System.Drawing.Point(548, 3);
             this.exitButton.Name = "exitButton";
             this.exitButton.Size = new System.Drawing.Size(30, 30);
             this.exitButton.TabIndex = 2;
@@ -194,7 +194,6 @@
             this.betterPBar.Location = new System.Drawing.Point(4, 448);
             this.betterPBar.Name = "betterPBar";
             this.betterPBar.Size = new System.Drawing.Size(570, 44);
-            this.betterPBar.TabIndex = 10;
             // 
             // TabControl
             // 
@@ -337,10 +336,10 @@
             // 
             this.readmeToggleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.readmeToggleButton.Image = ((System.Drawing.Image)(resources.GetObject("readmeToggleButton.Image")));
-            this.readmeToggleButton.Location = new System.Drawing.Point(25, 25);
+            this.readmeToggleButton.Location = new System.Drawing.Point(18, 10);
             this.readmeToggleButton.Name = "readmeToggleButton";
             this.readmeToggleButton.Size = new System.Drawing.Size(25, 20);
-            this.readmeToggleButton.TabIndex = 22;
+            this.readmeToggleButton.TabIndex = 12;
             this.readmeToggleButton.TabStop = false;
             // 
             // modpackName_label
