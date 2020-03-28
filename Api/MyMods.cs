@@ -56,16 +56,14 @@ namespace MCC_Mod_Manager.Api {
             foreach (Panel p in modpacksList) {
                 CheckBox chb = (CheckBox)p.GetChildAtPoint(Config.MyModsChbPoint);
                 string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
-                if (chb.Checked) {
-                    if (!Config.IsPatched(modpackname)) {
-                        toPatch.Add(chb);
-                        if ((string)p.Tag != Config.GetCurrentBuild()) {
-                            oldModpacks.Add(modpackname);
-                        }
+                if (chb.Checked && !Config.IsPatched(modpackname)) {
+                    toPatch.Add(chb);
+                    if ((string)p.Tag != Config.GetCurrentBuild()) {
+                        oldModpacks.Add(modpackname);
                     }
-                    if (Config.IsPatched(modpackname)) {
-                        toUnpatch.Add(chb);
-                    }
+                }
+                if (!chb.Checked Config.IsPatched(modpackname)) {
+                    toUnpatch.Add(chb);
                 }
             }
 
