@@ -19,13 +19,13 @@ namespace MCC_Mod_Manager {
             Program.MasterForm.Size = new System.Drawing.Size(577, 455);
             version_lbl.Text = Config.version;
             int r = Config.LoadCfg();
-            if (r == 3) {
+            if (r == 3) {   // Config error, user refused to regenerate config
                 Utility.ShowMsg("MCC Mod Manager cannot load because there are problems with the configuration file.", "Error");
                 Environment.Exit(1);
             }
             Backups.LoadBackups();
 
-            if (r == 2) {
+            if (r == 2) {   // User refused to stabilize the game
                 patchButton.Enabled = false;
                 delModpack.Enabled = false;
                 restoreSelectedBtn.Enabled = false;
@@ -36,7 +36,7 @@ namespace MCC_Mod_Manager {
 
                 megaCaution.Visible = true;
                 tt.SetToolTip(megaCaution, "MCC Mod Manager has detected an update and needs to stabilize the game. Please restart the app.");
-            } else if (r == 1) {
+            } else if (r == 1) {    // User allowed the manager to stabilize the game
                 Modpacks.StabilizeGame();
                 Backups.LoadBackups();
             }
