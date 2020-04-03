@@ -34,7 +34,7 @@ namespace MCC_Mod_Manager.Api {
         public const string _defaultReadmeText = @"Install using MCC Mod Manager: https://github.com/executionByFork/MCC_Mod_Manager/blob/master/README.md";
 
         // UI elements
-        public static string dirtyPadding = "        ";
+        public static string dirtyPadding = "      ";
         public static readonly Point delBtnPoint = new Point(0, 3);
         public static readonly Point delBtnPointAlt = new Point(0, 15);
         public static readonly Point sourceTextBoxPoint = new Point(20, 1);
@@ -52,7 +52,7 @@ namespace MCC_Mod_Manager.Api {
 
         public static readonly Point MyModsEnabledPoint = new Point(15, 1);
         public static readonly Point MyModsCautionPoint = new Point(37, 1);
-        public static readonly Point MyModsChbPoint = new Point(60, 1);
+        public static readonly Point MyModsChbPoint = new Point(66, 1);
 
         private static MainCfg _cfg = new MainCfg(); // this is set on form load
         public static bool fullBakPath = false;

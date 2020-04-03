@@ -62,7 +62,7 @@ namespace MCC_Mod_Manager.Api {
                         oldModpacks.Add(modpackname);
                     }
                 }
-                if (!chb.Checked Config.IsPatched(modpackname)) {
+                if (!chb.Checked && Config.IsPatched(modpackname)) {
                     toUnpatch.Add(chb);
                 }
             }
