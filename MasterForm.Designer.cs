@@ -367,7 +367,7 @@
             // 
             this.modpackName_label.AutoSize = true;
             this.modpackName_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F);
-            this.modpackName_label.Location = new System.Drawing.Point(12, 305);
+            this.modpackName_label.Location = new System.Drawing.Point(12, 312);
             this.modpackName_label.Name = "modpackName_label";
             this.modpackName_label.Size = new System.Drawing.Size(95, 15);
             this.modpackName_label.TabIndex = 20;
@@ -440,7 +440,7 @@
             this.readmeTxt.Multiline = true;
             this.readmeTxt.Name = "readmeTxt";
             this.readmeTxt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.readmeTxt.Size = new System.Drawing.Size(536, 259);
+            this.readmeTxt.Size = new System.Drawing.Size(536, 272);
             this.readmeTxt.TabIndex = 21;
             this.readmeTxt.TabStop = false;
             this.readmeTxt.Visible = false;
@@ -451,7 +451,7 @@
             this.createFilesPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.createFilesPanel.Location = new System.Drawing.Point(21, 37);
             this.createFilesPanel.Name = "createFilesPanel";
-            this.createFilesPanel.Size = new System.Drawing.Size(536, 259);
+            this.createFilesPanel.Size = new System.Drawing.Size(536, 272);
             this.createFilesPanel.TabIndex = 13;
             // 
             // ConfigurationTab
