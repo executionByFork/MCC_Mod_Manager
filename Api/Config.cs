@@ -369,9 +369,6 @@ namespace MCC_Mod_Manager.Api {
         }
 
         public static bool ChkHomeDir(String dir) {
-            if (!File.Exists(dir + @"\haloreach\haloreach.dll")) {
-                return false;
-            }
             if (!File.Exists(dir + @"\MCC\Content\Paks\MCC-WindowsNoEditor.pak")) {
                 return false;
             }
