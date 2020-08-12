@@ -217,16 +217,30 @@ namespace MCC_Mod_Manager {
 
         #region PROGRESS BAR
 
+        private readonly int numImages = 48;
         private bool PBar_init() {
-            for (int i = 0; i < 16; i++) {
-                PictureBox x = new PictureBox {
+//Program.MasterForm.Size = new System.Drawing.Size(577, 497);
+            TransparentPictureBox latest = new TransparentPictureBox {
+                Image = Properties.Resources.HaloHelmetIcon_small,
+                //Width = 600,
+                BackColor = Color.Transparent,
+                Location = new Point(10, 0),
+                Visible = true//false
+            };
+            betterPBar.Controls.Add(latest);
+            Application.DoEvents();
+
+            for (int i = 1; i < numImages; i++) {
+                TransparentPictureBox x = new TransparentPictureBox {
                     Image = Properties.Resources.HaloHelmetIcon_small,
-                    Width = 35,
-                    Height = 40,
-                    Location = new Point((i * 35) + 5, 0),
-                    Visible = false
+                    //Width = 600,
+                    BackColor = Color.Transparent,
+                    Location = new Point(i*10, 0),
+                    Visible = true//false
                 };
-                betterPBar.Controls.Add(x);
+                latest.Controls.Add(x);
+                latest = x;
+                Application.DoEvents();
             }
 
             return true;
@@ -241,6 +255,7 @@ namespace MCC_Mod_Manager {
             this.Cursor = Cursors.WaitCursor;
             return true;
         }
+
         public bool PBar_update() {
             // casting to int drops decimal values, flooring the divide
             for (int i = 0; i < (int)(16 / pBarSections); i++) {
@@ -254,7 +269,7 @@ namespace MCC_Mod_Manager {
         }
 
         public bool PBar_hide() {
-            foreach (PictureBox helm in betterPBar.Controls.OfType<PictureBox>()) {
+            foreach (TransparentPictureBox helm in betterPBar.Controls.OfType<TransparentPictureBox>()) {
                 helm.Visible = false;
             }
             Program.MasterForm.Size = new System.Drawing.Size(577, 455);
@@ -264,5 +279,10 @@ namespace MCC_Mod_Manager {
 
         #endregion
 
+        private void pictureBoxIcon_Click(object sender, EventArgs e) {
+            Program.MasterForm.Size = new System.Drawing.Size(577, 497);
+            //PBar_init();
+            //betterPBar.Controls[0].Controls[0].Controls[0].Visible = false;
+        }
     }
 }

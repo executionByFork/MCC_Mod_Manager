@@ -78,6 +78,9 @@
     <Compile Include="Api\Backups.cs" />
     <Compile Include="Api\Config.cs" />
     <Compile Include="Api\Utilities\FolderSelectDialog.cs" />
+    <Compile Include="Api\Utilities\TransparentPictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="MasterForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -124,6 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\HaloHelmetIcon.ico" />
+    <None Include="Resources\HaloHelmetIcon_PBar.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="ModManagerCustomControls\ModManagerCustomControls.csproj">
