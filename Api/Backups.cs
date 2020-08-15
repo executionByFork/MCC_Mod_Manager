@@ -417,6 +417,9 @@ namespace MCC_Mod_Manager.Api {
             return !err;
         }
         public static bool DeleteBak(string path) {
+            if (!_baks.ContainsKey(path)) {
+                return false;
+            }
             if (Utility.DeleteFile(Config.Backup_dir + @"\" + _baks[path])) {
                 _baks.Remove(path);
                 return true;
