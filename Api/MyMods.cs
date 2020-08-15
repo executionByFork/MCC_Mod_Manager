@@ -192,7 +192,7 @@ namespace MCC_Mod_Manager.Api {
                 AutoSize = true,
                 Text = Config.dirtyPadding + modpackName,
                 Location = Config.MyModsChbPoint,
-                Checked = Config.IsPatched(modpackName) && Program.MasterForm.selectEnabled_chb.Checked
+                Checked = Config.IsPatched(modpackName)
             };
             PictureBox p = new PictureBox {
                 Width = 15,
