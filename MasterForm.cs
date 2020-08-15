@@ -1,9 +1,7 @@
 ﻿using MCC_Mod_Manager.Api;
 using MCC_Mod_Manager.Api.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;

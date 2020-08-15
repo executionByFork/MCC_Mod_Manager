@@ -510,10 +510,8 @@ namespace MCC_Mod_Manager.Api {
                 foreach (KeyValuePair<string, string> fileEntry in modpack.Value.files) {
                     if (GetMD5(Utility.ExpandPath(fileEntry.Key)) == fileEntry.Value) { // if file is still modded after the update
                         potentialRestores.Add(fileEntry.Key);
-                    } else {    // if file was changed by the update
-                        if (!packClobbered) {   // if part of this pack has not yet been clobbered
-                            packClobbered = true;
-                        }
+                    } else {    // if file was changed by the update 
+                        packClobbered = true;   // flag pack as clobbered
                     }
                 }
                 if (packClobbered) {
