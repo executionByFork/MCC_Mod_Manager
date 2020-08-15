@@ -54,8 +54,11 @@ namespace MCC_Mod_Manager.Api {
         public static readonly Point MyModsCautionPoint = new Point(37, 1);
         public static readonly Point MyModsChbPoint = new Point(66, 1);
 
-        private static MainCfg _cfg = new MainCfg(); // this is set on form load
         public static bool fullBakPath = false;
+        public static int backupPanelWidth = 394;
+        public static readonly Point BackupsChbPoint = new Point(30, 0);
+
+        private static MainCfg _cfg = new MainCfg(); // this is set on form load
 
         #endregion
 

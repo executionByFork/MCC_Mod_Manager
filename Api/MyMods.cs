@@ -179,22 +179,22 @@ namespace MCC_Mod_Manager.Api {
         public static void ModListPanel_add(string modpackName, string modpackGameVersion) {
             var modListCount = Program.MasterForm.modListPanel.Controls.OfType<Panel>().Count();
             Panel container = new Panel {
-                Width = 400,
+                Width = 403,
                 Height = 17,
                 Location = new Point(0, (modListCount * 20) + 1),
                 Tag = modpackGameVersion    //tag the game version this modpack was made for, to make it easier to do prelim patch checks
             };
-            container.MouseEnter += new System.EventHandler(ModListPanel_rowHoverOn);
-            container.MouseLeave += new System.EventHandler(ModListPanel_rowHoverOff);
-            
+            container.MouseEnter += Program.MasterForm.ListPanel_rowHoverOn;
+            container.MouseLeave += Program.MasterForm.ListPanel_rowHoverOff;
+
             CheckBox chb = new CheckBox {
                 AutoSize = true,
                 Text = Config.dirtyPadding + modpackName,
                 Location = Config.MyModsChbPoint,
                 Checked = Config.IsPatched(modpackName)
             };
-            chb.MouseEnter += new System.EventHandler(ModListPanel_rowChildHoverOn);
-            chb.MouseLeave += new System.EventHandler(ModListPanel_rowChildHoverOff);
+            chb.MouseEnter += Program.MasterForm.ListPanel_rowChildHoverOn;
+            chb.MouseLeave += Program.MasterForm.ListPanel_rowChildHoverOff;
 
             PictureBox p = new PictureBox {
                 Width = 15,
@@ -202,8 +202,8 @@ namespace MCC_Mod_Manager.Api {
                 Location = Config.MyModsEnabledPoint,
                 Image = Config.IsPatched(modpackName) ? Properties.Resources.greenDot_15px : Properties.Resources.redDot_15px
             };
-            p.MouseEnter += new System.EventHandler(ModListPanel_rowChildHoverOn);
-            p.MouseLeave += new System.EventHandler(ModListPanel_rowChildHoverOff);
+            p.MouseEnter += Program.MasterForm.ListPanel_rowChildHoverOn;
+            p.MouseLeave += Program.MasterForm.ListPanel_rowChildHoverOff;
 
             PictureBox c = new PictureBox {
                 Width = 15,
@@ -212,13 +212,13 @@ namespace MCC_Mod_Manager.Api {
                 Image = Properties.Resources.caution_15px,
                 Visible = false
             };
-            c.MouseEnter += new System.EventHandler(ModListPanel_rowChildHoverOn);
-            c.MouseLeave += new System.EventHandler(ModListPanel_rowChildHoverOff);
+            c.MouseEnter += Program.MasterForm.ListPanel_rowChildHoverOn;
+            c.MouseLeave += Program.MasterForm.ListPanel_rowChildHoverOff;
 
             if (Program.MasterForm.manualOverride.Checked) {
                 p.Click += MyMods.ForceModpackState;
-                p.MouseEnter += ModListPanel_statusBtnShim_HoverOn;
-                p.MouseLeave += ModListPanel_statusBtnShim_HoverOff;
+                p.MouseEnter += Program.MasterForm.ListPanel_statusBtnShim_HoverOn;
+                p.MouseLeave += Program.MasterForm.ListPanel_statusBtnShim_HoverOff;
             }
 
             Program.MasterForm.modListPanel.Controls.Add(container);
@@ -245,26 +245,6 @@ namespace MCC_Mod_Manager.Api {
             Program.MasterForm.Cursor = Cursors.Default;
         }
 
-        public static void ModListPanel_rowHoverOn(object sender, System.EventArgs e) {
-            ((Panel)sender).BackColor = Color.DarkGray;
-        }
-        public static void ModListPanel_rowHoverOff(object sender, System.EventArgs e) {
-            ((Panel)sender).BackColor = System.Drawing.SystemColors.WindowFrame;
-        }
-        public static void ModListPanel_rowChildHoverOn(object sender, System.EventArgs e) {
-            ((Control)sender).Parent.BackColor = Color.DarkGray;
-        }
-        public static void ModListPanel_rowChildHoverOff(object sender, System.EventArgs e) {
-            ((Control)sender).Parent.BackColor = System.Drawing.SystemColors.WindowFrame;
-        }
-        public static void ModListPanel_statusBtnShim_HoverOn(object sender, System.EventArgs e) {
-            ((Control)sender).Parent.BackColor = Color.DarkGray;
-            Program.MasterForm.BtnHoverOn(sender, e);
-        }
-        public static void ModListPanel_statusBtnShim_HoverOff(object sender, System.EventArgs e) {
-            ((Control)sender).Parent.BackColor = System.Drawing.SystemColors.WindowFrame;
-            Program.MasterForm.BtnHoverOff(sender, e);
-        }
 
         #endregion
 

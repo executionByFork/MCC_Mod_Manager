@@ -17,13 +17,14 @@ namespace MCC_Mod_Manager.Api {
 
         public static void ShowFullPathCheckbox_Click(object sender, EventArgs e) {
             Config.fullBakPath = Program.MasterForm.fullBakPath_chb.Checked;
-            if (Config.fullBakPath) {   // swapping from filename to full path
-                foreach (CheckBox chb in Program.MasterForm.bakListPanel.Controls.OfType<CheckBox>()) {
+            foreach (Panel p in Program.MasterForm.bakListPanel.Controls.OfType<Panel>()) {
+                CheckBox chb = (CheckBox)p.GetChildAtPoint(Config.BackupsChbPoint);
+                if (Config.fullBakPath) {   // swapping from filename to full path
                     chb.Text = Config.dirtyPadding + Backups.GetBakKey(chb.Text.Replace(Config.dirtyPadding, ""));
-                }
-            } else {    // swapping from full path to filename
-                foreach (CheckBox chb in Program.MasterForm.bakListPanel.Controls.OfType<CheckBox>()) {
+                    p.Width = chb.Width + 40;
+                } else {    // swapping from full path to filename
                     chb.Text = Config.dirtyPadding + Backups._baks[chb.Text.Replace(Config.dirtyPadding, "")];
+                    p.Width = Config.backupPanelWidth;
                 }
             }
         }
@@ -94,9 +95,10 @@ namespace MCC_Mod_Manager.Api {
         }
 
         public static void RestoreSelectedBtn_Click(object sender, EventArgs e) {
-            IEnumerable<CheckBox> bakList = Program.MasterForm.bakListPanel.Controls.OfType<CheckBox>();
+            IEnumerable<Panel> bakList = Program.MasterForm.bakListPanel.Controls.OfType<Panel>();
             List<string> backupPaths = new List<string>();
-            foreach (CheckBox chb in bakList) {
+            foreach (Panel p in bakList) {
+                CheckBox chb = (CheckBox)p.GetChildAtPoint(Config.BackupsChbPoint);
                 if (chb.Checked) {
                     if (Program.MasterForm.fullBakPath_chb.Checked) {
                         backupPaths.Add(chb.Text.Replace(Config.dirtyPadding, ""));
@@ -157,7 +159,7 @@ namespace MCC_Mod_Manager.Api {
         }
 
         public static void DelSelectedBak_Click(object sender, EventArgs e) {
-            IEnumerable<CheckBox> bakList = Program.MasterForm.bakListPanel.Controls.OfType<CheckBox>();
+            IEnumerable<Panel> bakList = Program.MasterForm.bakListPanel.Controls.OfType<Panel>();
             EnsureBackupFolderExists();
 
             DialogResult ans = Utility.ShowMsg("Are you sure you want to delete the selected backup(s)?\r\nNo crying afterwards?", "Question");
@@ -168,7 +170,8 @@ namespace MCC_Mod_Manager.Api {
             bool chk = false;
             Program.MasterForm.PBar_show(bakList.Count());
             List<string> toDelete = new List<string>();
-            foreach (CheckBox chb in bakList) {
+            foreach (Panel p in bakList) {
+                CheckBox chb = (CheckBox)p.GetChildAtPoint(Config.BackupsChbPoint);
                 Program.MasterForm.PBar_update();
                 if (chb.Checked) {
                     chk = true;
@@ -262,13 +265,25 @@ namespace MCC_Mod_Manager.Api {
                 } else {
                     entryName = entry.Value;
                 }
+
+                Panel container = new Panel {
+                    Width = Config.backupPanelWidth,
+                    Height = 17,
+                    Location = new Point(0, (Program.MasterForm.bakListPanel.Controls.Count * 20) + 1),
+                };
+                container.MouseEnter += Program.MasterForm.ListPanel_rowHoverOn;
+                container.MouseLeave += Program.MasterForm.ListPanel_rowHoverOff;
+
                 CheckBox chb = new CheckBox {
                     AutoSize = true,
                     Text = Config.dirtyPadding + entryName,
-                    Location = new Point(30, Program.MasterForm.bakListPanel.Controls.Count * 20)
+                    Location = Config.BackupsChbPoint
                 };
+                chb.MouseEnter += Program.MasterForm.ListPanel_rowChildHoverOn;
+                chb.MouseLeave += Program.MasterForm.ListPanel_rowChildHoverOff;
 
-                Program.MasterForm.bakListPanel.Controls.Add(chb);
+                container.Controls.Add(chb);
+                Program.MasterForm.bakListPanel.Controls.Add(container);
             }
             return true;
         }

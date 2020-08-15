@@ -170,7 +170,6 @@ namespace MCC_Mod_Manager {
             #endregion
         }
 
-
         public void BtnHoverOn(object sender, EventArgs e) {
             this.Cursor = Cursors.Hand;
             this.Refresh();
@@ -179,6 +178,27 @@ namespace MCC_Mod_Manager {
         public void BtnHoverOff(object sender, EventArgs e) {
             this.Cursor = Cursors.Default;
             this.Refresh();
+        }
+
+        public void ListPanel_rowHoverOn(object sender, System.EventArgs e) {
+            ((Panel)sender).BackColor = Color.DarkGray;
+        }
+        public void ListPanel_rowHoverOff(object sender, System.EventArgs e) {
+            ((Panel)sender).BackColor = System.Drawing.SystemColors.WindowFrame;
+        }
+        public void ListPanel_rowChildHoverOn(object sender, System.EventArgs e) {
+            ((Control)sender).Parent.BackColor = Color.DarkGray;
+        }
+        public void ListPanel_rowChildHoverOff(object sender, System.EventArgs e) {
+            ((Control)sender).Parent.BackColor = System.Drawing.SystemColors.WindowFrame;
+        }
+        public void ListPanel_statusBtnShim_HoverOn(object sender, System.EventArgs e) {
+            ((Control)sender).Parent.BackColor = Color.DarkGray;
+            Program.MasterForm.BtnHoverOn(sender, e);
+        }
+        public void ListPanel_statusBtnShim_HoverOff(object sender, System.EventArgs e) {
+            ((Control)sender).Parent.BackColor = System.Drawing.SystemColors.WindowFrame;
+            Program.MasterForm.BtnHoverOff(sender, e);
         }
 
         #endregion
