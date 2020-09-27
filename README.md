@@ -92,7 +92,7 @@ Make sure `MCC Mod Manager.exe`, `Blamite.dll`, and the `Formats/` folder are in
 0. Open the MCC Mod Manager project in [Visual Studio 2019](https://visualstudio.microsoft.com/vs/) to allow for generation of default files and folders.  
 0. Clone [Assembly](https://github.com/XboxChaos/Assembly) source.  
 `git clone https://github.com/XboxChaos/Assembly.git`  
-0. Switch to the latest public release (As of 9/27/2020, this commit: [6ed79a2c0](https://github.com/XboxChaos/Assembly/tree/6ed79a2c0f3b9c5a975e55b8f72b66695ed8a3d1)) using a temporary branch to avoid a detached HEAD state.  
+0. Switch to the latest public release of the Assembly repo (As of 9/27/2020, this commit: [6ed79a2c0](https://github.com/XboxChaos/Assembly/tree/6ed79a2c0f3b9c5a975e55b8f72b66695ed8a3d1)) using a temporary branch to avoid a detached HEAD state.  
 `git checkout -b tmp 6ed79a2c0f3b9c5a975e55b8f72b66695ed8a3d1`  
 0. Open the Assembly project in Visual Studio 2019 (If it asks if you want to retarget the project, you may select yes). Then right click the "Blamite" project in Solution Explorer and select "Build".  
 0. Once built, go to `Assembly\src\Blamite\bin\x64\Debug` and copy the `Blamite.dll` and `Formats/` folder into `MCC_Mod_Manager\bin\Debug`.  
