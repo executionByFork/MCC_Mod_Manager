@@ -120,23 +120,8 @@ namespace MCC_Mod_Manager.Api {
                     chk = true;
 
                     string modpackname = chb.Text.Replace(Config.dirtyPadding, "");
-                    if (Config.IsPatched(modpackname)) {    // deliberately prompt for each modpack that is enabled
-                        DialogResult ans = Utility.ShowMsg("WARNING: The " + modpackname + " modpack is showing as currently installed. " +
-                            "Deleting this modpack will also unpatch it from the game. Continue?", "Question");
-                        if (ans == DialogResult.No) {
-                            partial = true;
-                            continue;
-                        } else {
-                            if (MyMods.UnpatchModpack(modpackname) == 2) {
-                                partial = true;
-                                continue;
-                            }
-                            Config.RmPatched(modpackname);
-                        }
-                    }
-
-                    if (!Utility.DeleteFile(Config.Modpack_dir + @"\" + modpackname + ".zip")) {
-                        Utility.ShowMsg("Could not delete '" + modpackname + ".zip'. Is the zip file open somewhere?", "Error");
+                    if (deleteModpack(modpackname) == 2) {
+                        partial = true;
                     }
                     del = true;
                     chb.Checked = false;
@@ -186,6 +171,18 @@ namespace MCC_Mod_Manager.Api {
             };
             container.MouseEnter += Program.MasterForm.ListPanel_rowHoverOn;
             container.MouseLeave += Program.MasterForm.ListPanel_rowHoverOff;
+
+            ContextMenuStrip cm = new ContextMenuStrip();
+            ToolStripMenuItem menuRename = new ToolStripMenuItem("Rename");
+            menuRename.Tag = modpackName;   // Tag the modpack name that the rename is referencing so later functions can pull this info.
+            menuRename.Click += cm_openRenameMenu;
+            ToolStripMenuItem menuDelete = new ToolStripMenuItem("Delete");
+            menuDelete.Tag = modpackName;   // Tag the modpack name that the rename is referencing so later functions can pull this info.
+            menuDelete.ForeColor = Color.Red;
+            menuDelete.Click += cm_deleteModpack;
+            cm.Items.Add(menuRename);
+            cm.Items.Add(menuDelete);
+            container.ContextMenuStrip = cm;
 
             CheckBox chb = new CheckBox {
                 AutoSize = true,
@@ -245,6 +242,19 @@ namespace MCC_Mod_Manager.Api {
             Program.MasterForm.Cursor = Cursors.Default;
         }
 
+        private static void cm_openRenameMenu(object sender, EventArgs e) {
+            string packName = (string)((ToolStripMenuItem)sender).Tag;
+            var renameForm = new ModpackRenameForm(packName);
+            renameForm.ShowDialog();    // ShowDialog prevents interaction with parent form while child is open
+        }
+        private static void cm_deleteModpack(object sender, EventArgs e) {
+            string packName = (string)((ToolStripMenuItem)sender).Tag;
+            DialogResult ans = Utility.ShowMsg("Are you sure you want to delete the '" + packName + "' modpack? This cannot be undone.", "Question");
+            if (ans == DialogResult.Yes) {
+                deleteModpack(packName);
+                LoadModpacks();
+            }
+        }
 
         #endregion
 
@@ -488,16 +498,38 @@ namespace MCC_Mod_Manager.Api {
                 }
             } catch (FileNotFoundException) {
                 Utility.ShowMsg("Could not unpatch '" + modpackname + "'. Could not find the modpack file to read the config from.", "Error");
-                return 2;
+                return 2;   // Unpatch failed due to error
             } catch (InvalidDataException) {
                 Utility.ShowMsg("Could not unpatch '" + modpackname + "'. The modpack file appears corrupted and the config cannot be read.", "Error");
-                return 2;
+                return 2;   // Unpatch failed due to error
             }
 
             return 0;
         }
 
         #endregion
+
+        private static int deleteModpack(string modpackname) {
+            if (Config.IsPatched(modpackname)) {    // deliberately prompt for each modpack that is enabled
+                DialogResult ans = Utility.ShowMsg("WARNING: The " + modpackname + " modpack is showing as currently installed. " +
+                    "Deleting this modpack will also unpatch it from the game. Continue?", "Question");
+                if (ans == DialogResult.No) {
+                    return 2;   // Modpack still patched: User decided to not delete/unpatch
+                } else {
+                    if (UnpatchModpack(modpackname) == 2) {
+                        return 2;   // Modpack still patched: Unpatch failed due to error
+                    }
+                    Config.RmPatched(modpackname);
+                }
+            }
+
+            if (!Utility.DeleteFile(Config.Modpack_dir + @"\" + modpackname + ".zip")) {
+                Utility.ShowMsg("Could not delete '" + modpackname + ".zip'. Is the zip file open somewhere?", "Error");
+                return 1;   // Modpack not deleted
+            }
+
+            return 0;   // Success
+        }
 
         public static void setModpacksDisabled(List<string> modpackList) {
             foreach (Panel p in Program.MasterForm.modListPanel.Controls.OfType<Panel>()) {
@@ -543,6 +575,7 @@ namespace MCC_Mod_Manager.Api {
                 }
             }
         }
+
         #endregion
 
         #region Helper Functions

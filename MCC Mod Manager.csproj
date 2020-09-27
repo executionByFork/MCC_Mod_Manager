@@ -86,10 +86,19 @@
     </Compile>
     <Compile Include="Api\Utilities\Utility.cs" />
     <Compile Include="Api\Modpacks.cs" />
+    <Compile Include="ModpackRenameForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModpackRenameForm.Designer.cs">
+      <DependentUpon>ModpackRenameForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MasterForm.resx">
       <DependentUpon>MasterForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModpackRenameForm.resx">
+      <DependentUpon>ModpackRenameForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
