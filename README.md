@@ -21,7 +21,7 @@ This application is intended to both make mod installations easy, and to create 
   - When a modpack is bundled and zipped, a `readme.txt` file is also created inside of the zip folder. Mod makers who want to include manual instructions for installing their mods can add them to this file.
 - **All mod files are contained in a `zip` archive. Not `rar`, and not `7zip`.**
   - This is because default Windows only support zip formats. This removes the overhead of users having to find and install 3rd party tools to open zipped archives
-  - The mod files are compressed, saving hard drive space
+  - The mod files are compressed, saving space
 - **No unzipping OR file manipulation is neccessary.**
   - This application extracts the zip file contents in memory. It avoids writing files to the hard drive, avoiding clutter and saving space.
   - Users do not have to bother with extracting zip files and handling multiple mod files. Everything is contained in a single, easy to handle package.
@@ -32,7 +32,7 @@ This application is intended to both make mod installations easy, and to create 
   - Applications which manage mods by using symbolic links need to run with Administrator privileges, and this poses a security threat to the user. This application does **NOT** need Administrator privileges to run, because it avoids using symlinks.
 
 ## USAGE
-I have recorded a video on how to use this tool in its entirety [here](https://www.youtube.com/watch?v=wvRcdXpgIos). However, although most of it still applies, it is somewhat out of date now. I will be making a new video soon. The details listed below are a fully up to date.
+I have recorded a video on how to use this tool in its entirety [here](https://www.youtube.com/watch?v=wvRcdXpgIos). However, although most of it still applies, it is pretty out of date now. I will be making a new video soon(TM). The details listed below are a fully up to date.
 
 ### Top Bar and Buttons
 - You can drag the window by holding down the left mouse on the light gray bar at the top of the window.  
@@ -46,23 +46,29 @@ I have recorded a video on how to use this tool in its entirety [here](https://w
 - A red dot indicates that the modpack is not currently installed, while a green dot indicates that it is installed.  
 - If you see a yellow caution sign beside a modpack it is a warning. Hover over it for more details.  
 - The checkbox beside a modpack can be used to select it.  
-- The 'Select Enabled' checkbox will select or deselect all modpacks which are listed as enabled (green dot).  
+- Modpack entries can be right clicked to rename or delete that modpack.
+- The 'Select Enabled', 'Select Disabled', and 'Select All' checkboxes are shortcuts to select or deselect modpacks for easier mass selecting.  
 - 'Patch/Unpatch' will patch the selected modpacks to the game if they are not yet patched, and unpatch the currently enabled modpacks which are not checked. The app will make sure you are not overwriting a mod before taking action, so you don't have to worry about clobbering anything.  
 - The 'Delete Selected' button will ask for comfirmation, then uninstall the modpack(s) if necessary before deleting them.  
 - The 'Allow Manual Override' option should be used with care. This is meant to fix syncing issues, and can be used to set the mod manager to think that a mod is or isn't currently installed. It does not modify game files.
 
 ### Create Modpack Tab
 \*\**This is primarily intended for mod makers, but can also be used by end users to create modpacks for mods which do not ship a modpack bundle.*  
-- The green plus button allows you to select modded files to add to the modpack.  
-- The left text fields contain the modded files and the browse button beside them can be used to change the file.  
-- The right text field and browse button is used to select the location the modded file should be placed when a user installs the mod.  
+- The green plus button allows you to select one or more modded files to add to the modpack.  
+- The left text field(s) are used to select the input file(s) and the browse button can be used to change the specified file(s).  
+- The right text field and browse button are used to select the location where the modded file should be placed when a user installs the mod.  
 - If the modded file is an `.asmp` file, a third text box and button will show below the first on the left. This defines the path to the original, unmodified map file that the patch will be appiled to when installed by the user.  
-- The far left 'X' button can be used to delete a single entry from the modpack. The name of the modpack can be supplied at the bottom.  
+- The far left 'X' button can be used to delete a single entry from the modpack.
+- The name of the modpack can be supplied at the bottom.  
 - The 'Clear All' button simply clears the above list and modpack name, avoiding users having to click the 'X' beside every entry.
+- The black arrows button beside the green plus is used to switch views between modpack file editing and the modpack readme
+    - The text in the readme box will be included in the modpack as a readme file to help users install the modpack
 
 ### Configuration Tab
 \*\**Remember to hit update to save the config changes*  
-- The app comes with a default configuration which may need to be changed. Different backup and modpack storage directories can be configured here. The MCC Install will need to be set to the root directory of the install. This is typically `C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection` on Steam installs, but the drive letter or path may vary. When updating the main config with the 'Update' button, the app will make a few checks to ensure that the MCC Install Directory was selected correctly. If it detects that the wrong folder was selected, the config won't be saved.
+- The app comes with a default configuration which may need to be changed. Different backup and modpack storage directories can be configured here.
+    - The MCC Install will need to be set to the root directory of the install. This is typically `C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection` on Steam installs, but the drive letter or path may vary.
+    - When updating the main config with the 'Update' button, the app will make a few checks to ensure that the MCC Install Directory was selected correctly. If it detects that the wrong folder was selected, the config won't be saved.
 - There is an option in the config to delete backups after restoring them. This is enabled by default, and is meant to save space on the computer. If you would like to retain the backups even after they are restored, you may uncheck this box.  
 - The 'Reset App' button should be used with caution. Its purpose is to reset the application state to default if the state gets out of sync. This typically should not happen with normal use, however if you are manually modifying files alongside using the mod manager, issues may arise. 'Reset App' assumes that all modpacks are uninstalled and sets them as such, then deletes all backups.
 
