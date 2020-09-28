@@ -314,17 +314,17 @@ namespace MCC_Mod_Manager.Api {
                     foreach (ModpackEntry entry in modpackConfig.entries) {
                         int r = PatchFile(archive, entry);
                         if (r != 0 && r != 1) {
-                            string errMsg;
+                            string errMsg = "";
                             if (r == 2) {
                                 errMsg = "File Access Exception.\n" +
-                                    "If you're using the MCStore version of the game, please run this tool as an administrator.\n" +
-                                    "If the game is running, exit it and try again.";
+                                    "If you're using the Microsoft Store version of the game, please run this tool as an administrator.\n" +
+                                    "If the game is running, exit it and try again.\r\n";
                             } else if (r == 3) {
-                                errMsg = "This modpack appears to be missing files.";
-                            } else {    // r == 4
-                                errMsg = "Unknown modfile type in modpack config.";
+                                errMsg = "This modpack appears to be missing files.\r\n";
+                            } else if (r == 4) {
+                                errMsg = "Unknown modfile type in modpack config.\r\n";
                             }
-                            Utility.ShowMsg(errMsg + "\r\nCould not install the '" + modpackname + "' modpack.", "Error");
+                            Utility.ShowMsg(errMsg + "Could not install the '" + modpackname + "' modpack.", "Error");
 
                             if (Backups.RestoreBaks(patched) != 0) {
                                 Utility.ShowMsg("At least one file restore failed. Your game is likely in an unstable state.", "Warning");
@@ -382,18 +382,23 @@ namespace MCC_Mod_Manager.Api {
                     return 0;
                 }
             } else if (entry.type == "patch") {
-                if (File.Exists(destination)) {
+                string unmoddedPath = Utility.ExpandPath(entry.orig);
+                bool fileIsPatchedOver = (unmoddedPath == destination);
+
+                if (File.Exists(destination) || fileIsPatchedOver) {
                     if (Backups.CreateBackup(destination, false) == 0) {
                         baksMade = true;
                     }
+                }
+                if (File.Exists(destination)) {
                     if (!Utility.DeleteFile(destination)) {
                         return 2;
                     }
                 }
 
-                string unmoddedPath = Utility.ExpandPath(entry.orig);
-                if (!Utility.GetUnmodifiedHash(entry.orig).Equals(Modpacks.GetMD5(unmoddedPath), StringComparison.OrdinalIgnoreCase)) {
-                    unmoddedPath = Config.Backup_dir + @"\" + Backups._baks[unmoddedPath];  // use backup version
+                // use the backup that was created if the original file and the destination are the same, because the destination has been deleted
+                if (fileIsPatchedOver) {
+                    unmoddedPath = Config.Backup_dir + @"\" + Backups._baks[unmoddedPath];
                 }
 
                 if (!AssemblyPatching.ApplyPatch(modFile, Path.GetFileName(entry.src), unmoddedPath, destination)) {

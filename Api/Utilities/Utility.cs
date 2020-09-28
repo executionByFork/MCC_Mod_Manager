@@ -34,9 +34,6 @@ namespace MCC_Mod_Manager.Api.Utilities {
             throw new FormatException("Please notify the developer: " + type + " is not a valid type for showMsg.");
         }
 
-        public static bool IsHaloFile(string filePath) {
-            return (GetUnmodifiedHash(filePath) != null);
-        }
 
         public static string CompressPath(string p) {
             return p.Replace(Config.MCC_home, "$MCC_home");
@@ -88,10 +85,23 @@ namespace MCC_Mod_Manager.Api.Utilities {
             }
         }
 
+        public static Dictionary<string, object> getFiletreeJSON() {
+            string json = File.ReadAllText("Formats/filetree.json");
+            Dictionary<string, object> fileTree;
+            try {
+                fileTree = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                return fileTree;
+            } catch (JsonSerializationException) {
+                throw new JsonReaderException();
+            } catch (JsonReaderException) {
+                return null;
+            }
+        }
+
         private static string RetrieveHash(string[] dirArray, int i, Dictionary<string, object> fileTree) {
             if (fileTree.ContainsKey(dirArray[i])) {
                 string hash = fileTree[dirArray[i]] as string;
-                if (hash == null) { // If object is not a string
+                if (hash == null) { // If object is not a string, it is a dictionary either empty or filled
                     return RetrieveHash(dirArray, i + 1, JObject.FromObject(fileTree[dirArray[i]]).ToObject<Dictionary<string, object>>());
                 }
                 return hash;
@@ -100,20 +110,23 @@ namespace MCC_Mod_Manager.Api.Utilities {
             return null;
         }
 
+        public static bool IsHaloFile(string filePath) {
+            string[] dirArray = filePath.Split(Path.DirectorySeparatorChar);
+            Dictionary<string, object> fileTree = getFiletreeJSON();
+
+            return RetrieveHash(dirArray, 1, fileTree) != null;
+        }
+
         public static string GetUnmodifiedHash(string filePath) {
             string[] dirArray = filePath.Split(Path.DirectorySeparatorChar);
+            Dictionary<string, object> fileTree = getFiletreeJSON();
 
-            string json = File.ReadAllText("Formats/filetree.json");
-            Dictionary<string, object> fileTree;
-            try {
-                fileTree = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
-            } catch (JsonSerializationException) {
-                throw new JsonReaderException();
-            } catch (JsonReaderException) {
+            string hash = RetrieveHash(dirArray, 1, fileTree);
+            if (hash == "") {   // --hash flag was not used when running jsonifyFileTree.pl
                 return null;
+            } else {
+                return hash;
             }
-
-            return RetrieveHash(dirArray, 1, fileTree);
         }
 
         #endregion
