@@ -117,23 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="caution_15px" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\caution_15px.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="caution_35px" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\caution_35px.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="greenDot_15px" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\greenDot_15px.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="HaloHelmetIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\HaloHelmetIcon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="HaloHelmetIcon_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\HaloHelmetIcon_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="redDot_15px" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\redDot_15px.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
 </root>

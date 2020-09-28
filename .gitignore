@@ -2,6 +2,7 @@
 bin/
 obj/
 
-# Dependencies should be pulled down separately from source
+# Dependencies should be pulled down separately from source <3
 packages/
-packages.config
+FodyWeavers.xml
+FodyWeavers.xsd
